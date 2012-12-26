@@ -41,6 +41,7 @@ MAKEFILES_dom="
   dom/activities/interfaces/Makefile
   dom/activities/src/Makefile
   dom/alarm/Makefile
+  dom/sdcard/Makefile
   dom/apps/Makefile
   dom/apps/src/Makefile
   dom/base/Makefile

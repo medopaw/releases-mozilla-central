@@ -52,6 +52,7 @@ PARALLEL_DIRS += \
   contacts \
   phonenumberutils \
   alarm \
+  sdcard \
   devicestorage \
   encoding \
   file \

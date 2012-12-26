@@ -1,0 +1,15 @@
+component {05d87ade-f1aa-4e0b-bb04-c068e22aa7eb} FileSystem.js
+contract @mozilla.org/sdcard/filesystem;1 {05d87ade-f1aa-4e0b-bb04-c068e22aa7eb}
+category JavaScript-navigator-property mozSDCard @mozilla.org/sdcard/filesystem;1
+
+component {7decc5e9-2f55-4f9f-ae1a-0b2f7ee083eb} DirectoryEntry.js
+contract @mozilla.org/sdcard/directoryentry;1 {7decc5e9-2f55-4f9f-ae1a-0b2f7ee083eb}
+
+component {5a8c0260-74a6-46dd-8fa4-926b9557c1e3} FileEntry.js
+contract @mozilla.org/sdcard/fileentry;1 {5a8c0260-74a6-46dd-8fa4-926b9557c1e3}
+
+component {5e59c1a1-25fa-499c-ae8c-c71d6ac0284b} DirectoryReader.js
+contract @mozilla.org/sdcard/directoryreader;1 {5e59c1a1-25fa-499c-ae8c-c71d6ac0284b}
+
+component {4e9cd6dc-44e0-4cb7-a31d-dbf4b39f3ecf} EntryArray.js
+contract @mozilla.org/sdcard/entryarray;1 {4e9cd6dc-44e0-4cb7-a31d-dbf4b39f3ecf}

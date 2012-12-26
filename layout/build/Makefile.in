@@ -67,6 +67,7 @@ SHARED_LIBRARY_LIBS = \
 	$(DEPTH)/dom/battery/$(LIB_PREFIX)dom_battery_s.$(LIB_SUFFIX) \
 	$(DEPTH)/dom/contacts/$(LIB_PREFIX)jsdomcontacts_s.$(LIB_SUFFIX) \
 	$(DEPTH)/dom/alarm/$(LIB_PREFIX)domalarm_s.$(LIB_SUFFIX) \
+	$(DEPTH)/dom/sdcard/$(LIB_PREFIX)domsdcard_s.$(LIB_SUFFIX) \
 	$(DEPTH)/dom/devicestorage/$(LIB_PREFIX)domdevicestorage_s.$(LIB_SUFFIX) \
 	$(DEPTH)/dom/encoding/$(LIB_PREFIX)domencoding_s.$(LIB_SUFFIX) \
 	$(DEPTH)/dom/file/$(LIB_PREFIX)domfile_s.$(LIB_SUFFIX) \

@@ -17,6 +17,7 @@ DOM_SRCDIRS = \
   dom/contacts \
   dom/permission \
   dom/alarm \
+  dom/sdcard \
   dom/src/events \
   dom/src/storage \
   dom/src/offline \

@@ -1,0 +1,22 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+// interface FileSystem;
+interface nsIDOMDirectoryEntry;
+interface nsIDOMEntryCallback;
+interface nsIDOMErrorCallback;
+
+[scriptable, uuid(4575c3d3-62ca-4b2d-8c6b-8aa81e739738)]
+interface nsIDOMEntry: nsISupports
+{
+    readonly attribute boolean isFile;
+    readonly attribute boolean isDirectory;
+    readonly attribute DOMString name;
+    readonly attribute DOMString fullPath;
+  //  readonly attribute FileSystem filesystem;
+    void copyTo(in nsIDOMDirectoryEntry parent, [optional] in DOMString newName, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
+    void getParent(in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
+};

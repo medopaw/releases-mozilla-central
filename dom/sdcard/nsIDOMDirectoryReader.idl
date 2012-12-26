@@ -1,0 +1,14 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+interface nsIDOMEntriesCallback;
+interface nsIDOMErrorCallback;
+
+[scriptable, uuid(5e59c1a1-25fa-499c-ae8c-c71d6ac0284b)]
+interface nsIDOMDirectoryReader: nsISupports
+{
+    void readEntries(in nsIDOMEntriesCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
+};

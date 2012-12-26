@@ -1,0 +1,11 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsIDOMEntry.idl"
+
+[scriptable, uuid(5a8c0260-74a6-46dd-8fa4-926b9557c1e3)]
+interface nsIDOMFileEntry: nsIDOMEntry
+{
+};
