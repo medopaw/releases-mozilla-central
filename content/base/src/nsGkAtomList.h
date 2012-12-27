@@ -1751,6 +1751,9 @@ GK_ATOM(onuserproximity, "onuserproximity")
 // light sensor support
 GK_ATOM(ondevicelight, "ondevicelight")
 
+// magnetic field sensor support
+GK_ATOM(ondevicemagneticfield, "ondevicemagneticfield")
+
 //---------------------------------------------------------------------------
 // Special atoms
 //---------------------------------------------------------------------------

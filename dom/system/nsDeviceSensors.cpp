@@ -227,7 +227,8 @@ nsDeviceSensors::Notify(const mozilla::hal::SensorData& aSensorData)
         FireDOMProximityEvent(target, x, y, z);
       else if (type == nsIDeviceSensorData::TYPE_LIGHT)
         FireDOMLightEvent(target, x);
-
+      else if (type == nsIDeviceSensorData::TYPE_MAGNETIC_FIELD)
+        FireDOMMagneticFieldEvent(target, x, y, z);
     }
   }
 }
@@ -387,4 +388,27 @@ nsDeviceSensors::FireDOMMotionEvent(nsIDOMDocument *domdoc,
   mLastAccelerationIncluduingGravity = nullptr;
   mLastAcceleration = nullptr;
   mLastDOMMotionEventTime = TimeStamp::Now();
+}
+
+void
+nsDeviceSensors::FireDOMMagneticFieldEvent(mozilla::dom::EventTarget* aTarget,
+                                           double x,
+                                           double y,
+                                           double z)
+{
+  nsCOMPtr<nsIDOMEvent> event;
+  NS_NewDOMDeviceMagneticFieldEvent(getter_AddRefs(event), aTarget, nullptr, nullptr);
+  nsCOMPtr<nsIDOMDeviceMagneticFieldEvent> oe = do_QueryInterface(event);
+
+  oe->InitDeviceMagneticFieldEvent(NS_LITERAL_STRING("devicemagneticfield"),
+                                   true,
+                                   false,
+                                   x,
+                                   y,
+                                   z);
+
+  event->SetTrusted(true);
+
+  bool defaultActionEnabled = true;
+  aTarget->DispatchEvent(event, &defaultActionEnabled);
 }

@@ -22,6 +22,7 @@ simple_events = [
     'MozContactChangeEvent',
     'DeviceOrientationEvent',
     'DeviceLightEvent',
+    'DeviceMagneticFieldEvent',
     'MozApplicationEvent',
     'SmartCardEvent',
     'StyleRuleChangeEvent',

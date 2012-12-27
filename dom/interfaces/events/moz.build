@@ -17,6 +17,7 @@ XPIDL_SOURCES += [
     'nsIDOMDataContainerEvent.idl',
     'nsIDOMDataTransfer.idl',
     'nsIDOMDeviceLightEvent.idl',
+    'nsIDOMDeviceMagneticFieldEvent.idl',
     'nsIDOMDeviceMotionEvent.idl',
     'nsIDOMDeviceOrientationEvent.idl',
     'nsIDOMDeviceProximityEvent.idl',

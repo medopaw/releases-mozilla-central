@@ -486,6 +486,10 @@ WINDOW_ONLY_EVENT(devicelight,
                   NS_DEVICE_LIGHT,
                   EventNameType_None,
                   NS_EVENT)
+WINDOW_ONLY_EVENT(devicemagneticfield,
+                  NS_DEVICE_MAGNETIC_FIELD,
+                  EventNameType_None,
+                  NS_EVENT)
 
 #ifdef MOZ_B2G
 WINDOW_ONLY_EVENT(moztimechange,

@@ -322,8 +322,9 @@ nsAppShell::ProcessNextNativeEvent(bool mayWait)
           case hal::SENSOR_ACCELERATION:
           case hal::SENSOR_GYROSCOPE:
           case hal::SENSOR_PROXIMITY:
+          case hal::SENSOR_MAGNETIC_FIELD:
             values.AppendElement(curEvent->X());
-            values.AppendElement(curEvent->Y()); 
+            values.AppendElement(curEvent->Y());
             values.AppendElement(curEvent->Z());
             break;
 

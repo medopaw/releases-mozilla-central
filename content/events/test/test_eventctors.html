@@ -507,6 +507,16 @@ is(e.absolute, true);
 document.dispatchEvent(e);
 is(receivedEvent, e, "Wrong event!");
 
+// DeviceMagneticFieldEvent
+e = new DeviceMagneticFieldEvent("hello", {x: 1, y: 2, z:3} );
+ok(e.type, "hello", "Wrong event type!");
+ok(!e.isTrusted, "Event should not be trusted");
+is(e.x, 1, "value should be 1");
+is(e.y, 2, "value should be 2");
+is(e.x, 1, "value should be 3");
+document.dispatchEvent(e);
+is(receivedEvent, e, "Wrong event!");
+
 // MouseEvent
 
 try {

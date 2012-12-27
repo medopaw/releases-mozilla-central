@@ -1,0 +1,32 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsIDOMEvent.idl"
+
+[scriptable, builtinclass, uuid(6B3BED4A-39AC-4F96-92DA-84806A539760)]
+interface nsIDOMDeviceMagneticFieldEvent : nsIDOMEvent
+{
+  void initDeviceMagneticFieldEvent(in DOMString aEventTypeArg,
+                                    in boolean aCanBubbleArg,
+                                    in boolean aCancelableArg,
+                                    in double aX,
+                                    in double aY,
+                                    in double aZ);
+
+  /*
+   * All values are in micro-Tesla (uT) and measure the ambient magnetic
+   * field in the X, Y and Z axis.
+   * http://developer.android.com/reference/android/hardware/SensorEvent.html
+   */
+  readonly attribute double x;
+  readonly attribute double y;
+  readonly attribute double z;
+};
+
+dictionary DeviceMagneticFieldEventInit : EventInit
+{
+   double x;
+   double y;
+   double z;
+};

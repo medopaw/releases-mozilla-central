@@ -60,6 +60,8 @@ HardwareSensorToHalSensor(int type)
       return SENSOR_GYROSCOPE;
     case SENSOR_TYPE_LINEAR_ACCELERATION:
       return SENSOR_LINEAR_ACCELERATION;
+    case SENSOR_TYPE_MAGNETIC_FIELD:
+      return SENSOR_MAGNETIC_FIELD;
     default:
       return SENSOR_UNKNOWN;
   }
@@ -86,6 +88,8 @@ HalSensorToHardwareSensor(SensorType type)
       return SENSOR_TYPE_GYROSCOPE;
     case SENSOR_LINEAR_ACCELERATION:
       return SENSOR_TYPE_LINEAR_ACCELERATION;
+    case SENSOR_MAGNETIC_FIELD:
+      return SENSOR_TYPE_MAGNETIC_FIELD;
     default:
       return -1;
   }
@@ -103,6 +107,8 @@ SensorseventStatus(const sensors_event_t& data)
       return data.acceleration.status;
     case SENSOR_GYROSCOPE:
       return data.gyro.status;
+    case SENSOR_MAGNETIC_FIELD:
+      return data.magnetic.status;
   }
 
   return SENSOR_STATUS_UNRELIABLE;
@@ -178,10 +184,6 @@ PollSensors()
     }
 
     for (int i = 0; i < n; ++i) {
-      // FIXME: bug 802004, add proper support for the magnetic field sensor.
-      if (buffer[i].type == SENSOR_TYPE_MAGNETIC_FIELD)
-        continue;
-
       if (HardwareSensorToHalSensor(buffer[i].type) == SENSOR_UNKNOWN) {
         // Emulator is broken and gives us events without types set
         int index;

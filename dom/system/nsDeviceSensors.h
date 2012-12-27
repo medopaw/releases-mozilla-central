@@ -16,6 +16,7 @@
 #include "nsIDOMDeviceProximityEvent.h"
 #include "nsIDOMUserProximityEvent.h"
 #include "nsIDOMDeviceMotionEvent.h"
+#include "nsIDOMDeviceMagneticFieldEvent.h"
 #include "nsDOMDeviceMotionEvent.h"
 #include "mozilla/TimeStamp.h"
 #include "mozilla/HalSensor.h"
@@ -74,6 +75,11 @@ private:
                           double x,
                           double y,
                           double z);
+
+  void FireDOMMagneticFieldEvent(mozilla::dom::EventTarget* aTarget,
+                                 double x,
+                                 double y,
+                                 double z);
 
   bool mEnabled;
 

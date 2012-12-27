@@ -300,6 +300,8 @@ nsEventListenerManager::AddEventListenerInternal(
     EnableDevice(NS_DEVICE_LIGHT);
   } else if (aTypeAtom == nsGkAtoms::ondevicemotion) {
     EnableDevice(NS_DEVICE_MOTION);
+  } else if (aTypeAtom == nsGkAtoms::ondevicemagneticfield) {
+    EnableDevice(NS_DEVICE_MAGNETIC_FIELD);
 #ifdef MOZ_B2G
   } else if (aTypeAtom == nsGkAtoms::onmoztimechange) {
     nsCOMPtr<nsPIDOMWindow> window = GetTargetAsInnerWindow();
@@ -366,6 +368,7 @@ nsEventListenerManager::IsDeviceType(uint32_t aType)
     case NS_DEVICE_LIGHT:
     case NS_DEVICE_PROXIMITY:
     case NS_USER_PROXIMITY:
+    case NS_DEVICE_MAGNETIC_FIELD:
       return true;
     default:
       break;
@@ -397,6 +400,9 @@ nsEventListenerManager::EnableDevice(uint32_t aType)
       window->EnableDeviceSensor(SENSOR_LINEAR_ACCELERATION);
       window->EnableDeviceSensor(SENSOR_GYROSCOPE);
       break;
+    case NS_DEVICE_MAGNETIC_FIELD:
+      window->EnableDeviceSensor(SENSOR_MAGNETIC_FIELD);
+      break;
     default:
       NS_WARNING("Enabling an unknown device sensor.");
       break;
@@ -426,6 +432,9 @@ nsEventListenerManager::DisableDevice(uint32_t aType)
       break;
     case NS_DEVICE_LIGHT:
       window->DisableDeviceSensor(SENSOR_LIGHT);
+      break;
+    case NS_DEVICE_MAGNETIC_FIELD:
+      window->DisableDeviceSensor(SENSOR_MAGNETIC_FIELD);
       break;
     default:
       NS_WARNING("Disabling an unknown device sensor.");
