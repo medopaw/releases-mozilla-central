@@ -346,9 +346,10 @@
 @BINPATH@/components/AlarmsManager.js
 @BINPATH@/components/AlarmsManager.manifest
 @BINPATH@/components/FileSystem.js
-@BINPATH@/components/Entry.js
+@BINPATH@/components/FileEntry.js
 @BINPATH@/components/DirectoryEntry.js
 @BINPATH@/components/DirectoryReader.js
+@BINPATH@/components/EntryArray.js
 @BINPATH@/components/SDCard.manifest
 @BINPATH@/components/FeedProcessor.manifest
 @BINPATH@/components/FeedProcessor.js

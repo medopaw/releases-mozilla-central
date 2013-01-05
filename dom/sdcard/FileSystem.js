@@ -54,7 +54,6 @@ FileSystem.prototype = {
   // nsIDOMGlobalPropertyInitializer implementation
   init: function (aWindow) {
     debug("init()");
-    this._rootPath = "/sdcard";
     this._name = "SD Card";
     // this._tmp = Cc["@mozilla.org/file/local;1"].createInstance(Ci.nsILocalFile);
    //  this._root = Cc["@mozilla.org/sdcard/directoryentry;1"].createInstance(Ci.nsIDOMDirectoryEntry);
@@ -63,7 +62,7 @@ FileSystem.prototype = {
        isFile: false,
        isDirectory: true,
        name: "",
-       fullPath: "/"
+       fullPath: SDCardUtils.rootPath
         // filesystem: this
    });
 

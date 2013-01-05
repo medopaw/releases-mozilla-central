@@ -43,7 +43,7 @@ DirectoryReader.prototype = {
   jsinit: SDCardUtils.setPrivates,
 
   readEntries: function(successCallback, errorCallback) {
-      debug('in readEntries, fullPath='+this._fullPath);
+      debug('in readEntries(), fullPath='+this._fullPath);
       debug('successCallback='+successCallback);
       // Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThreadi.dispatch({}, Ci.nsIEventTarget.DISPATCH_NORMAL);
       SDCardUtils.postToBackstage(new ReadEntriesEvent({

@@ -34,6 +34,8 @@ this.DOMEntryArray = Components.Constructor("@mozilla.org/sdcard/entryarray;1", 
 this.DOMDOMError = Components.Constructor("@mozilla.org/dom-error;1", "nsIDOMDOMError");
 
 this.SDCardUtils = {
+    rootPath: "/sdcard",
+
     setPrivates: function(args) {
         for (let i in args) {
             this["_" + i] = args[i];
@@ -51,6 +53,7 @@ this.SDCardUtils = {
     },
 
     postToBackstage: function(runnable) {
+        debug("in postToBackstage()");
         // Cc["@mozilla.org/network/stream-transport-service;1"].getService().QueryInterface(Ci.nsIEventTarget).dispatch(runnable, Ci.nsIEventTarget.DISPATCH_NORMAL);
         Services.tm.currentThread.dispatch(runnable, Ci.nsIEventTarget.DISPATCH_NORMAL);
         // Services.tm.newThread(0).dispatch(runnable, Ci.nsIEventTarget.DISPATCH_NORMAL);
@@ -127,39 +130,36 @@ this.CopyEvent = SDCardUtils.createEventType(function() {
         }));
     } catch (ex) {
         debug('Exception caught: '+ex);
-        SDCardUtils.postToMainThread(new ResultEvent({
-            callback: this._onerror,
-            result: SDCardUtils.exceptionToDOMError(ex)
-        }));
+        if (this._onerror) {
+            SDCardUtils.postToMainThread(new ResultEvent({
+                callback: this._onerror,
+                result: SDCardUtils.exceptionToDOMError(ex)
+            }));
+        }
     }
 });
 
 this.GetParentEvent = SDCardUtils.createEventType(function() {
     try {
-        let file = new FileUtils.File(this._path), parent = file.parent || file;
-        /* let entry = new DOMDirectoryEntry();
-        entry.wrappedJSObject.jsinit({
-            isDirectory: true,
-            isFile: false,
-            name: parent.leafName,
-            fullPath: parent.path
-        });*/
+        let file = new FileUtils.File(this._path), parent = SDCardUtils.rootPath == this._path ? file : (file.parent || file);
         SDCardUtils.postToMainThread(new ResultEvent({
             callback: this._onsuccess,
             result: SDCardUtils.nsIFileToDOMEntry(parent)// entry
         }));
     } catch (ex) {
         debug('Exception caught: '+ex);
-        SDCardUtils.postToMainThread(new ResultEvent({
-            callback: this._onerror,
-            result: SDCardUtils.exceptionToDOMError(ex)
-        }));
+        if (this._onerror) {
+            SDCardUtils.postToMainThread(new ResultEvent({
+                callback: this._onerror,
+                result: SDCardUtils.exceptionToDOMError(ex)
+            }));
+        }
     }
 });
 
 this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
     try {
-        debug('ReadEntriesEvent.run(). path='+this._path);
+        debug('in ReadEntriesEvent.run(). path='+this._path);
         let dir = new FileUtils.File(this._path);
         debug('dir.path='+dir.path);
         let children = dir.directoryEntries;
@@ -167,25 +167,6 @@ this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
         while (children.hasMoreElements()) {
             child = children.getNext().QueryInterface(Ci.nsIFile);
             debug('child.path='+child.path);
-/*            if (child.isDirectory()) {
-                entry = new DOMDirectoryEntry();
-                entry.wrappedJSObject.jsinit({
-                   isDirectory: true,
-                   isFile: false,
-                   name: child.leafName,
-                   fullPath: child.path
-                });
-                list.push(entry);
-            } else {
-                entry = new DOMFileEntry();
-                entry.wrappedJSObject.jsinit({
-                   isDirectory: false,
-                   isFile: true,
-                   name: child.leafName,
-                   fullPath: child.path
-                });
-                list.push(entry);
-            }*/
             list.push(SDCardUtils.nsIFileToDOMEntry(child));
         }
         let entryArray = new DOMEntryArray();
@@ -197,9 +178,11 @@ this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
         }));
     } catch(ex) {
         debug('Exception caught: '+ex);
-        SDCardUtils.postToMainThread(new ResultEvent({
-            callback: this._onerror,
-            result: SDCardUtils.exceptionToDOMError(ex)
-        }));
+        if (this._onerror) {
+            SDCardUtils.postToMainThread(new ResultEvent({
+                callback: this._onerror,
+                result: SDCardUtils.exceptionToDOMError(ex)
+            }));
+        }
     }
 });
