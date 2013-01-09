@@ -62,7 +62,7 @@ FileSystem.prototype = {
        isFile: false,
        isDirectory: true,
        name: "",
-       fullPath: SDCardUtils.rootPath
+       fullPath: "/" // SDCardUtils.rootPath
         // filesystem: this
    });
 

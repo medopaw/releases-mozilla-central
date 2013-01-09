@@ -34,7 +34,39 @@ this.DOMEntryArray = Components.Constructor("@mozilla.org/sdcard/entryarray;1", 
 this.DOMDOMError = Components.Constructor("@mozilla.org/dom-error;1", "nsIDOMDOMError");
 
 this.SDCardUtils = {
-    rootPath: "/sdcard",
+    root: "/sdcard",
+
+    realPath: function(path) {
+        return this.root + path;
+    },
+
+    nsIFile: function(path) {
+        return new FileUtils.File(this.realPath(path));
+    },
+
+    nsIFileToDOMEntry: function(file) {
+        let entry = null, path = file.path.slice(this.root.length) || "/", name = path == "/" ? "" : file.leafName; // root (/sdcard) is the special case
+
+        if (file.isDirectory()) {
+            entry = new DOMDirectoryEntry();
+            entry.wrappedJSObject.jsinit({
+               isDirectory: true,
+               isFile: false,
+               name: name,
+               fullPath: path
+            });
+        } else {
+            entry = new DOMFileEntry();
+            entry.wrappedJSObject.jsinit({
+               isDirectory: false,
+               isFile: true,
+               name: name,
+               fullPath: path
+            });
+        }
+
+        return entry;
+    },
 
     setPrivates: function(args) {
         for (let i in args) {
@@ -87,30 +119,6 @@ this.SDCardUtils = {
         }
         debug('error='+error);
         return this.createDOMError(error);
-    },
-
-    nsIFileToDOMEntry: function(file) {
-        let entry = null;
-
-        if (file.isDirectory()) {
-            entry = new DOMDirectoryEntry();
-            entry.wrappedJSObject.jsinit({
-               isDirectory: true,
-               isFile: false,
-               name: file.leafName,
-               fullPath: file.path
-            });
-        } else {
-            entry = new DOMFileEntry();
-            entry.wrappedJSObject.jsinit({
-               isDirectory: false,
-               isFile: true,
-               name: file.leafName,
-               fullPath: file.path
-            });
-        }
-
-        return entry;
     }
 };
 
@@ -121,7 +129,8 @@ this.ResultEvent = SDCardUtils.createEventType(function() {
 
 this.CopyEvent = SDCardUtils.createEventType(function() {
     try {
-        let file = new FileUtils.File(this._path), parent = new FileUtils.File(this._parent.fullPath);
+        // let file = new FileUtils.File(SDCardUtils.realPath(this._path)), parent = new FileUtils.File(this._parent.fullPath);
+        let file = SDCardUtils.nsIFile(this._path), parent = SDCardUtils.nsIFile(this._parent.fullPath);
         file.copyTo(parent, this._newName);
         let newFile = parent.append(this._newName);
         SDCardUtils.postToMainThread(new ResultEvent({
@@ -141,7 +150,8 @@ this.CopyEvent = SDCardUtils.createEventType(function() {
 
 this.GetParentEvent = SDCardUtils.createEventType(function() {
     try {
-        let file = new FileUtils.File(this._path), parent = SDCardUtils.rootPath == this._path ? file : (file.parent || file);
+        // let file = new FileUtils.File(this._path), parent = this._path == "/" ? file : (file.parent || file);
+        let file = SDCardUtils.nsIFile(this._path), parent = this._path == "/" ? file : (file.parent || file);
         SDCardUtils.postToMainThread(new ResultEvent({
             callback: this._onsuccess,
             result: SDCardUtils.nsIFileToDOMEntry(parent)// entry
@@ -160,7 +170,8 @@ this.GetParentEvent = SDCardUtils.createEventType(function() {
 this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
     try {
         debug('in ReadEntriesEvent.run(). path='+this._path);
-        let dir = new FileUtils.File(this._path);
+        // let dir = new FileUtils.File(this._path);
+        let dir = SDCardUtils.nsIFile(this._path);
         debug('dir.path='+dir.path);
         let children = dir.directoryEntries;
         let child, list = [];
