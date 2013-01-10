@@ -7,6 +7,7 @@
 // interface FileSystem;
 interface nsIDOMDirectoryEntry;
 interface nsIDOMEntryCallback;
+interface nsIDOMVoidCallback;
 interface nsIDOMErrorCallback;
 
 [scriptable, uuid(4575c3d3-62ca-4b2d-8c6b-8aa81e739738)]
@@ -18,5 +19,7 @@ interface nsIDOMEntry: nsISupports
     readonly attribute DOMString fullPath;
   //  readonly attribute FileSystem filesystem;
     void copyTo(in nsIDOMDirectoryEntry parent, [optional] in DOMString newName, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
+    void moveTo(in nsIDOMDirectoryEntry parent, [optional] in DOMString newName, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
+    void remove(in nsIDOMVoidCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
     void getParent(in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
 };

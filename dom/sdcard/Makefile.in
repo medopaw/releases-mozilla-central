@@ -29,6 +29,7 @@ XPIDLSRCS =               \
   nsIDOMDirectoryReader.idl \
   nsIDOMEntryCallback.idl \
   nsIDOMEntriesCallback.idl \
+  nsIDOMVoidCallback.idl \
   nsIDOMErrorCallback.idl \
   nsIDOMEntryArray.idl \
   $(NULL)

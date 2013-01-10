@@ -4,7 +4,7 @@
 
 "use strict";
 
-this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", /*"LocalFile", */"DOMDOMError", "ResultEvent", "ReadEntriesEvent", "CopyEvent", "GetParentEvent"];
+this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", /*"LocalFile", */"DOMDOMError", "ResultEvent", "ReadEntriesEvent", "CopyEvent", "MoveEvent", "RemoveEvent", "GetParentEvent"];
 
 const DEBUG = true;
 
@@ -96,6 +96,16 @@ this.SDCardUtils = {
         Services.tm.mainThread.dispatch(runnable, Ci.nsIEventTarget.DISPATCH_NORMAL);
     },
 
+    handleException: function(exception, errorCallback) {
+        debug('Exception caught: '+exception);
+        if (errorCallback) {
+            SDCardUtils.postToMainThread(new ResultEvent({
+                callback: errorCallback,
+                result: SDCardUtils.exceptionToDOMError(exception)
+            }));
+        }
+    },
+
     createDOMError: function(aError) {
         // let error = Cc["@mozilla.org/dom-error;1"].createInstance(Ci.nsIDOMDOMError);
         let error = new DOMDOMError(); // this.DOMDOMError == undefined. amazing!
@@ -145,32 +155,51 @@ this.CopyEvent = SDCardUtils.createEventType(function() {
             }));
         }
     } catch (ex) {
-        debug('Exception caught: '+ex);
-        if (this._onerror) {
+        SDCardUtils.handleException(ex, this._onerror);
+    }
+});
+
+this.MoveEvent = SDCardUtils.createEventType(function() {
+    try {
+        let file = SDCardUtils.nsIFile(this._path), parent = SDCardUtils.nsIFile(this._parent.fullPath);
+        debug('Move '+file.path+' to '+parent.path);
+        debug('this._path='+this._path+', this._parent='+this._parent+', this._newName='+this._newName+'; file='+file);
+        file.moveTo(parent, this._newName);
+        let newFile = parent.clone();
+        newFile.append(this._newName || file.leafName);
+        debug('newName='+(this._newName||file.leafName)+'newFile='+newFile);
+        if (this._onsuccess) {
             SDCardUtils.postToMainThread(new ResultEvent({
-                callback: this._onerror,
-                result: SDCardUtils.exceptionToDOMError(ex)
+                callback: this._onsuccess,
+                result: SDCardUtils.nsIFileToDOMEntry(newFile)
             }));
         }
+    } catch (ex) {
+        SDCardUtils.handleException(ex, this._onerror);
+    }
+});
+
+this.RemoveEvent = SDCardUtils.createEventType(function() {
+    try {
+        let file = SDCardUtils.nsIFile(this._path);
+        file.remove(false); // parameter is a must
+        SDCardUtils.postToMainThread(new ResultEvent({
+            callback: this._onsuccess
+        }));
+    } catch (ex) {
+        SDCardUtils.handleException(ex, this._onerror);
     }
 });
 
 this.GetParentEvent = SDCardUtils.createEventType(function() {
     try {
-        // let file = new FileUtils.File(this._path), parent = this._path == "/" ? file : (file.parent || file);
         let file = SDCardUtils.nsIFile(this._path), parent = this._path == "/" ? file : (file.parent || file);
         SDCardUtils.postToMainThread(new ResultEvent({
             callback: this._onsuccess,
-            result: SDCardUtils.nsIFileToDOMEntry(parent)// entry
+            result: SDCardUtils.nsIFileToDOMEntry(parent)
         }));
     } catch (ex) {
-        debug('Exception caught: '+ex);
-        if (this._onerror) {
-            SDCardUtils.postToMainThread(new ResultEvent({
-                callback: this._onerror,
-                result: SDCardUtils.exceptionToDOMError(ex)
-            }));
-        }
+        SDCardUtils.handleException(ex, this._onerror);
     }
 });
 
@@ -195,12 +224,6 @@ this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
             result: entryArray
         }));
     } catch(ex) {
-        debug('Exception caught: '+ex);
-        if (this._onerror) {
-            SDCardUtils.postToMainThread(new ResultEvent({
-                callback: this._onerror,
-                result: SDCardUtils.exceptionToDOMError(ex)
-            }));
-        }
+        SDCardUtils.handleException(ex, this._onerror);
     }
 });

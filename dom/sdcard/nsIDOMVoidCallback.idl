@@ -1,0 +1,12 @@
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "nsISupports.idl"
+
+[scriptable, function, uuid(0B2F2F80-CDAB-439F-9C8C-DD5B51B8783F)]
+interface nsIDOMVoidCallback: nsISupports
+{
+    void handleEvent();
+};

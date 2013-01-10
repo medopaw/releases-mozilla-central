@@ -71,7 +71,31 @@ FileEntry.prototype = {
       }));
   },
 
-  getParent: function(successCallback, errorCallback) {
+  moveTo: function(parent, newName, successCallback, errorCallback) {
+      if (!parent) {
+          return;
+      }
+      SDCardUtils.postToBackstage(new MoveEvent({
+          path: this._fullPath,
+          parent: parent,
+          newName: newName,
+          onsuccess: successCallback && successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
+      }));
+ },
+
+ remove: function(successCallback, errorCallback) {
+      if (!successCallback) {
+          return;
+      }
+      SDCardUtils.postToBackstage(new RemoveEvent({
+          path: this._fullPath,
+          onsuccess: successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
+      }));
+ },
+
+ getParent: function(successCallback, errorCallback) {
       if (!successCallback) {
           return;
       }
