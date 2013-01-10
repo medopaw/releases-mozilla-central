@@ -45,40 +45,14 @@ DirectoryReader.prototype = {
   readEntries: function(successCallback, errorCallback) {
       debug('in readEntries(), fullPath='+this._fullPath);
       debug('successCallback='+successCallback);
-      // Components.classes['@mozilla.org/thread-manager;1'].getService(Components.interfaces.nsIThreadManager).currentThreadi.dispatch({}, Ci.nsIEventTarget.DISPATCH_NORMAL);
+      if (!successCallback) {
+          return;
+      }
       SDCardUtils.postToBackstage(new ReadEntriesEvent({
           path: this._fullPath,
           onsuccess: successCallback.handleEvent,
-          onerror: errorCallback.handleEvent
+          onerror: errorCallback && errorCallback.handleEvent
       }));
-/*      let dir = new LocalFile();
-      dir.initWithPath(this._fullPath);
-      debug('dir.path='+dir.path);
-      let children = dir.directoryEntries;
-      let child, entry, list = [];
-      while (children.hasMoreElements()) {
-        child = children.getNext().QueryInterface(Ci.nsILocalFile);
-        debug('child.path='+child.path);
-        if (child.isDirectory()) {
-            entry = new DOMDirectoryEntry();
-            entry.wrappedJSObject.jsinit({
-               isDirectory: true,
-               isFile: false,
-               name: child.leafName,
-               fullPath: child.path
-            });
-            list.push(entry);
-        }
-      }
-      let entryArray = new DOMEntryArray();
-      entryArray.wrappedJSObject.jsinit({entryarray: list});
-
- //     successCallback.handleEvent(entryArray);
-      debug('errorCallback='+errorCallback);
-      let err = SDCardUtils.createDOMError("This is a error test.");
-      debug('errname='+err.name);
-      errorCallback.handleEvent(err);
-*/
   }
 };
 

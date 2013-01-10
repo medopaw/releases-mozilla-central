@@ -59,20 +59,26 @@ FileEntry.prototype = {
   },
 
   copyTo: function(parent, newName, successCallback, errorCallback) {
+      if (!parent) {
+          return;
+      }
       SDCardUtils.postToBackstage(new CopyEvent({
           path: this._fullPath,
           parent: parent,
           newName: newName,
-          onsuccess: successCallback.handleEvent,
-          onerror: errorCallback.handleEvent
+          onsuccess: successCallback && successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
       }));
   },
 
   getParent: function(successCallback, errorCallback) {
+      if (!successCallback) {
+          return;
+      }
       SDCardUtils.postToBackstage(new GetParentEvent({
           path: this._fullPath,
           onsuccess: successCallback.handleEvent,
-          onerror: errorCallback.handleEvent
+          onerror: errorCallback && errorCallback.handleEvent
       }));
   }
 

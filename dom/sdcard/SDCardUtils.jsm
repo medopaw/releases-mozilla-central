@@ -4,7 +4,7 @@
 
 "use strict";
 
-this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", /*"LocalFile", */"DOMDOMError", "ResultEvent", "ReadEntriesEvent", "GetParentEvent"];
+this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", /*"LocalFile", */"DOMDOMError", "ResultEvent", "ReadEntriesEvent", "CopyEvent", "GetParentEvent"];
 
 const DEBUG = true;
 
@@ -45,6 +45,7 @@ this.SDCardUtils = {
     },
 
     nsIFileToDOMEntry: function(file) {
+        debug("in nsiIFileToDOMEntry(), file="+file);
         let entry = null, path = file.path.slice(this.root.length) || "/", name = path == "/" ? "" : file.leafName; // root (/sdcard) is the special case
 
         if (file.isDirectory()) {
@@ -131,12 +132,18 @@ this.CopyEvent = SDCardUtils.createEventType(function() {
     try {
         // let file = new FileUtils.File(SDCardUtils.realPath(this._path)), parent = new FileUtils.File(this._parent.fullPath);
         let file = SDCardUtils.nsIFile(this._path), parent = SDCardUtils.nsIFile(this._parent.fullPath);
+        debug('Copy '+file.path+' to '+parent.path);
+        debug('this._path='+this._path+', this._parent='+this._parent+', this._newName='+this._newName+'; file='+file);
         file.copyTo(parent, this._newName);
-        let newFile = parent.append(this._newName);
-        SDCardUtils.postToMainThread(new ResultEvent({
-            callback: this._onsuccess,
-            result: SDCardUtils.nsIFileToDOMEntry(newFile)
-        }));
+        let newFile = parent.clone();
+        newFile.append(this._newName || file.leafName);
+        debug('newName='+(this._newName||file.leafName)+'newFile='+newFile);
+        if (this._onsuccess) {
+            SDCardUtils.postToMainThread(new ResultEvent({
+                callback: this._onsuccess,
+                result: SDCardUtils.nsIFileToDOMEntry(newFile)
+            }));
+        }
     } catch (ex) {
         debug('Exception caught: '+ex);
         if (this._onerror) {
