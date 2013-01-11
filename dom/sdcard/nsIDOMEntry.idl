@@ -6,6 +6,7 @@
 #include "nsISupports.idl"
 // interface FileSystem;
 interface nsIDOMDirectoryEntry;
+interface nsIDOMMetadataCallback;
 interface nsIDOMEntryCallback;
 interface nsIDOMVoidCallback;
 interface nsIDOMErrorCallback;
@@ -18,6 +19,7 @@ interface nsIDOMEntry: nsISupports
     readonly attribute DOMString name;
     readonly attribute DOMString fullPath;
   //  readonly attribute FileSystem filesystem;
+    void getMetadata(in nsIDOMMetadataCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
     void copyTo(in nsIDOMDirectoryEntry parent, [optional] in DOMString newName, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
     void moveTo(in nsIDOMDirectoryEntry parent, [optional] in DOMString newName, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
     void remove(in nsIDOMVoidCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);

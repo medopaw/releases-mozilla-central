@@ -62,6 +62,17 @@ DirectoryEntry.prototype = {
       return this._filesystem;
   },*/
 
+  getMetadata: function(successCallback, errorCallback) {
+      if (!successCallback) {
+          return;
+      }
+      SDCardUtils.postToBackstage(new GetMetadataEvent({
+          path: this._fullPath,
+          onsuccess: successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
+      }));
+  },
+
   copyTo: function(parent, newName, successCallback, errorCallback) {
       if (!parent) {
           return;

@@ -348,6 +348,7 @@
 @BINPATH@/components/FileSystem.js
 @BINPATH@/components/FileEntry.js
 @BINPATH@/components/DirectoryEntry.js
+@BINPATH@/components/Metadata.js
 @BINPATH@/components/DirectoryReader.js
 @BINPATH@/components/EntryArray.js
 @BINPATH@/components/SDCard.manifest

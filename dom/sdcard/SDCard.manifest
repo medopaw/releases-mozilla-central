@@ -8,6 +8,9 @@ contract @mozilla.org/sdcard/directoryentry;1 {7decc5e9-2f55-4f9f-ae1a-0b2f7ee08
 component {5a8c0260-74a6-46dd-8fa4-926b9557c1e3} FileEntry.js
 contract @mozilla.org/sdcard/fileentry;1 {5a8c0260-74a6-46dd-8fa4-926b9557c1e3}
 
+component {2B3C3424-31A5-413A-942B-3CAB1F21CAB8} Metadata.js
+contract @mozilla.org/sdcard/metadata;1 {2B3C3424-31A5-413A-942B-3CAB1F21CAB8}
+
 component {5e59c1a1-25fa-499c-ae8c-c71d6ac0284b} DirectoryReader.js
 contract @mozilla.org/sdcard/directoryreader;1 {5e59c1a1-25fa-499c-ae8c-c71d6ac0284b}
 

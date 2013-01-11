@@ -12,7 +12,12 @@ function debug(aStr) {
     dump("FileEntry: " + aStr + "\n");
 }
 
-const { classes: Cc, interfaces: Ci, utils: Cu, results: Cr } = Components;
+const {
+    classes: Cc,
+    interfaces: Ci,
+    utils: Cu,
+    results: Cr
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/SDCardUtils.jsm");
@@ -33,11 +38,13 @@ FileEntry.prototype = {
 
   QueryInterface : XPCOMUtils.generateQI([nsIDOMFileEntry]),
 
-  classInfo : XPCOMUtils.generateCI({ classID: FILEENTRY_CID,
-                                      contractID: FILEENTRY_CID,
-                                      classDescription: "FileEntry",
-                                      interfaces: [nsIDOMFileEntry],
-                                      flags: nsIClassInfo.DOM_OBJECT }),
+  classInfo : XPCOMUtils.generateCI({
+      classID: FILEENTRY_CID,
+      contractID: FILEENTRY_CID,
+      classDescription: "FileEntry",
+      interfaces: [nsIDOMFileEntry],
+      flags: nsIClassInfo.DOM_OBJECT
+  }),
 
   // this method is meant to be called by wrappedJSObject and is not defined in IDL
   jsinit: SDCardUtils.setPrivates,
@@ -56,6 +63,17 @@ FileEntry.prototype = {
 
   get fullPath() {
       return this._fullPath;
+  },
+
+  getMetadata: function(successCallback, errorCallback) {
+      if (!successCallback) {
+          return;
+      }
+      SDCardUtils.postToBackstage(new GetMetadataEvent({
+          path: this._fullPath,
+          onsuccess: successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
+      }));
   },
 
   copyTo: function(parent, newName, successCallback, errorCallback) {

@@ -29,6 +29,8 @@ XPIDLSRCS =               \
   nsIDOMDirectoryReader.idl \
   nsIDOMEntryCallback.idl \
   nsIDOMEntriesCallback.idl \
+  nsIDOMMetadata.idl \
+  nsIDOMMetadataCallback.idl \
   nsIDOMVoidCallback.idl \
   nsIDOMErrorCallback.idl \
   nsIDOMEntryArray.idl \
@@ -38,6 +40,7 @@ EXTRA_COMPONENTS =       \
   FileSystem.js       \
   DirectoryEntry.js       \
   FileEntry.js       \
+  Metadata.js       \
   DirectoryReader.js       \
   EntryArray.js       \
   SDCard.manifest \

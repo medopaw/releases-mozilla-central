@@ -4,7 +4,7 @@
 
 "use strict";
 
-this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", /*"LocalFile", */"DOMDOMError", "ResultEvent", "ReadEntriesEvent", "CopyEvent", "MoveEvent", "RemoveEvent", "GetParentEvent"];
+this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", "DOMDOMError", "ResultEvent", "GetMetadataEvent", "ReadEntriesEvent", "CopyEvent", "MoveEvent", "RemoveEvent", "GetParentEvent"];
 
 const DEBUG = true;
 
@@ -25,11 +25,11 @@ this.DOMDirectoryEntry = Components.Constructor("@mozilla.org/sdcard/directoryen
 
 this.DOMFileEntry = Components.Constructor("@mozilla.org/sdcard/fileentry;1", "nsIDOMFileEntry");
 
+this.DOMMetadata = Components.Constructor("@mozilla.org/sdcard/metadata;1", "nsIDOMMetadata");
+
 this.DOMDirectoryReader = Components.Constructor("@mozilla.org/sdcard/directoryreader;1", "nsIDOMDirectoryReader");
 
 this.DOMEntryArray = Components.Constructor("@mozilla.org/sdcard/entryarray;1", "nsIDOMEntryArray");
-
-// this.LocalFile = Components.Constructor("@mozilla.org/file/local;1", "nsIFile");
 
 this.DOMDOMError = Components.Constructor("@mozilla.org/dom-error;1", "nsIDOMDOMError");
 
@@ -63,9 +63,7 @@ this.SDCardUtils = {
                isFile: true,
                name: name,
                fullPath: path
-            });
-        }
-
+            }); } 
         return entry;
     },
 
@@ -96,7 +94,7 @@ this.SDCardUtils = {
         Services.tm.mainThread.dispatch(runnable, Ci.nsIEventTarget.DISPATCH_NORMAL);
     },
 
-    handleException: function(exception, errorCallback) {
+    exceptionHandler: function(exception, errorCallback) {
         debug('Exception caught: '+exception);
         if (errorCallback) {
             SDCardUtils.postToMainThread(new ResultEvent({
@@ -138,6 +136,25 @@ this.ResultEvent = SDCardUtils.createEventType(function() {
     this._callback(this._result);
 });
 
+this.GetMetadataEvent = SDCardUtils.createEventType(function() {
+    try {
+        let file = SDCardUtils.nsIFile(this._path);
+        debug("Get metadata of"+file.path);
+        let metadata = new DOMMetadata();
+        metadata.wrappedJSObject.jsinit({
+            modificationTime: new Date(file.lastModifiedTime),
+            size: file.isDirectory() ? 0 : file.fileSize
+        });
+        debug(metadata.modificationTime+', '+metadata.size);
+        SDCardUtils.postToMainThread(new ResultEvent({
+            callback: this._onsuccess,
+            result: metadata
+        }));
+    } catch (ex) {
+        SDCardUtils.exceptionHandler(ex, this._onerror);
+    }
+});
+
 this.CopyEvent = SDCardUtils.createEventType(function() {
     try {
         // let file = new FileUtils.File(SDCardUtils.realPath(this._path)), parent = new FileUtils.File(this._parent.fullPath);
@@ -155,7 +172,7 @@ this.CopyEvent = SDCardUtils.createEventType(function() {
             }));
         }
     } catch (ex) {
-        SDCardUtils.handleException(ex, this._onerror);
+        SDCardUtils.exceptionHandler(ex, this._onerror);
     }
 });
 
@@ -175,7 +192,7 @@ this.MoveEvent = SDCardUtils.createEventType(function() {
             }));
         }
     } catch (ex) {
-        SDCardUtils.handleException(ex, this._onerror);
+        SDCardUtils.exceptionHandler(ex, this._onerror);
     }
 });
 
@@ -187,7 +204,7 @@ this.RemoveEvent = SDCardUtils.createEventType(function() {
             callback: this._onsuccess
         }));
     } catch (ex) {
-        SDCardUtils.handleException(ex, this._onerror);
+        SDCardUtils.exceptionHandler(ex, this._onerror);
     }
 });
 
@@ -199,14 +216,13 @@ this.GetParentEvent = SDCardUtils.createEventType(function() {
             result: SDCardUtils.nsIFileToDOMEntry(parent)
         }));
     } catch (ex) {
-        SDCardUtils.handleException(ex, this._onerror);
+        SDCardUtils.exceptionHandler(ex, this._onerror);
     }
 });
 
 this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
     try {
         debug('in ReadEntriesEvent.run(). path='+this._path);
-        // let dir = new FileUtils.File(this._path);
         let dir = SDCardUtils.nsIFile(this._path);
         debug('dir.path='+dir.path);
         let children = dir.directoryEntries;
@@ -224,6 +240,6 @@ this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
             result: entryArray
         }));
     } catch(ex) {
-        SDCardUtils.handleException(ex, this._onerror);
+        SDCardUtils.exceptionHandler(ex, this._onerror);
     }
 });
