@@ -123,7 +123,7 @@ this.SDCardUtils = {
                 error = 'NotFoundError';
                 break;
             default:
-                error = 'UnknowError';
+                error = 'UnknownError';
                 break;
         }
         debug('error='+error);

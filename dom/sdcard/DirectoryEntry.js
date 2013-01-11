@@ -33,11 +33,13 @@ DirectoryEntry.prototype = {
 
   QueryInterface : XPCOMUtils.generateQI([nsIDOMDirectoryEntry]),
 
-  classInfo : XPCOMUtils.generateCI({ classID: DIRECTORYENTRY_CID,
-                                      contractID: DIRECTORYENTRY_CID,
-                                      classDescription: "DirectoryEntry",
-                                      interfaces: [nsIDOMDirectoryEntry],
-                                      flags: nsIClassInfo.DOM_OBJECT }),
+  classInfo : XPCOMUtils.generateCI({
+      classID: DIRECTORYENTRY_CID,
+      contractID: DIRECTORYENTRY_CID,
+      classDescription: "DirectoryEntry",
+      interfaces: [nsIDOMDirectoryEntry],
+      flags: nsIClassInfo.DOM_OBJECT
+  }),
 
   // this method is meant to be called by wrappedJSObject and is not defined in IDL
   jsinit: SDCardUtils.setPrivates,

@@ -33,11 +33,13 @@ EntryArray.prototype = {
 
   QueryInterface : XPCOMUtils.generateQI([nsIDOMEntryArray]),
 
-  classInfo : XPCOMUtils.generateCI({ classID: ENTRYARRAY_CID,
-                                      contractID: ENTRYARRAY_CID,
-                                      classDescription: "EntryArray",
-                                      interfaces: [nsIDOMEntryArray],
-                                      flags: nsIClassInfo.DOM_OBJECT }),
+  classInfo : XPCOMUtils.generateCI({
+      classID: ENTRYARRAY_CID,
+      contractID: ENTRYARRAY_CID,
+      classDescription: "EntryArray",
+      interfaces: [nsIDOMEntryArray],
+      flags: nsIClassInfo.DOM_OBJECT
+  }),
 
   // this method is meant to be called by wrappedJSObject and is not defined in IDL
   jsinit: SDCardUtils.setPrivates,

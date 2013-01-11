@@ -33,11 +33,13 @@ DirectoryReader.prototype = {
 
   QueryInterface : XPCOMUtils.generateQI([nsIDOMDirectoryReader]),
 
-  classInfo : XPCOMUtils.generateCI({ classID: DIRECTORYREADER_CID,
-                                      contractID: DIRECTORYREADER_CID,
-                                      classDescription: "DirectoryReader",
-                                      interfaces: [nsIDOMDirectoryReader],
-                                      flags: nsIClassInfo.DOM_OBJECT }),
+  classInfo : XPCOMUtils.generateCI({
+      classID: DIRECTORYREADER_CID,
+      contractID: DIRECTORYREADER_CID,
+      classDescription: "DirectoryReader",
+      interfaces: [nsIDOMDirectoryReader],
+      flags: nsIClassInfo.DOM_OBJECT
+  }),
 
   // this method is meant to be called by wrappedJSObject and is not defined in IDL
   jsinit: SDCardUtils.setPrivates,

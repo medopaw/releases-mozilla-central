@@ -36,12 +36,13 @@ FileSystem.prototype = {
 
   QueryInterface : XPCOMUtils.generateQI([nsIDOMFileSystem, Ci.nsIDOMGlobalPropertyInitializer]),
 
-  classInfo : XPCOMUtils.generateCI({ classID: FILESYSTEM_CID,
-                                      contractID: FILESYSTEM_CID,
-                                      classDescription: "FileSystem",
-                                      interfaces: [nsIDOMFileSystem],
-                                      flags: nsIClassInfo.DOM_OBJECT }),
-
+  classInfo : XPCOMUtils.generateCI({
+      classID: FILESYSTEM_CID,
+      contractID: FILESYSTEM_CID,
+      classDescription: "FileSystem",
+      interfaces: [nsIDOMFileSystem],
+      flags: nsIClassInfo.DOM_OBJECT
+  }),
 
   get name() {
       return this._name;
