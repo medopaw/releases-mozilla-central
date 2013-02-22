@@ -6,8 +6,15 @@
 #include "nsIDOMEntry.idl"
 interface nsIDOMDirectoryReader;
 
+dictionary Flags {
+    boolean create;
+    boolean exclusive;
+};
+
 [scriptable, uuid(7decc5e9-2f55-4f9f-ae1a-0b2f7ee083eb)]
 interface nsIDOMDirectoryEntry: nsIDOMEntry
 {
     nsIDOMDirectoryReader createReader();
+    void getFile (in DOMString path, [optional] in jsval options, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
+    void getDirectory (in DOMString path, [optional] in jsval options, [optional] in nsIDOMEntryCallback successCallback, [optional] in nsIDOMErrorCallback errorCallback);
 };

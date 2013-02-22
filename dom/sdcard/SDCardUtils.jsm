@@ -4,7 +4,7 @@
 
 "use strict";
 
-this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", "DOMDOMError", "ResultEvent", "GetMetadataEvent", "ReadEntriesEvent", "CopyEvent", "MoveEvent", "RemoveEvent", "GetParentEvent"];
+this.EXPORTED_SYMBOLS = ["SDCardUtils", /*"DOMFileSystem", */"DOMDirectoryEntry", "DOMFileEntry", "DOMDirectoryReader", "DOMEntryArray", "DOMDOMError", "ResultEvent", "GetMetadataEvent", "ReadEntriesEvent", "CopyEvent", "MoveEvent", "RemoveEvent", "GetParentEvent", "GetFileEvent", "GetDirectoryEvent"];
 
 const DEBUG = true;
 
@@ -13,7 +13,12 @@ function debug(aStr) {
     dump("SDCardUtils: " + aStr + "\n");
 }
 
-const { classes: Cc, interfaces: Ci, utils: Cu, results: Cr } = Components;
+const {
+    classes: Cc,
+    interfaces: Ci,
+    utils: Cu,
+    results: Cr
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
@@ -238,6 +243,42 @@ this.ReadEntriesEvent = SDCardUtils.createEventType(function() {
         SDCardUtils.postToMainThread(new ResultEvent({
             callback: this._onsuccess,
             result: entryArray
+        }));
+    } catch(ex) {
+        SDCardUtils.exceptionHandler(ex, this._onerror);
+    }
+});
+
+this.GetFileEvent = SDCardUtils.createEventType(function() {
+    try {
+        debug('in GetFileEvent.run(). path='+this._path);
+        let file = null;
+        if (path.indexOf("/") != 0) { // relative
+            file = SDCardUtils.nsIFile(this._path).append(this._filepath);
+        } else { // absolute
+            file = SDCardUtils.nsIFile(this._filepath);
+        }
+        SDCardUtils.postToMainThread(new ResultEvent({
+            callback: this._onsuccess,
+            result: SDCardUtils.nsIFileToDOMEntry(file)
+        }));
+    } catch(ex) {
+        SDCardUtils.exceptionHandler(ex, this._onerror);
+    }
+});
+
+this.GetDirectoryEvent = SDCardUtils.createEventType(function() {
+    try {
+        debug('in GetDirectoryEvent.run(). path='+this._path);
+        let dir = null;
+        if (path.indexOf("/") != 0) { // relative
+            dir = SDCardUtils.nsIFile(this._path).append(this._filepath);
+        } else { // absolute
+            dir = SDCardUtils.nsIFile(this._filepath);
+        }
+        SDCardUtils.postToMainThread(new ResultEvent({
+            callback: this._onsuccess,
+            result: SDCardUtils.nsIFileToDOMEntry(dir)
         }));
     } catch(ex) {
         SDCardUtils.exceptionHandler(ex, this._onerror);

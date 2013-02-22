@@ -12,7 +12,12 @@ function debug(aStr) {
     dump("DirectoryEntry: " + aStr + "\n");
 }
 
-const { classes: Cc, interfaces: Ci, utils: Cu, results: Cr } = Components;
+const {
+    classes: Cc,
+    interfaces: Ci,
+    utils: Cu,
+    results: Cr
+} = Components;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/SDCardUtils.jsm");
@@ -90,8 +95,7 @@ DirectoryEntry.prototype = {
 
   getParent: function(successCallback, errorCallback) {
       if (!successCallback) {
-          return;
-      }
+          return; }
       SDCardUtils.postToBackstage(new GetParentEvent({
           path: this._fullPath,
           onsuccess: successCallback.handleEvent,
@@ -106,7 +110,34 @@ DirectoryEntry.prototype = {
           fullPath: this._fullPath
       });
       return this._reader;
+  },
+
+  getFile: function(path, options, successCallback, errorCallback) {
+      if (!path) {
+          return;
+      }
+      SDCardUtils.postToBackstage(new GetFileEvent({
+          path: this._fullPath,
+          filepath: path,
+          options: options,
+          onsuccess: successCallback && successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
+      }));
+  },
+
+  getDirectory: function(path, options, successCallback, errorCallback) {
+      if (!path) {
+          return;
+      }
+      SDCardUtils.postToBackstage(new GetFileEvent({
+          path: this._fullPath,
+          filepath: path,
+          options: options,
+          onsuccess: successCallback && successCallback.handleEvent,
+          onerror: errorCallback && errorCallback.handleEvent
+      }));
   }
+
 };
 
 this.NSGetFactory = XPCOMUtils.generateNSGetFactory([DirectoryEntry]);
