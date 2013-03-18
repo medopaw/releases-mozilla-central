@@ -1,0 +1,41 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+DEPTH            = ../..
+topsrcdir        = @top_srcdir@
+srcdir           = @srcdir@
+VPATH            = @srcdir@
+
+include $(DEPTH)/config/autoconf.mk
+
+MODULE           = dom
+LIBRARY_NAME     = dom_sdcard_s
+XPIDL_MODULE     = dom_sdcard
+LIBXUL_LIBRARY   = 1
+FORCE_STATIC_LIB = 1
+ifndef _MSC_VER
+FAIL_ON_WARNINGS := 1
+endif # !_MSC_VER
+
+include $(topsrcdir)/dom/dom-config.mk
+
+EXPORTS_NAMESPACES = mozilla/dom/sdcard
+
+CPPSRCS = \
+  $(NULL)
+
+EXPORTS_mozilla/dom/sdcard = \
+  $(NULL)
+
+XPIDLSRCS = \
+  nsIDOMNavigatorSDCard.idl \
+  $(NULL)
+
+include $(topsrcdir)/config/config.mk
+include $(topsrcdir)/ipc/chromium/chromium-config.mk
+include $(topsrcdir)/config/rules.mk
+
+XPIDL_FLAGS += \
+ -I$(topsrcdir)/dom/interfaces/base \
+ $(NULL)

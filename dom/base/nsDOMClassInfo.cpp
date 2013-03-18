@@ -1328,6 +1328,9 @@ nsDOMClassInfo::Init()
 #ifdef MOZ_TIME_MANAGER
     DOM_CLASSINFO_MAP_ENTRY(nsIDOMMozNavigatorTime)
 #endif
+#ifdef MOZ_SDCARD
+    DOM_CLASSINFO_MAP_ENTRY(nsIDOMNavigatorSDCard)
+#endif
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
     DOM_CLASSINFO_MAP_ENTRY(nsIMozNavigatorAudioChannelManager)
 #endif

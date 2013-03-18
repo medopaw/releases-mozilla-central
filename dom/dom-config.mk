@@ -21,6 +21,7 @@ DOM_SRCDIRS = \
   dom/src/notification \
   dom/workers \
   dom/time \
+  dom/sdcard \
   content/xbl/src \
   content/xul/document/src \
   content/events/src \

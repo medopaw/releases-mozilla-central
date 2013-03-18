@@ -90,6 +90,8 @@ static uint32_t sMaxVibrateListLen = 0;
 void
 Navigator::Init()
 {
+  printf("\n\n\nIn Navigator::Init()!!!!\n\n\n");
+  printf("\n\n\n%d!!!!!\n\n\n", MOZ_SDCARD);
   Preferences::AddBoolVarCache(&sDoNotTrackEnabled,
                                "privacy.donottrackheader.enabled",
                                false);
@@ -148,6 +150,9 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Navigator)
   NS_INTERFACE_MAP_ENTRY(nsIDOMNavigatorSystemMessages)
 #ifdef MOZ_TIME_MANAGER
   NS_INTERFACE_MAP_ENTRY(nsIDOMMozNavigatorTime)
+#endif
+#ifdef MOZ_SDCARD
+  NS_INTERFACE_MAP_ENTRY(nsIDOMNavigatorSDCard)
 #endif
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
   NS_INTERFACE_MAP_ENTRY(nsIMozNavigatorAudioChannelManager)
@@ -1545,6 +1550,31 @@ Navigator::GetMozTime(nsISupports** aTime)
   }
 
   NS_ADDREF(*aTime = mTimeManager);
+  return NS_OK;
+}
+#endif
+
+//*****************************************************************************
+//    Navigator::nsIDOMNavigatorSDCard
+//*****************************************************************************
+#ifdef MOZ_SDCARD
+NS_IMETHODIMP
+Navigator::GetMozSDCard(bool* aSDCard)
+{
+  printf("\n\n\nin GetMozSDCard!!!!\n\n\n\n");
+/* *aSDCard = nullptr;
+
+  if (!CheckPermission("time")) {
+    return NS_ERROR_DOM_SECURITY_ERR;
+  }
+
+  if (!mTimeManager) {
+    mTimeManager = new time::TimeManager();
+  }
+
+  NS_ADDREF(*aTime = mTimeManager);
+*/
+  *aSDCard = true;
   return NS_OK;
 }
 #endif

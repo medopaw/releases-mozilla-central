@@ -59,6 +59,7 @@ PARALLEL_DIRS += [
     'mobilemessage',
     'src',
     'time',
+    'sdcard',
     'locales',
     'network',
     'permission',

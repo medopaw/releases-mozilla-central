@@ -28,6 +28,7 @@
 #endif
 #include "nsAutoPtr.h"
 #include "nsIDOMNavigatorTime.h"
+#include "nsIDOMNavigatorSDCard.h"
 #include "nsWeakReference.h"
 #include "DeviceStorage.h"
 #include "nsWrapperCache.h"
@@ -140,6 +141,9 @@ class Navigator : public nsIDOMNavigator
 #ifdef MOZ_TIME_MANAGER
                 , public nsIDOMMozNavigatorTime
 #endif
+#ifdef MOZ_SDCARD
+                , public nsIDOMNavigatorSDCard
+#endif
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
                 , public nsIMozNavigatorAudioChannelManager
 #endif
@@ -184,6 +188,9 @@ public:
   NS_DECL_NSIDOMNAVIGATORSYSTEMMESSAGES
 #ifdef MOZ_TIME_MANAGER
   NS_DECL_NSIDOMMOZNAVIGATORTIME
+#endif
+#ifdef MOZ_SDCARD
+  NS_DECL_NSIDOMNAVIGATORSDCARD
 #endif
 
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
