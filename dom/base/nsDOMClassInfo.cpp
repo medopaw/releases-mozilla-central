@@ -290,6 +290,10 @@ using mozilla::dom::workers::ResolveWorkerClasses;
 #include "TimeManager.h"
 #endif
 
+#ifdef MOZ_SDCARD
+#include "FileSystem.h"
+#endif
+
 using namespace mozilla;
 using namespace mozilla::dom;
 

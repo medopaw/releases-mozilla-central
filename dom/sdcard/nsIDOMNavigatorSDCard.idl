@@ -4,10 +4,8 @@
 
 #include "nsISupports.idl"
 
-// interface nsIDOMFileSystem;
-
 [scriptable, uuid(EED22D4D-51A5-40B5-9751-22FDAA227C64)]
 interface nsIDOMNavigatorSDCard : nsISupports
 {
-  readonly attribute boolean mozSDCard;
+  readonly attribute nsISupports mozSDCard;
 };

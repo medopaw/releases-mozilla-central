@@ -102,6 +102,10 @@ namespace time {
 class TimeManager;
 } // namespace time
 
+namespace sdcard {
+class FileSystem;
+} // namespace sdcard
+
 namespace system {
 #ifdef MOZ_AUDIO_CHANNEL_MANAGER
 class AudioChannelManager;
@@ -256,6 +260,7 @@ private:
   nsCOMPtr<nsIDOMNavigatorSystemMessages> mMessagesManager;
   nsTArray<nsRefPtr<nsDOMDeviceStorage> > mDeviceStorageStores;
   nsRefPtr<time::TimeManager> mTimeManager;
+  nsRefPtr<sdcard::FileSystem> mSDCard;
   nsCOMPtr<nsPIDOMWindow> mWindow;
 };
 

@@ -53,6 +53,7 @@
 #include "nsNetUtil.h"
 #include "nsIHttpChannel.h"
 #include "TimeManager.h"
+#include "FileSystem.h"
 
 #ifdef MOZ_MEDIA_NAVIGATOR
 #include "MediaManager.h"
@@ -91,7 +92,6 @@ void
 Navigator::Init()
 {
   printf("\n\n\nIn Navigator::Init()!!!!\n\n\n");
-  printf("\n\n\n%d!!!!!\n\n\n", MOZ_SDCARD);
   Preferences::AddBoolVarCache(&sDoNotTrackEnabled,
                                "privacy.donottrackheader.enabled",
                                false);
@@ -305,6 +305,10 @@ Navigator::Invalidate()
 
   if (mTimeManager) {
     mTimeManager = nullptr;
+  }
+
+  if (mSDCard) {
+    mSDCard = nullptr;
   }
 }
 
@@ -1559,22 +1563,18 @@ Navigator::GetMozTime(nsISupports** aTime)
 //*****************************************************************************
 #ifdef MOZ_SDCARD
 NS_IMETHODIMP
-Navigator::GetMozSDCard(bool* aSDCard)
+Navigator::GetMozSDCard(nsISupports** aSDCard)
 {
   printf("\n\n\nin GetMozSDCard!!!!\n\n\n\n");
-/* *aSDCard = nullptr;
-
-  if (!CheckPermission("time")) {
-    return NS_ERROR_DOM_SECURITY_ERR;
+  if (!mSDCard) {
+    *aSDCard = nullptr;
+    mSDCard = new sdcard::FileSystem();
+    // mSDCard->Init(this);
   }
 
-  if (!mTimeManager) {
-    mTimeManager = new time::TimeManager();
-  }
+  NS_ADDREF(*aSDCard = mSDCard);
+  // *aSDCard = mSDCard;
 
-  NS_ADDREF(*aTime = mTimeManager);
-*/
-  *aSDCard = true;
   return NS_OK;
 }
 #endif

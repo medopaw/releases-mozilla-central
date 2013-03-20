@@ -85,6 +85,7 @@ webidl_files = \
   FileReaderSync.webidl \
   FileRequest.webidl \
   FocusEvent.webidl \
+  FileSystem.webidl \
   FormData.webidl \
   Function.webidl \
   Future.webidl \
