@@ -1566,14 +1566,18 @@ NS_IMETHODIMP
 Navigator::GetMozSDCard(nsISupports** aSDCard)
 {
   printf("\n\n\nin GetMozSDCard!!!!\n\n\n\n");
+
+/*  if (!CheckPermission("sdcard")) {
+    return NS_ERROR_DOM_SECURITY_ERR;
+  }
+*/
   if (!mSDCard) {
     *aSDCard = nullptr;
-    mSDCard = new sdcard::FileSystem();
-    // mSDCard->Init(this);
+
+    mSDCard = new sdcard::FileSystem(this);
   }
 
   NS_ADDREF(*aSDCard = mSDCard);
-  // *aSDCard = mSDCard;
 
   return NS_OK;
 }

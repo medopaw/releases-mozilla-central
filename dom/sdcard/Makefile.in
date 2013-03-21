@@ -22,22 +22,22 @@ include $(topsrcdir)/dom/dom-config.mk
 
 EXPORTS_NAMESPACES = mozilla/dom/sdcard
 
+EXPORTS_mozilla/dom/sdcard = \
+  FileSystem.h \
+  $(NULL)
+
 CPPSRCS = \
   FileSystem.cpp \
-  $(NULL)
-
-EXPORTS_mozilla/dom/sdcard = \
-  $(NULL)
-
-LOCAL_INCLUDES = \
   $(NULL)
 
 XPIDLSRCS = \
   nsIDOMNavigatorSDCard.idl \
   $(NULL)
 
+LOCAL_INCLUDES = \
+  $(NULL)
+
 include $(topsrcdir)/config/config.mk
-include $(topsrcdir)/ipc/chromium/chromium-config.mk
 include $(topsrcdir)/config/rules.mk
 
 XPIDL_FLAGS += \

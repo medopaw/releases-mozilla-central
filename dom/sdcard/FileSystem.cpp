@@ -22,8 +22,9 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
 NS_INTERFACE_MAP_END
 
 
-FileSystem::FileSystem()
+FileSystem::FileSystem(nsIDOMNavigator* aNavigator) : mNavigator(aNavigator)
 {
+  MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
   SetIsDOMBinding();
 }
 

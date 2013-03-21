@@ -11,16 +11,14 @@
 #include "nsCycleCollectionParticipant.h"
 #include "nsWrapperCache.h"
 
+#include "nsCOMPtr.h"
+#include "nsIDOMNavigator.h"
 #include "nsString.h"
-// #include "Navigator.h"
 
 struct JSContext;
 
 namespace mozilla {
 namespace dom {
-
-// class Navigator;
-
 namespace sdcard {
 
 class FileSystem MOZ_FINAL : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this */,
@@ -31,19 +29,14 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileSystem)
 
 public:
-  FileSystem();
+  FileSystem(nsIDOMNavigator* aNavigator);
 
   ~FileSystem();
 
-/*  void Init(Navigator* aNavigator)
-  {
-    mNavigator = aNavigator;
-  }
-*/
   // TODO: return something sensible here, and change the return type
-  FileSystem* GetParentObject() const
+  nsIDOMNavigator* GetParentObject() const
   {
-    return NULL;//mNavigator;
+    return mNavigator.get();
   }
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
@@ -51,7 +44,7 @@ public:
   void GetName(nsString& retval) const;
 
 private:
-//  Navigator* mNavigator;
+  nsCOMPtr<nsIDOMNavigator> mNavigator;
 };
 
 } // namespace sdcard
