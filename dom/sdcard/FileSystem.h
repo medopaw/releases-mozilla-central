@@ -12,8 +12,10 @@
 #include "nsWrapperCache.h"
 
 #include "nsCOMPtr.h"
-#include "nsIDOMNavigator.h"
+#include "nsAutoPtr.h"
 #include "nsString.h"
+#include "nsIDOMNavigator.h"
+#include "DirectoryEntry.h"
 
 struct JSContext;
 
@@ -41,10 +43,29 @@ public:
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
 
-  void GetName(nsString& retval) const;
+  void GetName(nsString& retval) const
+  {
+    retval.AssignLiteral("SD Card");
+  }
+
+  // Mark this as resultNotAddRefed to return raw pointers
+  already_AddRefed<DirectoryEntry> Root() const
+  {
+    NS_IF_ADDREF(mRoot);
+    return mRoot.get();
+
+    // DirectoryEntry* root = mRoot;
+    // NS_IF_ADDREF(root);
+    // return root;
+
+    // nsCOMPtr<DirectoryEntry> root(do_QueryInterface(mRoot));
+    // return root.forget();
+  }
 
 private:
   nsCOMPtr<nsIDOMNavigator> mNavigator;
+  // DirectoryEntry* mRoot;
+  nsRefPtr<DirectoryEntry> mRoot;
 };
 
 } // namespace sdcard

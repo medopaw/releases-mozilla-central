@@ -10,7 +10,75 @@
  * liability, trademark and document use rules apply.
  */
 
+interface DOMError;
+// interface FileWriter;
+
 interface FileSystem {
     readonly attribute DOMString      name;
-//    readonly attribute DirectoryEntry root;
+    readonly attribute DirectoryEntry root;
 };
+
+interface Entry {
+    readonly attribute boolean    isFile;
+    readonly attribute boolean    isDirectory;
+/*    void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);
+    readonly attribute DOMString  name;
+    readonly attribute DOMString  fullPath;
+    readonly attribute FileSystem filesystem;
+    void      moveTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
+    void      copyTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
+    DOMString toURL ();
+    void      remove (VoidCallback successCallback, optional ErrorCallback errorCallback);
+    void      getParent (EntryCallback successCallback, optional ErrorCallback errorCallback);
+    */
+};
+
+interface DirectoryEntry : Entry {
+    /*
+    [Creator]
+    DirectoryReader createReader ();
+    void            getFile (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
+    void            getDirectory (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
+    void            removeRecursively (VoidCallback successCallback, optional ErrorCallback errorCallback);
+    */
+};
+
+interface FileEntry : Entry {
+//    [Creator]
+//    void createWriter (FileWriterCallback successCallback, optional ErrorCallback errorCallback);
+//    void file (FileCallback successCallback, optional ErrorCallback errorCallback);
+};
+
+interface DirectoryReader {
+    /*
+    void readEntries (EntriesCallback successCallback, optional ErrorCallback errorCallback);
+    */
+};
+
+interface Metadata {
+    /*
+    readonly attribute any               modificationTime;
+    // readonly attribute Date               modificationTime;
+    readonly attribute unsigned long long size;
+    */
+};
+
+dictionary Flags {
+    boolean create;
+    boolean exclusive;
+};
+
+callback EntryCallback = void (Entry entry);
+
+callback EntriesCallback = void (sequence<Entry> entries);
+// callback EntriesCallback = void (Entry[] entries);
+
+callback MetadataCallback = void (Metadata metadata);
+
+// callback FileWriterCallback = void (FileWriter fileWriter);
+
+// callback FileCallback = void (File file);
+
+callback VoidCallback = void ();
+
+callback ErrorCallback = void (DOMError err);

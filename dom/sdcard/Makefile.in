@@ -24,10 +24,20 @@ EXPORTS_NAMESPACES = mozilla/dom/sdcard
 
 EXPORTS_mozilla/dom/sdcard = \
   FileSystem.h \
+  Entry.h \
+  DirectoryEntry.h \
+  DirectoryReader.h \
+  FileEntry.h \
+  Metadata.h \
   $(NULL)
 
 CPPSRCS = \
   FileSystem.cpp \
+  Entry.cpp \
+  DirectoryEntry.cpp \
+  DirectoryReader.cpp \
+  FileEntry.cpp \
+  Metadata.cpp \
   $(NULL)
 
 XPIDLSRCS = \

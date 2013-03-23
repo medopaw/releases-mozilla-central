@@ -4,42 +4,38 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "FileSystem.h"
+#include "DirectoryEntry.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
-
-#include "DirectoryEntry.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileSystem)
-NS_IMPL_CYCLE_COLLECTING_ADDREF(FileSystem)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(FileSystem)
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(DirectoryEntry)
+NS_IMPL_CYCLE_COLLECTING_ADDREF(DirectoryEntry)
+NS_IMPL_CYCLE_COLLECTING_RELEASE(DirectoryEntry)
+NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryEntry)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator) : mNavigator(aNavigator){
-  MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
-  mRoot = new DirectoryEntry();
+DirectoryEntry::DirectoryEntry()
+{
   SetIsDOMBinding();
 }
 
-FileSystem::~FileSystem()
+DirectoryEntry::~DirectoryEntry()
 {
-  mRoot = nullptr;
 }
 
 JSObject*
-FileSystem::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 {
-  return FileSystemBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return DirectoryEntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
+
 
 } // namespace sdcard
 } // namespace dom

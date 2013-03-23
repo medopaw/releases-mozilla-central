@@ -4,42 +4,38 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "FileSystem.h"
+#include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
-
-#include "DirectoryEntry.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileSystem)
-NS_IMPL_CYCLE_COLLECTING_ADDREF(FileSystem)
-NS_IMPL_CYCLE_COLLECTING_RELEASE(FileSystem)
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(Metadata)
+NS_IMPL_CYCLE_COLLECTING_ADDREF(Metadata)
+NS_IMPL_CYCLE_COLLECTING_RELEASE(Metadata)
+NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Metadata)
   NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator) : mNavigator(aNavigator){
-  MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
-  mRoot = new DirectoryEntry();
+Metadata::Metadata()
+{
   SetIsDOMBinding();
 }
 
-FileSystem::~FileSystem()
+Metadata::~Metadata()
 {
-  mRoot = nullptr;
 }
 
 JSObject*
-FileSystem::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+Metadata::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 {
-  return FileSystemBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return MetadataBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
+
 
 } // namespace sdcard
 } // namespace dom
