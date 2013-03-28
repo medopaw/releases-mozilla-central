@@ -24,7 +24,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-FileEntry::FileEntry(const nsAString& aFullPath) : Entry(aFullPath)
+FileEntry::FileEntry(FileSystem* aFilesystem, const nsAString& aFullPath) : Entry(aFilesystem, aFullPath)
 {
   SDCARD_LOG("init FileEntryn");
   SetIsDOMBinding();

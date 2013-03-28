@@ -19,6 +19,8 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
+class FileSystem;
+
 class Entry : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this */
 {
 public:
@@ -26,7 +28,9 @@ public:
 
 public:
   // full path in filesystem
-  explicit Entry(const nsAString& aFullPath);
+  explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
+  // nsIFile to Entry
+  explicit Entry(nsIFile* aFile);
 
   virtual ~Entry();
 
@@ -46,10 +50,11 @@ public:
   void GetName(nsString& retval) const;
 
   void GetFullPath(nsString& retval) const;
-/*
   // Mark this as resultNotAddRefed to return raw pointers
-  already_AddRefed<sdcard::FileSystem> Filesystem() const;
+  // already_AddRefed<FileSystem> Filesystem() const;
+  FileSystem* Filesystem() const;
 
+/*
   void MoveTo(mozilla::dom::sdcard::DirectoryEntry& parent, const Optional< nsAString >& newName, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   void CopyTo(mozilla::dom::sdcard::DirectoryEntry& parent, const Optional< nsAString >& newName, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
@@ -62,6 +67,7 @@ public:
   */
 
 protected:
+  FileSystem* mFilesystem;
   nsString mFullPath;
   nsCOMPtr<nsIFile> mEntry;
 };

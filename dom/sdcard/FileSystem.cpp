@@ -26,7 +26,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
 NS_INTERFACE_MAP_END
 
 
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName), mRoot(new DirectoryEntry(aPath))
+FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName), mRoot(new DirectoryEntry(this, aPath))
 {
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
  //  mRoot = new DirectoryEntry(/*aPath*/);
@@ -45,9 +45,18 @@ FileSystem::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
   return FileSystemBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
 
+void FileSystem::GetName(nsString& retval) const
+{
+  SDCARD_LOG("in FileSystem.GetName()");
+  SDCARD_LOG("mName=%s", NS_ConvertUTF16toUTF8(mName).get());
+  retval = mName;
+  SDCARD_LOG("retval=%s", NS_ConvertUTF16toUTF8(retval).get());
+}
+
+
 already_AddRefed<DirectoryEntry> FileSystem::Root()
 {
-    printf("\nin FileSystem.Root()\n");
+    SDCARD_LOG("in FileSystem.Root()");
 /*
     if (!mRoot) {
       mRoot = nullptr;

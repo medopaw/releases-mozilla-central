@@ -43,12 +43,7 @@ public:
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
 
-  void GetName(nsString& retval) const
-  {
-    printf("\nin FileSystem.GetName()\n");
-    // retval.AssignLiteral("SD Card");
-    retval = mName;
-  }
+  void GetName(nsString& retval) const;
 
   // Mark this as resultNotAddRefed to return raw pointers
   already_AddRefed<DirectoryEntry> Root();

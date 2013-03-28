@@ -8,6 +8,7 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
+#include "FileSystem.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -20,7 +21,7 @@ NS_INTERFACE_MAP_BEGIN(Entry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-Entry::Entry(const nsAString& aFullPath) : mFullPath(aFullPath)
+Entry::Entry(FileSystem* aFilesystem, const nsAString& aFullPath) : mFilesystem(aFilesystem), mFullPath(aFullPath)
 {
   SDCARD_LOG("init Entry");
   NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
@@ -45,6 +46,22 @@ void Entry::GetFullPath(nsString& retval) const
   SDCARD_LOG("in Entry.GetFullPath()!!!!");
   SDCARD_LOG("mFullPath=%s", NS_ConvertUTF16toUTF8(mFullPath).get());
   SDCARD_LOG("retval=%s", NS_ConvertUTF16toUTF8(retval).get());
+}
+
+/*
+already_AddRefed<FileSystem> Entry::Filesystem() const
+{
+  SDCARD_LOG("in Entry.Filesystem()");
+  nsRefPtr<FileSystem> filesystem(mFilesystem);
+  NS_IF_ADDREF(filesystem);
+  return filesystem.get();
+}
+*/
+
+FileSystem* Entry::Filesystem() const
+{
+  SDCARD_LOG("in Entry.Filesystem()");
+  return mFilesystem;
 }
 
 } // namespace sdcard

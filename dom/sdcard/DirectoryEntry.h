@@ -28,7 +28,7 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DirectoryEntry)
 
 public:
-  explicit DirectoryEntry(const nsAString& aFullPath);
+  explicit DirectoryEntry(FileSystem* aFilesystem, const nsAString& aFullPath);
 
   ~DirectoryEntry();
 

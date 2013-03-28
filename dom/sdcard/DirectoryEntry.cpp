@@ -23,7 +23,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-DirectoryEntry::DirectoryEntry(const nsAString& aFullPath) : Entry(aFullPath)
+DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, const nsAString& aFullPath) : Entry(aFilesystem, aFullPath)
 {
   SDCARD_LOG("init DirectoryEntry");
   SetIsDOMBinding();
