@@ -20,32 +20,17 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class DirectoryEntry MOZ_FINAL : public Entry//,
-                                /*public nsISupports  Change nativeOwnership in the binding configuration if you don't want this */,
-                                public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this*/
+class DirectoryEntry MOZ_FINAL : public Entry,
+                                 public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this ,*/
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DirectoryEntry)
 
-//  NS_DECL_CYCLE_COLLECTING_ISUPPORTS
-//  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS_INHERITED(DirectoryEntry, Entry)
-
-//  NS_DECL_ISUPPORTS_INHERITED
-/* NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(DirectoryEntry, Entry)
-*/
 public:
   explicit DirectoryEntry(const nsAString& aFullPath);
- // DirectoryEntry(const nsAString& aFullPath);
 
   ~DirectoryEntry();
-
-  // TODO: return something sensible here, and change the return type
-  /*DirectoryEntry* GetParentObject() const
-  {
-    return NULL;
-  }
-  */
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
 
@@ -53,17 +38,6 @@ public:
 
   bool IsDirectory() const MOZ_OVERRIDE;
 
-  /*
-  void GetFullPath(nsString& retval) const
-  {
-    printf("\nin DirectoryEntry.GetFullPath()!!!\n");
-    // Entry::GetFullPath(retval);
-    printf("%s\n", NS_ConvertUTF16toUTF8(mFullPath).get());
-    retval.AssignLiteral("fuckfuckfuck");
-    // retval = mFullPath;
-    printf("%s\n", NS_ConvertUTF16toUTF8(retval).get());
-  }
-  */
 /*
   already_AddRefed<DirectoryReader> CreateReader();
 
@@ -74,7 +48,6 @@ public:
   void RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
   */
 private:
-//  nsString mFullPath;
 };
 
 } // namespace sdcard

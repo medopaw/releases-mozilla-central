@@ -16,7 +16,6 @@ namespace sdcard {
 
 
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileEntry)
-// NS_IMPL_CYCLE_COLLECTION_INHERITED_0(FileEntry, Entry)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(FileEntry)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(FileEntry)
@@ -25,21 +24,10 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/*
-NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION_INHERITED(FileEntry)
-  NS_WRAPPERCACHE_INTERFACE_MAP_ENTRY
-NS_INTERFACE_MAP_END_INHERITING(FileEntry)
-*/
-
-// NS_IMPL_ADDREF_INHERITED(FileEntry, Entry)
-// NS_IMPL_RELEASE_INHERITED(FileEntry, Entry)
-
 FileEntry::FileEntry(const nsAString& aFullPath) : Entry(aFullPath)
 {
   SDCARD_LOG("init FileEntryn");
-  // printf("\ninit FileEntry\n");
-//  mFullPath = aFullPath;
-//  SetIsDOMBinding();
+  SetIsDOMBinding();
 }
 
 FileEntry::~FileEntry()
@@ -55,14 +43,12 @@ FileEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 bool FileEntry::IsFile() const
 {
   SDCARD_LOG("in FileEntry.IsFile()!!!");
-  // printf("\nin FileEntry.IsFile()!!!\n");
   return true;
 }
 
 bool FileEntry::IsDirectory() const
 {
   SDCARD_LOG("in FileEntry.IsDirectory()!!!");
-  // printf("\nin FileEntry.IsDirectory()!!!\n");
   return false;
 }
 
