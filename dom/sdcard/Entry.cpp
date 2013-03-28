@@ -23,10 +23,20 @@ NS_INTERFACE_MAP_END
 Entry::Entry(const nsAString& aFullPath) : mFullPath(aFullPath)
 {
   SDCARD_LOG("init Entry");
+  NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
 }
 
 Entry::~Entry()
 {
+}
+
+void Entry::GetName(nsString& retval) const
+{
+  SDCARD_LOG("in Entry.GetName()");
+  nsString name;
+  mEntry->GetLeafName(name);
+  SDCARD_LOG("entry name=%s", NS_ConvertUTF16toUTF8(name).get());
+  retval = name;
 }
 
 void Entry::GetFullPath(nsString& retval) const

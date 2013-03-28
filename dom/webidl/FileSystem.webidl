@@ -21,8 +21,8 @@ interface FileSystem {
 interface Entry {
     readonly attribute boolean    isFile;
     readonly attribute boolean    isDirectory;
-/*    void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);
-    readonly attribute DOMString  name;*/
+/*    void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);*/
+    readonly attribute DOMString  name;
     readonly attribute DOMString  fullPath;
     /*
     readonly attribute FileSystem filesystem;

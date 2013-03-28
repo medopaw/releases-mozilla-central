@@ -10,7 +10,7 @@
 #include "mozilla/ErrorResult.h"
 
 #include "nsAutoPtr.h"
-
+#include "nsIFile.h"
 #include "nsString.h"
 
 struct JSContext;
@@ -25,6 +25,7 @@ public:
   NS_DECL_ISUPPORTS
 
 public:
+  // full path in filesystem
   explicit Entry(const nsAString& aFullPath);
 
   virtual ~Entry();
@@ -41,9 +42,9 @@ public:
 
 /*
   void GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
-
-  void GetName(nsString& retval) const;
 */
+  void GetName(nsString& retval) const;
+
   void GetFullPath(nsString& retval) const;
 /*
   // Mark this as resultNotAddRefed to return raw pointers
@@ -62,6 +63,7 @@ public:
 
 protected:
   nsString mFullPath;
+  nsCOMPtr<nsIFile> mEntry;
 };
 
 } // namespace sdcard
