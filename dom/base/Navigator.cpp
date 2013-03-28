@@ -1574,7 +1574,11 @@ Navigator::GetMozSDCard(nsISupports** aSDCard)
   if (!mSDCard) {
     *aSDCard = nullptr;
 
-    mSDCard = new sdcard::FileSystem(this);
+    /* nsString fsName, rootPath;
+    fsName.AssignLiteral("SD Card");
+    rootPath.AssignLiteral("/sdcard");*/
+
+    mSDCard = new sdcard::FileSystem(this, NS_LITERAL_STRING("SD Card"), NS_LITERAL_STRING("/sdcard"));
   }
 
   NS_ADDREF(*aSDCard = mSDCard);

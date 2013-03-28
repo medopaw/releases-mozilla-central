@@ -8,7 +8,7 @@
 
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
-#include "nsCycleCollectionParticipant.h"
+// #include "nsCycleCollectionParticipant.h"
 #include "nsWrapperCache.h"
 
 #include "Entry.h"
@@ -19,40 +19,51 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class FileEntry MOZ_FINAL : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this */,
-                            public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this */,
-                            public Entry
+class FileEntry MOZ_FINAL : public Entry,
+                            /*public nsISupports  Change nativeOwnership in the binding configuration if you don't want this ,*/
+                            public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this ,*/
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileEntry)
+//  NS_DECL_ISUPPORTS_INHERITED
+//  NS_DECL_CYCLE_COLLECTION_CLASS_INHERITED(FileEntry, Entry)
 
 public:
-  FileEntry();
+  explicit FileEntry(const nsAString& aFullPath);
+  // FileEntry(/*const nsAString& aFullPath*/);
 
   ~FileEntry();
 
   // TODO: return something sensible here, and change the return type
-  FileEntry* GetParentObject() const
+  /*FileEntry* GetParentObject() const
   {
     return NULL;
   }
+  */
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
-  bool IsFile() const
-  {
-    return true;
-  }
 
-  bool IsDirectory() const
+  bool IsFile() const MOZ_OVERRIDE;
+
+  bool IsDirectory() const MOZ_OVERRIDE;
+/*
+  void GetFullPath(nsString& retval) const
   {
-    return false;
+    printf("\nin FileEntry.GetFullPath()!!!\n");
+    // Entry::GetFullPath(retval);
+    printf("%s\n", NS_ConvertUTF16toUTF8(mFullPath).get());
+    retval = mFullPath;
+    printf("%s\n", NS_ConvertUTF16toUTF8(retval).get());
   }
+  */
 /*
   void CreateWriter(FileWriterCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   void File(FileCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
   */
+private:
+//  nsString mFullPath;
 };
 
 } // namespace sdcard

@@ -8,14 +8,16 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
-#include "DirectoryEntry.h"
+// #include "DirectoryEntry.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileSystem)
+// NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileSystem)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_1(FileSystem, mRoot);
+
 NS_IMPL_CYCLE_COLLECTING_ADDREF(FileSystem)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(FileSystem)
 NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
@@ -24,9 +26,11 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
 NS_INTERFACE_MAP_END
 
 
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator) : mNavigator(aNavigator){
+FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName), mRoot(new DirectoryEntry(aPath))
+{
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
-  mRoot = new DirectoryEntry();
+ //  mRoot = new DirectoryEntry(/*aPath*/);
+//  mRoot = nullptr;
   SetIsDOMBinding();
 }
 
@@ -39,6 +43,26 @@ JSObject*
 FileSystem::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 {
   return FileSystemBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+}
+
+already_AddRefed<DirectoryEntry> FileSystem::Root()
+{
+    printf("\nin FileSystem.Root()\n");
+/*
+    if (!mRoot) {
+      mRoot = nullptr;
+      mRoot = new DirectoryEntry();
+    }
+    */
+    NS_IF_ADDREF(mRoot);
+    return mRoot.get();
+
+    // DirectoryEntry* root = mRoot;
+    // NS_IF_ADDREF(root);
+    // return root;
+
+    // nsCOMPtr<DirectoryEntry> root(do_QueryInterface(mRoot));
+    // return root.forget();
 }
 
 } // namespace sdcard

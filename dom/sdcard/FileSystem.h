@@ -31,7 +31,7 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileSystem)
 
 public:
-  FileSystem(nsIDOMNavigator* aNavigator);
+  explicit FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath);
 
   ~FileSystem();
 
@@ -45,12 +45,19 @@ public:
 
   void GetName(nsString& retval) const
   {
-    retval.AssignLiteral("SD Card");
+    printf("\nin FileSystem.GetName()\n");
+    // retval.AssignLiteral("SD Card");
+    retval = mName;
   }
 
   // Mark this as resultNotAddRefed to return raw pointers
-  already_AddRefed<DirectoryEntry> Root() const
-  {
+  already_AddRefed<DirectoryEntry> Root();
+/*  {
+    printf("\nin FileSystem.Root()\n");
+    if (!mRoot) {
+      mRoot = nullptr;
+      mRoot = new DirectoryEntry();
+    }
     NS_IF_ADDREF(mRoot);
     return mRoot.get();
 
@@ -61,9 +68,10 @@ public:
     // nsCOMPtr<DirectoryEntry> root(do_QueryInterface(mRoot));
     // return root.forget();
   }
-
+*/
 private:
   nsCOMPtr<nsIDOMNavigator> mNavigator;
+  nsString mName;
   // DirectoryEntry* mRoot;
   nsRefPtr<DirectoryEntry> mRoot;
 };

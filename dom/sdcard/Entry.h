@@ -11,7 +11,11 @@
 // #include "nsCycleCollectionParticipant.h"
 // #include "nsWrapperCache.h"
 
+#include "nsAutoPtr.h"
+// #include "FileSystem.h"
+
 #include "nsString.h"
+// #include "Utils.h"
 
 struct JSContext;
 
@@ -19,17 +23,24 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class Entry /*: public nsISupports  Change nativeOwnership in the binding configuration if you don't want this ,*/
-                        /*public nsWrapperCache  Change wrapperCache in the binding configuration if you don't want this */
+// class FileSystem;
+
+class Entry : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this ,
+                        public nsWrapperCache  Change wrapperCache in the binding configuration if you don't want this */
 {
 public:
+  NS_DECL_ISUPPORTS
+
 //  NS_DECL_CYCLE_COLLECTING_ISUPPORTS
+
 //  NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(Entry)
+//   NS_DECL_CYCLE_COLLECTION_CLASS(Entry)
 
 public:
-  Entry();
+  explicit Entry(const nsAString& aFullPath);
+  // Entry(const nsAString& aFullPath);
 
-  ~Entry();
+  virtual ~Entry();
 
   // TODO: return something sensible here, and change the return type
   Entry* GetParentObject() const
@@ -42,13 +53,18 @@ public:
   virtual bool IsFile() const = 0;
 
   virtual bool IsDirectory() const = 0;
+/*  {
+    printf("\nin Entry.IsDirectory()\n");
+    return false;
+  }
+  */
 /*
   void GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   void GetName(nsString& retval) const;
-
+*/
   void GetFullPath(nsString& retval) const;
-
+/*
   // Mark this as resultNotAddRefed to return raw pointers
   already_AddRefed<sdcard::FileSystem> Filesystem() const;
 
@@ -65,6 +81,8 @@ public:
 
 protected:
   nsString mFullPath;
+//  nsRefPtr<FileSystem> mFileSystem;
+//  FileSystem* mFileSystem;
 };
 
 } // namespace sdcard

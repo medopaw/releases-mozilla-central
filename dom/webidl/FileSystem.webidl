@@ -22,8 +22,9 @@ interface Entry {
     readonly attribute boolean    isFile;
     readonly attribute boolean    isDirectory;
 /*    void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);
-    readonly attribute DOMString  name;
+    readonly attribute DOMString  name;*/
     readonly attribute DOMString  fullPath;
+    /*
     readonly attribute FileSystem filesystem;
     void      moveTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     void      copyTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
