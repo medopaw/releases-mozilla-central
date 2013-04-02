@@ -7,13 +7,11 @@
 #include "FileSystem.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
-
-// #include "DirectoryEntry.h"
+#include "Path.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
-
 
 // NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileSystem)
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_1(FileSystem, mRoot);
@@ -26,11 +24,15 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
 NS_INTERFACE_MAP_END
 
 
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName), mRoot(new DirectoryEntry(this, aPath))
+FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName)//, mRoot(new DirectoryEntry(this, aPath))
 {
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
- //  mRoot = new DirectoryEntry(/*aPath*/);
 //  mRoot = nullptr;
+//  Path::separator.AssignLiteral("/");
+  Path::base = aPath;
+  nsCOMPtr<nsIFile> rootDir;
+  NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
+  mRoot = new DirectoryEntry(this, rootDir);
   SetIsDOMBinding();
 }
 

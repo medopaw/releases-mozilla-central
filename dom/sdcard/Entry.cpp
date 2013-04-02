@@ -9,6 +9,7 @@
 #include "nsContentUtils.h"
 
 #include "FileSystem.h"
+#include "Path.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -21,10 +22,21 @@ NS_INTERFACE_MAP_BEGIN(Entry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
+/*
 Entry::Entry(FileSystem* aFilesystem, const nsAString& aFullPath) : mFilesystem(aFilesystem), mFullPath(aFullPath)
 {
   SDCARD_LOG("init Entry");
   NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
+}
+*/
+
+Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile) : mFilesystem(aFilesystem)
+{
+  SDCARD_LOG("init Entry");
+  // copy nsIFile object and hold it
+  nsCOMPtr<nsIFile> file;
+  aFile->Clone(getter_AddRefs(mFile));
+  // NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
 }
 
 Entry::~Entry()
@@ -35,17 +47,27 @@ void Entry::GetName(nsString& retval) const
 {
   SDCARD_LOG("in Entry.GetName()");
   nsString name;
-  mEntry->GetLeafName(name);
+  mFile->GetLeafName(name);
   SDCARD_LOG("entry name=%s", NS_ConvertUTF16toUTF8(name).get());
   retval = name;
 }
 
 void Entry::GetFullPath(nsString& retval) const
 {
+  /*
   retval = mFullPath;
+  // call the conversion function
   SDCARD_LOG("in Entry.GetFullPath()!!!!");
   SDCARD_LOG("mFullPath=%s", NS_ConvertUTF16toUTF8(mFullPath).get());
   SDCARD_LOG("retval=%s", NS_ConvertUTF16toUTF8(retval).get());
+  */
+  SDCARD_LOG("in Entry.GetFullPath()!!!!");
+  nsString path, fullPath;
+  mFile->GetPath(path);
+  SDCARD_LOG("mFile Path=%s", NS_ConvertUTF16toUTF8(path).get());
+  Path::RealPathToInnerPath(path, fullPath);
+  SDCARD_LOG("entry fullPath=%s", NS_ConvertUTF16toUTF8(fullPath).get());
+  retval = fullPath;
 }
 
 /*

@@ -38,6 +38,7 @@ CPPSRCS = \
   DirectoryReader.cpp \
   FileEntry.cpp \
   Metadata.cpp \
+  Path.cpp \
   $(NULL)
 
 XPIDLSRCS = \

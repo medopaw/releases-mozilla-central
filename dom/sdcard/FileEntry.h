@@ -27,7 +27,7 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileEntry)
 
 public:
-  explicit FileEntry(FileSystem* aFilesystem, const nsAString& aFullPath);
+  explicit FileEntry(FileSystem* aFilesystem, nsIFile* aFile);
 
   ~FileEntry();
 

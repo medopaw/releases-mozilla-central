@@ -28,7 +28,8 @@ public:
 
 public:
   // full path in filesystem
-  explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
+  // explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
+  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile);
   // nsIFile to Entry
   explicit Entry(nsIFile* aFile);
 
@@ -68,8 +69,10 @@ public:
 
 protected:
   FileSystem* mFilesystem;
-  nsString mFullPath;
-  nsCOMPtr<nsIFile> mEntry;
+  // nsString mFullPath;
+  nsCOMPtr<nsIFile> mFile;
+
+private:
 };
 
 } // namespace sdcard
