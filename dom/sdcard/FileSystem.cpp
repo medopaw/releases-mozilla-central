@@ -26,13 +26,20 @@ NS_INTERFACE_MAP_END
 
 FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName)//, mRoot(new DirectoryEntry(this, aPath))
 {
+  SDCARD_LOG("init FileSystem");
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
 //  mRoot = nullptr;
 //  Path::separator.AssignLiteral("/");
   Path::base = aPath;
   nsCOMPtr<nsIFile> rootDir;
-  NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
-  mRoot = new DirectoryEntry(this, rootDir);
+  nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
+  if (NS_FAILED(rv)) {
+    SDCARD_LOG("Create root nsIFile failed");
+    mRoot = nullptr;
+  } else {
+    SDCARD_LOG("Create root nsIFile successful");
+    mRoot = new DirectoryEntry(this, rootDir);
+  }
   SetIsDOMBinding();
 }
 
@@ -74,6 +81,11 @@ already_AddRefed<DirectoryEntry> FileSystem::Root()
 
     // nsCOMPtr<DirectoryEntry> root(do_QueryInterface(mRoot));
     // return root.forget();
+}
+
+bool FileSystem::IsValid() const
+{
+    return mRoot != nullptr && mRoot->Exists();
 }
 
 } // namespace sdcard

@@ -64,6 +64,9 @@ public:
     // return root.forget();
   }
 */
+
+  bool IsValid() const;
+
 private:
   nsCOMPtr<nsIDOMNavigator> mNavigator;
   nsString mName;

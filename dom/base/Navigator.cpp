@@ -1583,7 +1583,11 @@ Navigator::GetMozSDCard(nsISupports** aSDCard)
     mSDCard = new sdcard::FileSystem(this, NS_LITERAL_STRING("SD Card"), NS_LITERAL_STRING("/sdcard"));
   }
 
-  NS_ADDREF(*aSDCard = mSDCard);
+  if (mSDCard->IsValid()) {
+    NS_ADDREF(*aSDCard = mSDCard);
+  } else {
+    *aSDCard = nullptr;
+  }
 
   return NS_OK;
 }

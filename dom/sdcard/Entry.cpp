@@ -86,6 +86,13 @@ FileSystem* Entry::Filesystem() const
   return mFilesystem;
 }
 
+bool Entry::Exists() const
+{
+  bool exists = false;
+  mFile->Exists(&exists);
+  return exists;
+}
+
 } // namespace sdcard
 } // namespace dom
 } // namespace mozilla

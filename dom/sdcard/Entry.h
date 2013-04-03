@@ -67,6 +67,8 @@ public:
   void GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
   */
 
+  bool Exists() const;
+
 protected:
   FileSystem* mFilesystem;
   // nsString mFullPath;
