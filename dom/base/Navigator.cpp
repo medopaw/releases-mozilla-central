@@ -307,9 +307,11 @@ Navigator::Invalidate()
     mTimeManager = nullptr;
   }
 
+#ifdef MOZ_SDCARD
   if (mSDCard) {
     mSDCard = nullptr;
   }
+#endif
 }
 
 //*****************************************************************************

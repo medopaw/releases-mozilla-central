@@ -28,7 +28,11 @@
 #endif
 #include "nsAutoPtr.h"
 #include "nsIDOMNavigatorTime.h"
+
+#ifdef MOZ_SDCARD
 #include "nsIDOMNavigatorSDCard.h"
+#endif
+
 #include "nsWeakReference.h"
 #include "DeviceStorage.h"
 #include "nsWrapperCache.h"
@@ -260,7 +264,9 @@ private:
   nsCOMPtr<nsIDOMNavigatorSystemMessages> mMessagesManager;
   nsTArray<nsRefPtr<nsDOMDeviceStorage> > mDeviceStorageStores;
   nsRefPtr<time::TimeManager> mTimeManager;
+#ifdef MOZ_SDCARD
   nsRefPtr<sdcard::FileSystem> mSDCard;
+#endif
   nsCOMPtr<nsPIDOMWindow> mWindow;
 };
 
