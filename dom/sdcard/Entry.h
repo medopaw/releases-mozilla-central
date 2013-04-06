@@ -41,6 +41,8 @@ public:
     return NULL;
   }
 
+//  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
+
   virtual bool IsFile() const = 0;
 
   virtual bool IsDirectory() const = 0;

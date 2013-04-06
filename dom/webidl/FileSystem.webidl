@@ -21,7 +21,7 @@ interface FileSystem {
 interface Entry {
     readonly attribute boolean    isFile;
     readonly attribute boolean    isDirectory;
-/*    void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);*/
+    // void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);
     readonly attribute DOMString  name;
     readonly attribute DOMString  fullPath;
     readonly attribute FileSystem filesystem;
@@ -35,9 +35,9 @@ interface Entry {
 };
 
 interface DirectoryEntry : Entry {
-    /*
     [Creator]
     DirectoryReader createReader ();
+    /*
     void            getFile (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     void            getDirectory (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     void            removeRecursively (VoidCallback successCallback, optional ErrorCallback errorCallback);

@@ -12,6 +12,7 @@
 #include "nsWrapperCache.h"
 
 #include "Entry.h"
+#include "DirectoryReader.h"
 #include "Utils.h"
 
 struct JSContext;
@@ -39,9 +40,9 @@ public:
 
   bool IsDirectory() const MOZ_OVERRIDE;
 
-/*
   already_AddRefed<DirectoryReader> CreateReader();
 
+/*
   void GetFile(const nsAString& path, const Flags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   void GetDirectory(const nsAString& path, const Flags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);

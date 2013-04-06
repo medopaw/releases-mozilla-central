@@ -36,7 +36,8 @@ public:
   }
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
-/*
+
+  /*
   void ReadEntries(EntriesCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
   */
 };

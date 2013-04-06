@@ -66,12 +66,6 @@ void FileSystem::GetName(nsString& retval) const
 already_AddRefed<DirectoryEntry> FileSystem::Root()
 {
     SDCARD_LOG("in FileSystem.Root()");
-/*
-    if (!mRoot) {
-      mRoot = nullptr;
-      mRoot = new DirectoryEntry();
-    }
-    */
     NS_IF_ADDREF(mRoot);
     return mRoot.get();
 

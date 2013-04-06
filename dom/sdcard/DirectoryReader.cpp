@@ -36,6 +36,11 @@ DirectoryReader::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap
   return DirectoryReaderBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
 
+/*
+void DirectoryReader::ReadEntries(EntriesCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+}
+*/
 
 } // namespace sdcard
 } // namespace dom

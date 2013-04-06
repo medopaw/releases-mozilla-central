@@ -43,6 +43,14 @@ Entry::~Entry()
 {
 }
 
+/*
+JSObject*
+Entry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+{
+  return EntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+}
+*/
+
 void Entry::GetName(nsString& retval) const
 {
   SDCARD_LOG("in Entry.GetName()");

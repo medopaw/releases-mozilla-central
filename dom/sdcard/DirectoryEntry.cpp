@@ -8,6 +8,7 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
+// #include "DirectoryReader.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -51,6 +52,13 @@ bool DirectoryEntry::IsDirectory() const
   return true;
 }
 
+already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
+{
+    SDCARD_LOG("in DirectoryEntry.CreateReader()");
+    nsRefPtr<DirectoryReader> reader = new DirectoryReader();
+    NS_IF_ADDREF(reader);
+    return reader.get();
+}
 
 } // namespace sdcard
 } // namespace dom
