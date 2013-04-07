@@ -30,7 +30,7 @@ public:
 public:
   // full path in filesystem
   // explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
-  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile);
+  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory);
   // nsIFile to Entry
   explicit Entry(nsIFile* aFile);
 
@@ -44,9 +44,14 @@ public:
 
 //  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
 
+/*
   virtual bool IsFile() const = 0;
 
   virtual bool IsDirectory() const = 0;
+*/
+  bool IsFile() const;
+
+  bool IsDirectory() const;
 
   void GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
@@ -76,6 +81,9 @@ protected:
   // nsString mFullPath;
   nsRefPtr<Metadata> mMetadata;
   nsCOMPtr<nsIFile> mFile;
+
+  bool mIsFile;
+  bool mIsDirectory;
 
 private:
 };

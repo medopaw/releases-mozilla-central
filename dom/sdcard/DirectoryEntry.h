@@ -35,10 +35,11 @@ public:
   ~DirectoryEntry();
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
-
+/*
   bool IsFile() const MOZ_OVERRIDE;
 
   bool IsDirectory() const MOZ_OVERRIDE;
+*/
 
   already_AddRefed<DirectoryReader> CreateReader();
 

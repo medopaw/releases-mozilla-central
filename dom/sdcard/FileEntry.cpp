@@ -24,7 +24,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-FileEntry::FileEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile)
+FileEntry::FileEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, true, false)
 {
   SDCARD_LOG("init FileEntryn");
   SetIsDOMBinding();
@@ -39,7 +39,7 @@ FileEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 {
   return FileEntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
-
+/*
 bool FileEntry::IsFile() const
 {
   SDCARD_LOG("in FileEntry.IsFile()!!!");
@@ -51,7 +51,7 @@ bool FileEntry::IsDirectory() const
   SDCARD_LOG("in FileEntry.IsDirectory()!!!");
   return false;
 }
-
+*/
 } // namespace sdcard
 } // namespace dom
 } // namespace mozilla

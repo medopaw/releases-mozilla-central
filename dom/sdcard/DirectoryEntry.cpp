@@ -24,7 +24,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile)
+DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, false, true)
 {
   SDCARD_LOG("init DirectoryEntry");
   SetIsDOMBinding();
@@ -39,7 +39,7 @@ DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 {
   return DirectoryEntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
-
+/*
 bool DirectoryEntry::IsFile() const
 {
   SDCARD_LOG("in DirectoryEntry.IsFile()!!!");
@@ -51,7 +51,7 @@ bool DirectoryEntry::IsDirectory() const
   SDCARD_LOG("in DirectoryEntry.IsDirectory()!!!");
   return true;
 }
-
+*/
 already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
 {
     SDCARD_LOG("in DirectoryEntry.CreateReader()");

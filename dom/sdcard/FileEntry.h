@@ -32,11 +32,11 @@ public:
   ~FileEntry();
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
-
+/*
   bool IsFile() const MOZ_OVERRIDE;
 
   bool IsDirectory() const MOZ_OVERRIDE;
-
+*/
 /*
   void CreateWriter(FileWriterCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 

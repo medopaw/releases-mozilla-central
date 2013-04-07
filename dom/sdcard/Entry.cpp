@@ -31,7 +31,7 @@ Entry::Entry(FileSystem* aFilesystem, const nsAString& aFullPath) : mFilesystem(
 }
 */
 
-Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile) : mFilesystem(aFilesystem)
+Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory) : mFilesystem(aFilesystem), mIsFile(aIsFile), mIsDirectory(aIsDirectory)
 {
   SDCARD_LOG("init Entry");
   // copy nsIFile object and hold it
@@ -53,17 +53,30 @@ Entry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 }
 */
 
+bool Entry::IsFile() const
+{
+  return mIsFile;
+}
+
+bool Entry::IsDirectory() const
+{
+  return mIsDirectory;
+}
+
 void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
   int64_t size;
-  if (NS_FAILED(mFile->GetFileSize(&size))) {
+  if (mIsDirectory) {
+    size = 0; // size is always 0 for directory
+  } else if (NS_FAILED(mFile->GetFileSize(&size))) {
     // errorcallback
-  } else {
-    // successcallback
-    mMetadata->setSize(uint64_t(size));
-    ErrorResult rv;
-    successCallback.Call(*mMetadata, rv);
   }
+
+  mMetadata->setSize(uint64_t(size));
+
+  // successcallback
+  ErrorResult rv;
+  successCallback.Call(*mMetadata, rv);
 }
 
 void Entry::GetName(nsString& retval) const
