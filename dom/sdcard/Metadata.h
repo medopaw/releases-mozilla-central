@@ -38,9 +38,14 @@ public:
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
 /*
   JS::Value ModificationTime(JSContext* cx) const;
+  */
 
   uint64_t Size() const;
-  */
+
+  void setSize(uint64_t aSize);
+
+private:
+  uint64_t mSize;
 };
 
 } // namespace sdcard

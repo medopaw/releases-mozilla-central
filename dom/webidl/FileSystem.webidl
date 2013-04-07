@@ -21,7 +21,7 @@ interface FileSystem {
 interface Entry {
     readonly attribute boolean    isFile;
     readonly attribute boolean    isDirectory;
-    // void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);
+    void      getMetadata (MetadataCallback successCallback, optional ErrorCallback errorCallback);
     readonly attribute DOMString  name;
     readonly attribute DOMString  fullPath;
     readonly attribute FileSystem filesystem;
@@ -57,11 +57,9 @@ interface DirectoryReader {
 };
 
 interface Metadata {
-    /*
-    readonly attribute any               modificationTime;
+//    readonly attribute any               modificationTime;
     // readonly attribute Date               modificationTime;
     readonly attribute unsigned long long size;
-    */
 };
 
 dictionary Flags {

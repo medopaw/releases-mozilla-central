@@ -8,6 +8,8 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
+#include "Utils.h"
+
 namespace mozilla {
 namespace dom {
 namespace sdcard {
@@ -23,6 +25,7 @@ NS_INTERFACE_MAP_END
 
 Metadata::Metadata()
 {
+  SDCARD_LOG("init Metadata");
   SetIsDOMBinding();
 }
 
@@ -36,6 +39,19 @@ Metadata::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
   return MetadataBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
 
+uint64_t Metadata::Size() const
+{
+  SDCARD_LOG("in Metadata.Size()");
+  SDCARD_LOG("size=%lld", mSize);
+  return mSize;
+}
+
+void Metadata::setSize(uint64_t aSize)
+{
+  SDCARD_LOG("in Metadata.setSize()");
+  SDCARD_LOG("aSize=%lld", aSize);
+  mSize = aSize;
+}
 
 } // namespace sdcard
 } // namespace dom

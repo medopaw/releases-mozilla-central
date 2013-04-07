@@ -9,6 +9,7 @@
 #include "mozilla/Attributes.h"
 #include "mozilla/ErrorResult.h"
 
+#include "mozilla/dom/FileSystemBinding.h"
 #include "nsAutoPtr.h"
 #include "nsIFile.h"
 #include "nsString.h"
@@ -47,9 +48,8 @@ public:
 
   virtual bool IsDirectory() const = 0;
 
-/*
   void GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
-*/
+
   void GetName(nsString& retval) const;
 
   void GetFullPath(nsString& retval) const;
@@ -74,6 +74,7 @@ public:
 protected:
   FileSystem* mFilesystem;
   // nsString mFullPath;
+  nsRefPtr<Metadata> mMetadata;
   nsCOMPtr<nsIFile> mFile;
 
 private:

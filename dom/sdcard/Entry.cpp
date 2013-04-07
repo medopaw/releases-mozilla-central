@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Entry.h"
-#include "mozilla/dom/FileSystemBinding.h"
+// #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
 #include "FileSystem.h"
+#include "Metadata.h"
 #include "Path.h"
 #include "Utils.h"
 
@@ -37,6 +38,7 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile) : mFilesystem(aFilesystem)
   nsCOMPtr<nsIFile> file;
   aFile->Clone(getter_AddRefs(mFile));
   // NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
+  mMetadata = new Metadata;
 }
 
 Entry::~Entry()
@@ -50,6 +52,19 @@ Entry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
   return EntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
 */
+
+void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+  int64_t size;
+  if (NS_FAILED(mFile->GetFileSize(&size))) {
+    // errorcallback
+  } else {
+    // successcallback
+    mMetadata->setSize(uint64_t(size));
+    ErrorResult rv;
+    successCallback.Call(*mMetadata, rv);
+  }
+}
 
 void Entry::GetName(nsString& retval) const
 {
