@@ -13,6 +13,9 @@
 #include "FileSystemRunnable.h"
 #include "Path.h"
 #include "Utils.h"
+#include "DirectoryEntry.h"
+#include "FileEntry.h"
+#include "GetParentRunnable.h"
 
 namespace mozilla {
 namespace dom {
@@ -44,7 +47,10 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDire
 
 Entry::~Entry()
 {
-//  mMetadata = nullptr;
+  if (mParent)
+  {
+    mParent = nullptr;
+  }
 }
 
 /*
@@ -120,11 +126,70 @@ FileSystem* Entry::Filesystem() const
   return mFilesystem;
 }
 
+void Entry::GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+  nsCOMPtr<nsIThread> thread;
+  nsresult rv = NS_NewThread(getter_AddRefs(thread));
+  if (NS_FAILED(rv) ) {
+    if (errorCallback.WasPassed()) {
+      //TODO call error Callback
+    }
+  } else {
+    ErrorCallback* errorCallbackPtr = nullptr;
+    if (errorCallback.WasPassed()) {
+      errorCallbackPtr = errorCallback.Value().get();
+    }
+    nsCOMPtr<nsIRunnable> r = new GetParentRunnable(&successCallback,
+        errorCallbackPtr, this);
+    thread->Dispatch(r, NS_DISPATCH_NORMAL);
+  }
+}
+
 bool Entry::Exists() const
 {
   bool exists = false;
   mFile->Exists(&exists);
   return exists;
+}
+
+Entry* Entry::GetParentInternal()
+{
+  if (IsRoot()) {
+    return this;
+  }
+  if (mParent == nullptr) {
+    nsString path;
+
+    nsCOMPtr<nsIFile> parentFile;
+    nsresult rv = mFile->GetParent(getter_AddRefs(parentFile));
+    if (NS_FAILED(rv)) {
+      nsString path;
+      GetFullPath(path);
+      SDCARD_LOG("GetParentInternal failed! Path=%s",
+          NS_ConvertUTF16toUTF8(path).get());
+      return nullptr;
+    }
+
+    bool isDir = false;
+    rv = mFile->IsDirectory(&isDir);
+    if (NS_FAILED(rv)) {
+      return nullptr;
+    }
+
+    if (isDir) {
+      mParent = new DirectoryEntry(mFilesystem, parentFile);
+    } else {
+      mParent = new FileEntry(mFilesystem, parentFile);
+    }
+  }
+  return mParent;
+}
+
+bool Entry::IsRoot() const
+{
+  nsString path;
+  GetFullPath(path);
+  return path == NS_LITERAL_STRING("/");
 }
 
 } // namespace sdcard

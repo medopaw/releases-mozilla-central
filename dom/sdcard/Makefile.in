@@ -39,6 +39,7 @@ CPPSRCS = \
   FileEntry.cpp \
   Metadata.cpp \
   Path.cpp \
+  GetParentRunnable.cpp \
   $(NULL)
 
 XPIDLSRCS = \

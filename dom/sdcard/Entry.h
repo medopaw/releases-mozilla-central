@@ -60,6 +60,7 @@ public:
   void GetName(nsString& retval) const;
 
   void GetFullPath(nsString& retval) const;
+
   // Mark this as resultNotAddRefed to return raw pointers
   // already_AddRefed<FileSystem> Filesystem() const;
   FileSystem* Filesystem() const;
@@ -72,9 +73,8 @@ public:
   void ToURL(nsString& retval);
 
   void Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
-
+*/
   void GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
-  */
 
   bool Exists() const;
 
@@ -86,7 +86,11 @@ public:
   bool mIsFile;
   bool mIsDirectory;
 
+  Entry* GetParentInternal();
 private:
+  // The parent folder
+  nsRefPtr<Entry> mParent;
+  bool IsRoot() const;
 };
 
 } // namespace sdcard

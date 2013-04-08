@@ -22,7 +22,7 @@ nsString Path::base = Path::root;
 
 void Path::RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath)
 {
-  MOZ_ASSERT(Path::IsParentOf(Path::base, aRealPath), "Path must be within the scope of FileSystem!");
+  MOZ_ASSERT(Path::IsParentOf(Path::base, aRealPath) || Path::base == aRealPath, "Path must be within the scope of FileSystem!");
   // special case for root
   if (aRealPath.Equals(Path::base)) {
     aInnerPath = Path::root;

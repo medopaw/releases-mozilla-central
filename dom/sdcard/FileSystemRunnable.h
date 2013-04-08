@@ -10,6 +10,8 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "mozilla/dom/DOMError.h"
 #include "Utils.h"
+#include "Entry.h"
+#include "Metadata.h"
 
 namespace mozilla {
 namespace dom {

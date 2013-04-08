@@ -30,8 +30,8 @@ interface Entry {
     void      copyTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     DOMString toURL ();
     void      remove (VoidCallback successCallback, optional ErrorCallback errorCallback);
-    void      getParent (EntryCallback successCallback, optional ErrorCallback errorCallback);
     */
+    void      getParent (EntryCallback successCallback, optional ErrorCallback errorCallback);
 };
 
 interface DirectoryEntry : Entry {
