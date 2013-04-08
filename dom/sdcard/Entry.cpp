@@ -10,6 +10,7 @@
 
 #include "FileSystem.h"
 #include "Metadata.h"
+#include "FileSystemRunnable.h"
 #include "Path.h"
 #include "Utils.h"
 
@@ -65,18 +66,14 @@ bool Entry::IsDirectory() const
 
 void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
-  int64_t size;
-  if (mIsDirectory) {
-    size = 0; // size is always 0 for directory
-  } else if (NS_FAILED(mFile->GetFileSize(&size))) {
-    // errorcallback
+  nsCOMPtr<nsIThread> thread;
+  nsresult rv = NS_NewThread(getter_AddRefs(thread));
+  if (NS_FAILED(rv)) {
+  } else {
+    nsCOMPtr<nsIRunnable> r = new GetMetadataRunnable(successCallback, errorCallback, this);
+    // NS_DispatchToMainThread(r);
+    thread->Dispatch(r, NS_DISPATCH_NORMAL);
   }
-
-  mMetadata->setSize(uint64_t(size));
-
-  // successcallback
-  ErrorResult rv;
-  successCallback.Call(*mMetadata, rv);
 }
 
 void Entry::GetName(nsString& retval) const
@@ -90,13 +87,6 @@ void Entry::GetName(nsString& retval) const
 
 void Entry::GetFullPath(nsString& retval) const
 {
-  /*
-  retval = mFullPath;
-  // call the conversion function
-  SDCARD_LOG("in Entry.GetFullPath()!!!!");
-  SDCARD_LOG("mFullPath=%s", NS_ConvertUTF16toUTF8(mFullPath).get());
-  SDCARD_LOG("retval=%s", NS_ConvertUTF16toUTF8(retval).get());
-  */
   SDCARD_LOG("in Entry.GetFullPath()!!!!");
   nsString path, fullPath;
   mFile->GetPath(path);

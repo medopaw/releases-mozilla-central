@@ -42,9 +42,7 @@ public:
 
   uint64_t Size() const;
 
-  void setSize(uint64_t aSize);
-
-private:
+public:
   uint64_t mSize;
 };
 

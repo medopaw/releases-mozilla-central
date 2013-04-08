@@ -46,13 +46,6 @@ uint64_t Metadata::Size() const
   return mSize;
 }
 
-void Metadata::setSize(uint64_t aSize)
-{
-  SDCARD_LOG("in Metadata.setSize()");
-  SDCARD_LOG("aSize=%lld", aSize);
-  mSize = aSize;
-}
-
 } // namespace sdcard
 } // namespace dom
 } // namespace mozilla

@@ -76,7 +76,7 @@ public:
 
   bool Exists() const;
 
-protected:
+public:
   FileSystem* mFilesystem;
   // nsString mFullPath;
   nsRefPtr<Metadata> mMetadata;

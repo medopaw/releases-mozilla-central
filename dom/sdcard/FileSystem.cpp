@@ -32,7 +32,8 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
 //  Path::separator.AssignLiteral("/");
   Path::base = aPath;
   nsCOMPtr<nsIFile> rootDir;
-  if (NS_FAILED(NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir)))) {
+  nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
+  if (NS_FAILED(rv)) {
     SDCARD_LOG("Create root nsIFile failed");
     mRoot = nullptr;
   } else {
