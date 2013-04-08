@@ -10,6 +10,7 @@
 #include "mozilla/ErrorResult.h"
 
 #include "mozilla/dom/FileSystemBinding.h"
+#include "nsWrapperCache.h"
 #include "nsAutoPtr.h"
 #include "nsIFile.h"
 #include "nsString.h"
@@ -22,7 +23,8 @@ namespace sdcard {
 
 class FileSystem;
 
-class Entry : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this */
+class Entry : public nsISupports, /* Change nativeOwnership in the binding configuration if you don't want this */
+              public nsWrapperCache
 {
 public:
   NS_DECL_ISUPPORTS

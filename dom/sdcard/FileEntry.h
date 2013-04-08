@@ -19,8 +19,8 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class FileEntry MOZ_FINAL : public Entry,
-                            public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this ,*/
+class FileEntry MOZ_FINAL : public Entry
+                            /* public nsWrapperCache Change wrapperCache in the binding configuration if you don't want this ,*/
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS

@@ -69,6 +69,7 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
   nsCOMPtr<nsIThread> thread;
   nsresult rv = NS_NewThread(getter_AddRefs(thread));
   if (NS_FAILED(rv)) {
+    // errorCallback.Call();
   } else {
     nsCOMPtr<nsIRunnable> r = new GetMetadataRunnable(successCallback, errorCallback, this);
     // NS_DispatchToMainThread(r);
