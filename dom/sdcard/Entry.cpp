@@ -75,7 +75,7 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
 {
   SDCARD_LOG("in Entry.GetMetadata()");
 
-  nsRefPtr<ErrorCallback> pErrorCallback = nullptr;
+  ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
@@ -86,7 +86,7 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
     r = new ErrorRunnable(pErrorCallback, rv);
     NS_DispatchToMainThread(r);
   } else {
-    r = new GetMetadataRunnable(successCallback, pErrorCallback, this);
+    r = new GetMetadataRunnable(&successCallback, pErrorCallback, this);
     thread->Dispatch(r, NS_DISPATCH_NORMAL);
   }
 }

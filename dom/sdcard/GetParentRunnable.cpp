@@ -25,7 +25,7 @@ NS_IMETHODIMP GetParentRunnable::Run()
   if (parent) {
     // success callback
     nsCOMPtr<nsIRunnable> r = new ResultRunnable<EntryCallback, Entry>(
-        *mSuccessCallback, parent);
+        mSuccessCallback.get(), parent);
     NS_DispatchToMainThread(r);
   } else {
     // error callback

@@ -11,7 +11,6 @@
 #include "mozilla/dom/DOMError.h"
 #include "Utils.h"
 #include "Entry.h"
-#include "Metadata.h"
 
 #define DOM_ERROR_ENCODING                    NS_LITERAL_STRING("EncodingError")
 #define DOM_ERROR_INVALID_MODIFICATION        NS_LITERAL_STRING("InvalidModificationError")
@@ -33,7 +32,7 @@ template <class T, class U>
 class ResultRunnable : public nsRunnable
 {
   public:
-    ResultRunnable(T& aSuccessCallback, U* aResult) : mSuccessCallback(aSuccessCallback), mResult(aResult)
+    ResultRunnable(T* aSuccessCallback, U* aResult) : mSuccessCallback(aSuccessCallback), mResult(aResult)
     {
       SDCARD_LOG("init ResultRunnable!");
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
@@ -47,14 +46,14 @@ class ResultRunnable : public nsRunnable
       MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
       ErrorResult rv;
-      mSuccessCallback.Call(*mResult, rv);
+      mSuccessCallback->Call(*mResult, rv);
 
       return NS_OK;
     }
 
   private:
-    T mSuccessCallback;
-    U* mResult;
+    nsRefPtr<T> mSuccessCallback;
+    nsRefPtr<U> mResult;
 };
 
 class ErrorRunnable : public nsRunnable
@@ -83,12 +82,13 @@ class FileSystemRunnable : public nsRunnable
 class GetMetadataRunnable : public FileSystemRunnable
 {
   public:
-    GetMetadataRunnable(MetadataCallback& aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    GetMetadataRunnable(MetadataCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
 
     NS_IMETHOD Run();
 
   private:
-    MetadataCallback mSuccessCallback;
+    nsRefPtr<MetadataCallback> mSuccessCallback;
+    // MetadataCallback mSuccessCallback;
 };
 
 } // namespace sdcard

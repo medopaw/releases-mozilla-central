@@ -82,7 +82,7 @@ FileSystemRunnable::FileSystemRunnable(ErrorCallback* aErrorCallback, Entry* aEn
 }
 
 
-GetMetadataRunnable::GetMetadataRunnable(MetadataCallback& aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
+GetMetadataRunnable::GetMetadataRunnable(MetadataCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
 {
   SDCARD_LOG("init GetMetadataRunnable");
 }
@@ -91,7 +91,7 @@ NS_IMETHODIMP GetMetadataRunnable::Run()
 {
   SDCARD_LOG("in GetMetadataRunnable.Run()!");
   SDCARD_LOG("on main thread: %d", NS_IsMainThread());
-    MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   int64_t size;
   nsCOMPtr<nsIRunnable> r;
@@ -100,15 +100,13 @@ NS_IMETHODIMP GetMetadataRunnable::Run()
   } else {
     nsresult rv = mEntry->mFile->GetFileSize(&size);
     if (NS_FAILED(rv)) {
-      r = new ErrorRunnable(mErrorCallback, rv);
+      r = new ErrorRunnable(mErrorCallback.get(), rv);
     }
   }
   mEntry->mMetadata->mSize = uint64_t(size);
 
-  // successcallback
   ErrorResult rv;
-//      mSuccessCallback.Call(*(mEntry->mMetadata), rv);
-  r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback, mEntry->mMetadata.get());
+  r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback.get(), mEntry->mMetadata.get());
   NS_DispatchToMainThread(r);
 
   return NS_OK;
