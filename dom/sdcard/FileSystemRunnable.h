@@ -45,6 +45,7 @@ class ResultRunnable : public nsRunnable
       SDCARD_LOG("in ResultRunnable.Run()!");
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
       ErrorResult rv;
       mSuccessCallback.Call(*mResult, rv);
 
@@ -59,11 +60,54 @@ class ResultRunnable : public nsRunnable
 class ErrorRunnable : public nsRunnable
 {
   public:
-    ErrorRunnable(ErrorCallback* aErrorCallback/*, const nsAString& name*/) : mErrorCallback(aErrorCallback)
+    ErrorRunnable(ErrorCallback* aErrorCallback, const nsAString& aName) : mErrorCallback(aErrorCallback)
     {
       SDCARD_LOG("init ErrorRunnable!");
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       // MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+      mError = DOMError::CreateWithName(aName);
+    }
+
+    ErrorRunnable(ErrorCallback* aErrorCallback, const nsresult& aError) : mErrorCallback(aErrorCallback)
+    {
+      SDCARD_LOG("init ErrorRunnable!");
+      SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+      // MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+      SDCARD_LOG("Error code: %d", aError);
+
+      nsString name;
+      switch (aError) {
+        case NS_ERROR_FILE_INVALID_PATH:
+        case NS_ERROR_FILE_UNRECOGNIZED_PATH:
+          name = DOM_ERROR_ENCODING;
+          break;
+        case NS_ERROR_FILE_DESTINATION_NOT_DIR:
+          name = DOM_ERROR_INVALID_MODIFICATION;
+          break;
+        case NS_ERROR_FILE_ACCESS_DENIED:
+          name = DOM_ERROR_NO_MODIFICATION_ALLOWED;
+          break;
+        case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
+        case NS_ERROR_NOT_AVAILABLE:
+          name = DOM_ERROR_NOT_FOUND;
+          break;
+        case NS_ERROR_FILE_ALREADY_EXISTS:
+        case NS_ERROR_FILE_DIR_NOT_EMPTY:
+          name = DOM_ERROR_PATH_EXISTS;
+          break;
+        case NS_ERROR_DOM_SECURITY_ERR:
+        case NS_ERROR_OUT_OF_MEMORY:
+          name = DOM_ERROR_SECURITY;
+          break;
+        case NS_ERROR_FILE_NOT_DIRECTORY:
+          name = DOM_ERROR_TYPE_MISMATCH;
+          break;
+        case NS_ERROR_UNEXPECTED:
+        default:
+          name = DOM_ERROR_UNKNOWN;
+          break;
+      }
+      mError = DOMError::CreateWithName(name);
     }
 
     NS_IMETHOD Run()
@@ -72,7 +116,6 @@ class ErrorRunnable : public nsRunnable
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
       if (mErrorCallback != nullptr) {
-        nsCOMPtr<nsIDOMDOMError> mError = DOMError::CreateWithName(DOM_ERROR_NOT_FOUND);
         ErrorResult rv;
         mErrorCallback->Call(mError, rv);
       }
@@ -80,6 +123,7 @@ class ErrorRunnable : public nsRunnable
     }
 
   private:
+    nsCOMPtr<nsIDOMDOMError> mError;
     nsCOMPtr<ErrorCallback> mErrorCallback;
 };
 
@@ -110,13 +154,15 @@ class GetMetadataRunnable : public FileSystemRunnable
       SDCARD_LOG("in GetMetadataRunnable.Run()!");
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+
       int64_t size;
+      nsCOMPtr<nsIRunnable> r;
       if (mEntry->mIsDirectory) {
         size = 0; // size is always 0 for directory
       } else {
         nsresult rv = mEntry->mFile->GetFileSize(&size);
         if (NS_FAILED(rv)) {
-        // errorcallback
+          r = new ErrorRunnable(mErrorCallback, rv);
         }
       }
       mEntry->mMetadata->mSize = uint64_t(size);
@@ -124,7 +170,7 @@ class GetMetadataRunnable : public FileSystemRunnable
       // successcallback
       ErrorResult rv;
 //      mSuccessCallback.Call(*(mEntry->mMetadata), rv);
-      nsCOMPtr<nsIRunnable> r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback, mEntry->mMetadata.get());
+      r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback, mEntry->mMetadata.get());
       NS_DispatchToMainThread(r);
 
       return NS_OK;

@@ -74,6 +74,7 @@ bool Entry::IsDirectory() const
 void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in Entry.GetMetadata()");
+
   nsRefPtr<ErrorCallback> pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
@@ -82,7 +83,7 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
   nsCOMPtr<nsIThread> thread;
   nsresult rv = NS_NewThread(getter_AddRefs(thread));
   if (NS_FAILED(rv)) {
-    r = new ErrorRunnable(pErrorCallback);
+    r = new ErrorRunnable(pErrorCallback, rv);
     NS_DispatchToMainThread(r);
   } else {
     r = new GetMetadataRunnable(successCallback, pErrorCallback, this);
@@ -93,6 +94,7 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
 void Entry::GetName(nsString& retval) const
 {
   SDCARD_LOG("in Entry.GetName()");
+
   nsString name;
   mFile->GetLeafName(name);
   SDCARD_LOG("entry name=%s", NS_ConvertUTF16toUTF8(name).get());
@@ -102,6 +104,7 @@ void Entry::GetName(nsString& retval) const
 void Entry::GetFullPath(nsString& retval) const
 {
   SDCARD_LOG("in Entry.GetFullPath()!!!!");
+
   nsString path, fullPath;
   mFile->GetPath(path);
   SDCARD_LOG("mFile Path=%s", NS_ConvertUTF16toUTF8(path).get());
