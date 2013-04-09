@@ -16,15 +16,27 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-nsString Path::separator = NS_LITERAL_STRING("/");
-nsString Path::root = Path::separator;
-nsString Path::base = Path::root;
+const nsString Path::separator = NS_LITERAL_STRING("/");
+const nsString Path::root = Path::separator;
+const nsString Path::base = Path::root + NS_LITERAL_STRING("sdcard");
+
+bool Path::IsRoot(const nsAString& aPath)
+{
+  MOZ_ASSERT(Path::IsAbsolute(aPath), "Path must be absolute!");
+  return aPath == Path::root;
+}
+
+bool Path::IsBase(const nsAString& aPath)
+{
+  MOZ_ASSERT(Path::IsAbsolute(aPath), "Path must be absolute!");
+  return aPath == Path::base;
+}
 
 void Path::RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath)
 {
-  MOZ_ASSERT(Path::IsParentOf(Path::base, aRealPath) || Path::base == aRealPath, "Path must be within the scope of FileSystem!");
+  MOZ_ASSERT(Path::IsParentOf(Path::base, aRealPath) || Path::IsBase(aRealPath), "Path must be within the scope of FileSystem!");
   // special case for root
-  if (aRealPath.Equals(Path::base)) {
+  if (Path::IsBase(aRealPath)) {
     aInnerPath = Path::root;
   } else {
     aInnerPath = aRealPath;
@@ -36,7 +48,7 @@ void Path::InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
 {
   MOZ_ASSERT(Path::IsAbsolute(aInnerPath), "Path must be absolute!");
   // special case for root
-  if (aInnerPath.Equals(Path::root)) {
+  if (Path::IsRoot(aInnerPath)) {
     aRealPath = Path::base;
   } else {
     aRealPath = Path::base + aInnerPath;
@@ -45,7 +57,7 @@ void Path::InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
 
 bool Path::StartsWith(const nsAString& aPath, const nsAString& aMayBeHead)
 {
-  return aMayBeHead.Equals(Substring(aPath, 0, aMayBeHead.Length()));
+  return aMayBeHead == Substring(aPath, 0, aMayBeHead.Length());
 }
 
 bool Path::IsAbsolute(const nsAString& aPath)
@@ -61,7 +73,7 @@ bool Path::IsParentOf(const nsAString& aParent, const nsAString& aMayBeChild)
     return false;
   }
   // check separator
-  if (!Substring(aMayBeChild, aParent.Length(), 1).Equals(Path::separator)) {
+  if (Substring(aMayBeChild, aParent.Length(), 1) != Path::separator) {
     return false;
   }
   return true;

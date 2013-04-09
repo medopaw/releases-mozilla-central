@@ -30,7 +30,7 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
 //  mRoot = nullptr;
 //  Path::separator.AssignLiteral("/");
-  Path::base = aPath;
+  // Path::base = aPath;
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
   if (NS_FAILED(rv)) {

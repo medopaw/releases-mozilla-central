@@ -21,9 +21,12 @@ namespace sdcard {
 // FileSystem path utilities. All methods in this class are static.
 class Path {
 public:
-    static nsString separator;
-    static nsString root; // different from FileSystem.root, normally "/"
-    static nsString base; // the real path of FileSystem.root, normally "/sdcard"
+    static const nsString separator;
+    static const nsString root; // different from FileSystem.root, normally "/"
+    static const nsString base; // the real path of FileSystem.root, normally "/sdcard"
+
+    static bool IsRoot(const nsAString& aPath);
+    static bool IsBase(const nsAString& aPath);
 
     static void RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath);
     static void InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath);
