@@ -13,8 +13,6 @@
 #include "FileSystemRunnable.h"
 #include "Path.h"
 #include "Utils.h"
-#include "DirectoryEntry.h"
-#include "FileEntry.h"
 #include "GetParentRunnable.h"
 
 namespace mozilla {
@@ -47,10 +45,6 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDire
 
 Entry::~Entry()
 {
-  if (mParent)
-  {
-    mParent = nullptr;
-  }
 }
 
 /*
@@ -105,20 +99,11 @@ void Entry::GetFullPath(nsString& retval) const
   retval = fullPath;
 }
 
-/*
-already_AddRefed<FileSystem> Entry::Filesystem() const
-{
-  SDCARD_LOG("in Entry.Filesystem()");
-  nsRefPtr<FileSystem> filesystem(mFilesystem);
-  NS_IF_ADDREF(filesystem);
-  return filesystem.get();
-}
-*/
-
 FileSystem* Entry::Filesystem() const
 {
   SDCARD_LOG("in Entry.Filesystem()");
-  return mFilesystem;
+  nsRefPtr<FileSystem> fileSystem(mFilesystem);
+  return fileSystem.forget().get();
 }
 
 void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
@@ -133,23 +118,16 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
   mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
 }
 
-void Entry::GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void Entry::GetParent(EntryCallback& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
-  nsCOMPtr<nsIThread> thread;
-  nsresult rv = NS_NewThread(getter_AddRefs(thread));
-  if (NS_FAILED(rv) ) {
-    if (errorCallback.WasPassed()) {
-      //TODO call error Callback
-    }
-  } else {
-    ErrorCallback* errorCallbackPtr = nullptr;
-    if (errorCallback.WasPassed()) {
-      errorCallbackPtr = errorCallback.Value().get();
-    }
-    nsCOMPtr<nsIRunnable> r = new GetParentRunnable(&successCallback,
-        errorCallbackPtr, this);
-    thread->Dispatch(r, NS_DISPATCH_NORMAL);
+  ErrorCallback* errorCallbackPtr = nullptr;
+  if (errorCallback.WasPassed()) {
+    errorCallbackPtr = errorCallback.Value().get();
   }
+  nsIRunnable* r = new GetParentRunnable(&successCallback,
+      errorCallbackPtr, this);
+  mFilesystem->DispatchToWorkerThread(r, errorCallbackPtr);
 }
 
 bool Entry::Exists() const
@@ -157,39 +135,6 @@ bool Entry::Exists() const
   bool exists = false;
   mFile->Exists(&exists);
   return exists;
-}
-
-Entry* Entry::GetParentInternal()
-{
-  if (IsRoot()) {
-    return this;
-  }
-  if (mParent == nullptr) {
-    nsString path;
-
-    nsCOMPtr<nsIFile> parentFile;
-    nsresult rv = mFile->GetParent(getter_AddRefs(parentFile));
-    if (NS_FAILED(rv)) {
-      nsString path;
-      GetFullPath(path);
-      SDCARD_LOG("GetParentInternal failed! Path=%s",
-          NS_ConvertUTF16toUTF8(path).get());
-      return nullptr;
-    }
-
-    bool isDir = false;
-    rv = mFile->IsDirectory(&isDir);
-    if (NS_FAILED(rv)) {
-      return nullptr;
-    }
-
-    if (isDir) {
-      mParent = new DirectoryEntry(mFilesystem, parentFile);
-    } else {
-      mParent = new FileEntry(mFilesystem, parentFile);
-    }
-  }
-  return mParent;
 }
 
 bool Entry::IsRoot() const

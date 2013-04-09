@@ -57,9 +57,8 @@ bool DirectoryEntry::IsDirectory() const
 already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
 {
     SDCARD_LOG("in DirectoryEntry.CreateReader()");
-    nsRefPtr<DirectoryReader> reader = new DirectoryReader();
-    NS_IF_ADDREF(reader);
-    return reader.get();
+    nsRefPtr<DirectoryReader> reader = new DirectoryReader(this);
+    return reader.forget();
 }
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)

@@ -7,6 +7,8 @@
 #include "DirectoryReader.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "ReadEntriesRunnable.h"
+#include "DirectoryEntry.h"
 
 namespace mozilla {
 namespace dom {
@@ -21,7 +23,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryReader)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-DirectoryReader::DirectoryReader()
+DirectoryReader::DirectoryReader(DirectoryEntry* entry) :
+    mEntry(entry)
 {
   SetIsDOMBinding();
 }
@@ -36,11 +39,27 @@ DirectoryReader::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap
   return DirectoryReaderBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
 
-/*
-void DirectoryReader::ReadEntries(EntriesCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void DirectoryReader::ReadEntries(EntriesCallback& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
+  nsCOMPtr<nsIThread> thread;
+  nsresult rv = NS_NewThread(getter_AddRefs(thread));
+  ErrorCallback* errorCallbackPtr = nullptr;
+  if (errorCallback.WasPassed()) {
+    errorCallbackPtr = errorCallback.Value().get();
+  }
+  if (NS_FAILED(rv) ) {
+    if (errorCallbackPtr) {
+      nsString errorName = DOM_ERROR_UNKNOWN;
+      nsCOMPtr<nsIRunnable> r = new ErrorRunnable(errorCallbackPtr, errorName);
+      NS_DispatchToMainThread(r);
+    }
+  } else {
+    nsCOMPtr<nsIRunnable> r = new ReadEntriesRunnable(&successCallback,
+        errorCallbackPtr, mEntry);
+    thread->Dispatch(r, NS_DISPATCH_NORMAL);
+  }
 }
-*/
 
 } // namespace sdcard
 } // namespace dom

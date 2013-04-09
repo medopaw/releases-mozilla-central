@@ -46,11 +46,6 @@ public:
 
 //  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
 
-/*
-  virtual bool IsFile() const = 0;
-
-  virtual bool IsDirectory() const = 0;
-*/
   bool IsFile() const;
 
   bool IsDirectory() const;
@@ -61,8 +56,6 @@ public:
 
   void GetFullPath(nsString& retval) const;
 
-  // Mark this as resultNotAddRefed to return raw pointers
-  // already_AddRefed<FileSystem> Filesystem() const;
   FileSystem* Filesystem() const;
 
 /*
@@ -72,27 +65,34 @@ public:
 
   void ToURL(nsString& retval);
 */
+
   void Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+  void GetParent(EntryCallback& successCallback,
+      const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
   bool Exists() const;
 
 public:
+  bool IsRoot() const;
+
+  FileSystem* GetFilesystem() const
+  {
+    return mFilesystem.get();
+  }
+
+  nsIFile* GetFileInternal() const
+  {
+    return mFile;
+  }
+
   nsRefPtr<Metadata> mMetadata;
   nsCOMPtr<nsIFile> mFile;
 
-  Entry* GetParentInternal();
-  bool IsRoot() const;
-
 protected:
-  FileSystem* mFilesystem;
+  nsRefPtr<FileSystem> mFilesystem;
   bool mIsFile;
   bool mIsDirectory;
-
-private:
-  // The parent folder
-  nsRefPtr<Entry> mParent;
 };
 
 } // namespace sdcard

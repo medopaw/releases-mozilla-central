@@ -51,9 +51,7 @@ interface FileEntry : Entry {
 };
 
 interface DirectoryReader {
-    /*
     void readEntries (EntriesCallback successCallback, optional ErrorCallback errorCallback);
-    */
 };
 
 interface Metadata {
@@ -70,7 +68,6 @@ dictionary Flags {
 callback EntryCallback = void (Entry entry);
 
 callback EntriesCallback = void (sequence<Entry> entries);
-// callback EntriesCallback = void (Entry[] entries);
 
 callback MetadataCallback = void (Metadata metadata);
 

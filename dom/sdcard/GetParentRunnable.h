@@ -18,16 +18,12 @@ class GetParentRunnable : public FileSystemRunnable
 public:
   GetParentRunnable(EntryCallback* aSuccessCallback,
       ErrorCallback* aErrorCallback,
-      Entry* aEntry) :
-      FileSystemRunnable(aErrorCallback, aEntry),
-          mSuccessCallback(aSuccessCallback)
-  {
-  }
+      Entry* aEntry);
 
-  virtual
-  ~GetParentRunnable();
+  virtual ~GetParentRunnable();
 
-  NS_IMETHOD Run();
+  // Overrides nsRunnable
+  NS_IMETHOD Run() MOZ_OVERRIDE;
 
 private:
   nsRefPtr<EntryCallback> mSuccessCallback;

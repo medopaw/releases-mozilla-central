@@ -11,6 +11,7 @@
 #include "mozilla/dom/DOMError.h"
 #include "Utils.h"
 #include "Entry.h"
+#include "Metadata.h"
 
 #define DOM_ERROR_ENCODING                    NS_LITERAL_STRING("EncodingError")
 #define DOM_ERROR_INVALID_MODIFICATION        NS_LITERAL_STRING("InvalidModificationError")
@@ -28,7 +29,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-template<class T, class U>
+template <class T, class U, bool NEED_DELETION = false>
 class ResultRunnable : public nsRunnable
 {
   public:
@@ -49,13 +50,16 @@ class ResultRunnable : public nsRunnable
         ErrorResult rv;
         mSuccessCallback->Call(*mResult, rv);
       }
+      if (NEED_DELETION && mResult) {
+        delete mResult;
+      }
 
       return NS_OK;
     }
 
   private:
     nsRefPtr<T> mSuccessCallback;
-    nsRefPtr<U> mResult;
+    U* mResult;
 };
 
 // for VoidCallback only

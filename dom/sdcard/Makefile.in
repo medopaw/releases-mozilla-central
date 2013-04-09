@@ -41,6 +41,7 @@ CPPSRCS = \
   Path.cpp \
   FileSystemRunnable.cpp \
   GetParentRunnable.cpp \
+  ReadEntriesRunnable.cpp \
   $(NULL)
 
 XPIDLSRCS = \
