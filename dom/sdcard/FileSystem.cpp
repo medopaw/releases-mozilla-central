@@ -7,6 +7,7 @@
 #include "FileSystem.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "FileSystemRunnable.h"
 #include "Path.h"
 
 namespace mozilla {
@@ -40,7 +41,7 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
     SDCARD_LOG("Create root nsIFile successful");
     mRoot = new DirectoryEntry(this, rootDir);
   }
-  mThread = nullptr;
+  mWorkerThread = nullptr;
   SetIsDOMBinding();
 }
 
@@ -48,7 +49,7 @@ FileSystem::~FileSystem()
 {
   // mRoot = nullptr;
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
-  mThread->Shutdown();
+  mWorkerThread->Shutdown();
 }
 
 JSObject*
@@ -85,17 +86,18 @@ bool FileSystem::IsValid() const
     return mRoot != nullptr && mRoot->Exists();
 }
 
-nsresult FileSystem::DispatchToWorkerThread(nsCOMPtr<nsIRunnable> runnable)
+void FileSystem::DispatchToWorkerThread(nsCOMPtr<nsIRunnable> aRunnable, nsRefPtr<ErrorCallback> aErrorCallback)
 {
   nsresult rv = NS_OK;
-  if (!mThread) {
-    rv = NS_NewThread(getter_AddRefs(mThread));
+  if (!mWorkerThread) {
+    rv = NS_NewThread(getter_AddRefs(mWorkerThread));
   }
-  if (NS_SUCCEEDED(rv)) {
-    mThread->Dispatch(runnable, NS_DISPATCH_NORMAL);
+  if (NS_FAILED(rv)) {
+    nsCOMPtr<nsIRunnable> r = new ErrorRunnable(aErrorCallback, rv);
+    NS_DispatchToMainThread(r);
+  } else {
+    mWorkerThread->Dispatch(aRunnable, NS_DISPATCH_NORMAL);
   }
-
-  return rv;
 }
 
 } // namespace sdcard

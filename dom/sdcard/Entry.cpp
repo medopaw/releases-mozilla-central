@@ -79,12 +79,8 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsCOMPtr<nsIRunnable> r = new GetMetadataRunnable(&successCallback, pErrorCallback, this);
-  nsresult rv = mFilesystem->DispatchToWorkerThread(r);
-  if (NS_FAILED(rv)) {
-    r = new ErrorRunnable(pErrorCallback, rv);
-    NS_DispatchToMainThread(r);
-  }
+  nsIRunnable* r = new GetMetadataRunnable(&successCallback, pErrorCallback, this);
+  mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
 }
 
 void Entry::GetName(nsString& retval) const

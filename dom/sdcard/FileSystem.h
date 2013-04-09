@@ -67,14 +67,14 @@ public:
 
   bool IsValid() const;
 
-  nsresult DispatchToWorkerThread(nsCOMPtr<nsIRunnable> runnable);
+  void DispatchToWorkerThread(nsCOMPtr<nsIRunnable> aRunnable, nsRefPtr<ErrorCallback> aErrorCallback);
 
 private:
   nsCOMPtr<nsIDOMNavigator> mNavigator;
   nsString mName;
   nsRefPtr<DirectoryEntry> mRoot;
 
-  nsCOMPtr<nsIThread> mThread;
+  nsCOMPtr<nsIThread> mWorkerThread;
 };
 
 } // namespace sdcard
