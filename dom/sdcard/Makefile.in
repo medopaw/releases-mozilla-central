@@ -39,6 +39,7 @@ CPPSRCS = \
   FileEntry.cpp \
   Metadata.cpp \
   Path.cpp \
+  FileSystemRunnable.cpp \
   GetParentRunnable.cpp \
   $(NULL)
 
