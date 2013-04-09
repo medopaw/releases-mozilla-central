@@ -79,15 +79,11 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsCOMPtr<nsIRunnable> r;
-  nsCOMPtr<nsIThread> thread;
-  nsresult rv = NS_NewThread(getter_AddRefs(thread));
+  nsCOMPtr<nsIRunnable> r = new GetMetadataRunnable(&successCallback, pErrorCallback, this);
+  nsresult rv = mFilesystem->DispatchToWorkerThread(r);
   if (NS_FAILED(rv)) {
     r = new ErrorRunnable(pErrorCallback, rv);
     NS_DispatchToMainThread(r);
-  } else {
-    r = new GetMetadataRunnable(&successCallback, pErrorCallback, this);
-    thread->Dispatch(r, NS_DISPATCH_NORMAL);
   }
 }
 

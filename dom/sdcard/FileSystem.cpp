@@ -40,12 +40,15 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
     SDCARD_LOG("Create root nsIFile successful");
     mRoot = new DirectoryEntry(this, rootDir);
   }
+  mThread = nullptr;
   SetIsDOMBinding();
 }
 
 FileSystem::~FileSystem()
 {
-  mRoot = nullptr;
+  // mRoot = nullptr;
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+  mThread->Shutdown();
 }
 
 JSObject*
@@ -80,6 +83,19 @@ already_AddRefed<DirectoryEntry> FileSystem::Root()
 bool FileSystem::IsValid() const
 {
     return mRoot != nullptr && mRoot->Exists();
+}
+
+nsresult FileSystem::DispatchToWorkerThread(nsCOMPtr<nsIRunnable> runnable)
+{
+  nsresult rv = NS_OK;
+  if (!mThread) {
+    rv = NS_NewThread(getter_AddRefs(mThread));
+  }
+  if (NS_SUCCEEDED(rv)) {
+    mThread->Dispatch(runnable, NS_DISPATCH_NORMAL);
+  }
+
+  return rv;
 }
 
 } // namespace sdcard
