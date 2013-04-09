@@ -66,7 +66,7 @@ NS_IMETHODIMP ErrorRunnable::Run()
   SDCARD_LOG("in ErrorRunnable.Run()");
   SDCARD_LOG("on main thread: %d", NS_IsMainThread());
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
-  if (mErrorCallback != nullptr) {
+  if (mErrorCallback) {
     ErrorResult rv;
     mErrorCallback->Call(mError, rv);
   }

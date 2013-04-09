@@ -45,8 +45,10 @@ class ResultRunnable : public nsRunnable
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
-      ErrorResult rv;
-      mSuccessCallback->Call(*mResult, rv);
+      if (mSuccessCallback) {
+        ErrorResult rv;
+        mSuccessCallback->Call(*mResult, rv);
+      }
 
       return NS_OK;
     }

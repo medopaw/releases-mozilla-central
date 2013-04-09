@@ -29,9 +29,6 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
 {
   SDCARD_LOG("init FileSystem");
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
-//  mRoot = nullptr;
-//  Path::separator.AssignLiteral("/");
-  // Path::base = aPath;
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
   if (NS_FAILED(rv)) {
@@ -47,7 +44,6 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
 
 FileSystem::~FileSystem()
 {
-  // mRoot = nullptr;
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
   mWorkerThread->Shutdown();
 }
@@ -83,7 +79,7 @@ already_AddRefed<DirectoryEntry> FileSystem::Root()
 
 bool FileSystem::IsValid() const
 {
-    return mRoot != nullptr && mRoot->Exists();
+    return mRoot && mRoot->Exists();
 }
 
 void FileSystem::DispatchToWorkerThread(nsCOMPtr<nsIRunnable> aRunnable, nsRefPtr<ErrorCallback> aErrorCallback)
