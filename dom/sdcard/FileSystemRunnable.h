@@ -13,6 +13,18 @@
 #include "Entry.h"
 #include "Metadata.h"
 
+#define DOM_ERROR_ENCODING                    NS_LITERAL_STRING("EncodingError")
+#define DOM_ERROR_INVALID_MODIFICATION        NS_LITERAL_STRING("InvalidModificationError")
+#define DOM_ERROR_INVALID_STATE               NS_LITERAL_STRING("InvalidStateError")
+#define DOM_ERROR_NOT_FOUND                   NS_LITERAL_STRING("NotFoundError")
+#define DOM_ERROR_NOT_READABLE                NS_LITERAL_STRING("NotReadableError")
+#define DOM_ERROR_NO_MODIFICATION_ALLOWED     NS_LITERAL_STRING("NoModificationAllowedError")
+#define DOM_ERROR_PATH_EXISTS                 NS_LITERAL_STRING("PathExistsError")
+#define DOM_ERROR_QUOTA_EXCEEDED              NS_LITERAL_STRING("QuotaExceededError")
+#define DOM_ERROR_SECURITY                    NS_LITERAL_STRING("SecurityError")
+#define DOM_ERROR_TYPE_MISMATCH               NS_LITERAL_STRING("TypeMismatchError")
+#define DOM_ERROR_UNKNOWN                     NS_LITERAL_STRING("Unknown")
+
 namespace mozilla {
 namespace dom {
 namespace sdcard {
@@ -40,7 +52,7 @@ class ResultRunnable : public nsRunnable
     }
 
   private:
-    T& mSuccessCallback;
+    T mSuccessCallback;
     U* mResult;
 };
 
@@ -60,7 +72,7 @@ class ErrorRunnable : public nsRunnable
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
       if (mErrorCallback != nullptr) {
-        nsCOMPtr<nsIDOMDOMError> mError = DOMError::CreateWithName(NS_LITERAL_STRING("Example Error"));
+        nsCOMPtr<nsIDOMDOMError> mError = DOMError::CreateWithName(DOM_ERROR_NOT_FOUND);
         ErrorResult rv;
         mErrorCallback->Call(mError, rv);
       }
@@ -96,7 +108,7 @@ class GetMetadataRunnable : public FileSystemRunnable
     NS_IMETHOD Run()
     {
       SDCARD_LOG("in GetMetadataRunnable.Run()!");
-      SDCARD_LOG("on main thread:%d", NS_IsMainThread());
+      SDCARD_LOG("on main thread: %d", NS_IsMainThread());
       MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
       int64_t size;
       if (mEntry->mIsDirectory) {
@@ -119,7 +131,7 @@ class GetMetadataRunnable : public FileSystemRunnable
     }
 
   private:
-    MetadataCallback& mSuccessCallback;
+    MetadataCallback mSuccessCallback;
 };
 
 } // namespace sdcard

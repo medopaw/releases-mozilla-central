@@ -74,7 +74,7 @@ bool Entry::IsDirectory() const
 void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in Entry.GetMetadata()");
-  nsCOMPtr<ErrorCallback> pErrorCallback = nullptr;
+  nsRefPtr<ErrorCallback> pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
