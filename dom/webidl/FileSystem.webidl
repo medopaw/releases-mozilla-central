@@ -29,8 +29,8 @@ interface Entry {
     void      moveTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     void      copyTo (DirectoryEntry parent, optional DOMString newName, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     DOMString toURL ();
-    void      remove (VoidCallback successCallback, optional ErrorCallback errorCallback);
     */
+    void      remove (VoidCallback successCallback, optional ErrorCallback errorCallback);
     void      getParent (EntryCallback successCallback, optional ErrorCallback errorCallback);
 };
 

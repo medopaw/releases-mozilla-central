@@ -36,6 +36,7 @@ ErrorRunnable::ErrorRunnable(ErrorCallback* aErrorCallback, const nsresult& aErr
       name = DOM_ERROR_INVALID_MODIFICATION;
       break;
     case NS_ERROR_FILE_ACCESS_DENIED:
+    case NS_ERROR_FILE_DIR_NOT_EMPTY:
       name = DOM_ERROR_NO_MODIFICATION_ALLOWED;
       break;
     case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
@@ -43,7 +44,6 @@ ErrorRunnable::ErrorRunnable(ErrorCallback* aErrorCallback, const nsresult& aErr
       name = DOM_ERROR_NOT_FOUND;
       break;
     case NS_ERROR_FILE_ALREADY_EXISTS:
-    case NS_ERROR_FILE_DIR_NOT_EMPTY:
       name = DOM_ERROR_PATH_EXISTS;
       break;
     case NS_ERROR_DOM_SECURITY_ERR:
@@ -95,22 +95,54 @@ NS_IMETHODIMP GetMetadataRunnable::Run()
 
   int64_t size;
   nsCOMPtr<nsIRunnable> r;
+  nsresult rv = NS_OK;
   if (mEntry->mIsDirectory) {
     size = 0; // size is always 0 for directory
   } else {
-    nsresult rv = mEntry->mFile->GetFileSize(&size);
+    rv = mEntry->mFile->GetFileSize(&size);
     if (NS_FAILED(rv)) {
       r = new ErrorRunnable(mErrorCallback.get(), rv);
     }
   }
-  mEntry->mMetadata->mSize = uint64_t(size);
+  if (NS_SUCCEEDED(rv)) {
+    mEntry->mMetadata->mSize = uint64_t(size);
+    r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback.get(), mEntry->mMetadata.get());
+  }
 
-  ErrorResult rv;
-  r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback.get(), mEntry->mMetadata.get());
   NS_DispatchToMainThread(r);
 
-  return NS_OK;
+  return rv;
 }
+
+RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
+{
+  SDCARD_LOG("init RemoveRunnable");
+}
+
+NS_IMETHODIMP RemoveRunnable::Run()
+{
+  SDCARD_LOG("in RemoveRunnable.Run()!");
+  SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+
+  nsCOMPtr<nsIRunnable> r;
+  nsresult rv = NS_OK;
+  if (mEntry->IsRoot()) {
+    r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
+  } else {
+    rv = mEntry->mFile->Remove(false);
+    if (NS_FAILED(rv)) {
+      r = new ErrorRunnable(mErrorCallback.get(), rv);
+    } else {
+      r = new ResultRunnable<VoidCallback, void>(mSuccessCallback.get());
+    }
+  }
+
+  NS_DispatchToMainThread(r);
+
+  return rv;
+}
+
 
 } // namespace sdcard
 } // namespace dom

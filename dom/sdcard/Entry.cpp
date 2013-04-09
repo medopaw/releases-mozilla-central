@@ -121,6 +121,18 @@ FileSystem* Entry::Filesystem() const
   return mFilesystem;
 }
 
+void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+  SDCARD_LOG("in Entry.Remove()");
+
+  ErrorCallback* pErrorCallback = nullptr;
+  if (errorCallback.WasPassed()) {
+    pErrorCallback = errorCallback.Value().get();
+  }
+  nsIRunnable* r = new RemoveRunnable(&successCallback, pErrorCallback, this);
+  mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+}
+
 void Entry::GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
   nsCOMPtr<nsIThread> thread;

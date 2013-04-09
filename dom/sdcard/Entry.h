@@ -71,9 +71,9 @@ public:
   void CopyTo(mozilla::dom::sdcard::DirectoryEntry& parent, const Optional< nsAString >& newName, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   void ToURL(nsString& retval);
-
-  void Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 */
+  void Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+
   void GetParent(EntryCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   bool Exists() const;
@@ -87,10 +87,10 @@ public:
   bool mIsDirectory;
 
   Entry* GetParentInternal();
+  bool IsRoot() const;
 private:
   // The parent folder
   nsRefPtr<Entry> mParent;
-  bool IsRoot() const;
 };
 
 } // namespace sdcard

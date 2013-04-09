@@ -28,7 +28,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-template <class T, class U>
+template<class T, class U>
 class ResultRunnable : public nsRunnable
 {
   public:
@@ -56,6 +56,36 @@ class ResultRunnable : public nsRunnable
   private:
     nsRefPtr<T> mSuccessCallback;
     nsRefPtr<U> mResult;
+};
+
+// for VoidCallback only
+template<class T>
+class ResultRunnable<T, void> : public nsRunnable
+{
+  public:
+    ResultRunnable(T* aSuccessCallback) : mSuccessCallback(aSuccessCallback)
+    {
+      SDCARD_LOG("init ResultRunnable!");
+      SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+      MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+    }
+
+    NS_IMETHOD Run()
+    {
+      SDCARD_LOG("in ResultRunnable.Run()!");
+      SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+      MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
+      if (mSuccessCallback) {
+        ErrorResult rv;
+        mSuccessCallback->Call(rv);
+      }
+
+      return NS_OK;
+    }
+
+  private:
+    nsRefPtr<T> mSuccessCallback;
 };
 
 class ErrorRunnable : public nsRunnable
@@ -90,7 +120,17 @@ class GetMetadataRunnable : public FileSystemRunnable
 
   private:
     nsRefPtr<MetadataCallback> mSuccessCallback;
-    // MetadataCallback mSuccessCallback;
+};
+
+class RemoveRunnable : public FileSystemRunnable
+{
+  public:
+    RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+
+    NS_IMETHOD Run();
+
+  private:
+    nsRefPtr<VoidCallback> mSuccessCallback;
 };
 
 } // namespace sdcard
