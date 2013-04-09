@@ -44,6 +44,7 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDire
 
 Entry::~Entry()
 {
+//  mMetadata = nullptr;
 }
 
 /*
@@ -66,13 +67,19 @@ bool Entry::IsDirectory() const
 
 void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
+  SDCARD_LOG("in Entry.GetMetadata()");
+  nsCOMPtr<ErrorCallback> pErrorCallback = nullptr;
+  if (errorCallback.WasPassed()) {
+    pErrorCallback = errorCallback.Value().get();
+  }
+  nsCOMPtr<nsIRunnable> r;
   nsCOMPtr<nsIThread> thread;
   nsresult rv = NS_NewThread(getter_AddRefs(thread));
   if (NS_FAILED(rv)) {
-    // errorCallback.Call();
+    r = new ErrorRunnable(pErrorCallback);
+    NS_DispatchToMainThread(r);
   } else {
-    nsCOMPtr<nsIRunnable> r = new GetMetadataRunnable(successCallback, errorCallback, this);
-    // NS_DispatchToMainThread(r);
+    r = new GetMetadataRunnable(successCallback, pErrorCallback, this);
     thread->Dispatch(r, NS_DISPATCH_NORMAL);
   }
 }

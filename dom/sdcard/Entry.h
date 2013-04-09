@@ -80,7 +80,6 @@ public:
 
 public:
   FileSystem* mFilesystem;
-  // nsString mFullPath;
   nsRefPtr<Metadata> mMetadata;
   nsCOMPtr<nsIFile> mFile;
 

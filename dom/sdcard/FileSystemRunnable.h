@@ -8,21 +8,22 @@
 
 #include "nsThreadUtils.h"
 #include "mozilla/dom/FileSystemBinding.h"
+#include "mozilla/dom/DOMError.h"
 #include "Utils.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-template <class S, class T>
+template <class T, class U>
 class ResultRunnable : public nsRunnable
 {
   public:
-    ResultRunnable(S& aSuccessCallback, T* aResult) : mSuccessCallback(aSuccessCallback), mResult(aResult)
+    ResultRunnable(T& aSuccessCallback, U* aResult) : mSuccessCallback(aSuccessCallback), mResult(aResult)
     {
       SDCARD_LOG("init ResultRunnable!");
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
-      MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!"); // This should be running on the worker thread
+      MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
     }
 
     NS_IMETHOD Run()
@@ -37,14 +38,41 @@ class ResultRunnable : public nsRunnable
     }
 
   private:
-    S mSuccessCallback;
-    T* mResult;
+    T& mSuccessCallback;
+    U* mResult;
+};
+
+class ErrorRunnable : public nsRunnable
+{
+  public:
+    ErrorRunnable(ErrorCallback* aErrorCallback/*, const nsAString& name*/) : mErrorCallback(aErrorCallback)
+    {
+      SDCARD_LOG("init ErrorRunnable!");
+      SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+      // MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+    }
+
+    NS_IMETHOD Run()
+    {
+      SDCARD_LOG("in ErrorRunnable.Run()");
+      SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+      MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+      if (mErrorCallback != nullptr) {
+        nsCOMPtr<nsIDOMDOMError> mError = DOMError::CreateWithName(NS_LITERAL_STRING("Example Error"));
+        ErrorResult rv;
+        mErrorCallback->Call(mError, rv);
+      }
+      return NS_OK;
+    }
+
+  private:
+    nsCOMPtr<ErrorCallback> mErrorCallback;
 };
 
 class FileSystemRunnable : public nsRunnable
 {
   public:
-    FileSystemRunnable(const Optional< OwningNonNull<ErrorCallback> >& aErrorCallback, Entry* aEntry) : mErrorCallback(aErrorCallback), mEntry(aEntry)
+    FileSystemRunnable(ErrorCallback* aErrorCallback, Entry* aEntry) : mErrorCallback(aErrorCallback), mEntry(aEntry)
     {
       SDCARD_LOG("init FileSystemRunnable!");
       SDCARD_LOG("on main thread: %d", NS_IsMainThread());
@@ -52,14 +80,14 @@ class FileSystemRunnable : public nsRunnable
     }
 
   protected:
-    const Optional< OwningNonNull<ErrorCallback> >& mErrorCallback;
-    Entry* mEntry;
+    nsRefPtr<ErrorCallback> mErrorCallback;
+    nsRefPtr<Entry> mEntry;
 };
 
 class GetMetadataRunnable : public FileSystemRunnable
 {
   public:
-    GetMetadataRunnable(MetadataCallback& aSuccessCallback, const Optional< OwningNonNull<ErrorCallback> >& aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
+    GetMetadataRunnable(MetadataCallback& aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
     {
     }
 
@@ -82,14 +110,14 @@ class GetMetadataRunnable : public FileSystemRunnable
       // successcallback
       ErrorResult rv;
 //      mSuccessCallback.Call(*(mEntry->mMetadata), rv);
-      nsCOMPtr<nsIRunnable> r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback, mEntry->mMetadata);
+      nsCOMPtr<nsIRunnable> r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback, mEntry->mMetadata.get());
       NS_DispatchToMainThread(r);
 
       return NS_OK;
     }
 
   private:
-    MetadataCallback mSuccessCallback;
+    MetadataCallback& mSuccessCallback;
 };
 
 } // namespace sdcard
