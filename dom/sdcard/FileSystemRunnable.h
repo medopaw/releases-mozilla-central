@@ -40,6 +40,8 @@ class ResultRunnable : public nsRunnable
       MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
     }
 
+    virtual ~ResultRunnable() {}
+
     NS_IMETHOD Run()
     {
       SDCARD_LOG("in ResultRunnable.Run()!");
@@ -57,7 +59,7 @@ class ResultRunnable : public nsRunnable
       return NS_OK;
     }
 
-  private:
+  protected:
     nsRefPtr<T> mSuccessCallback;
     U* mResult;
 };
@@ -97,6 +99,7 @@ class ErrorRunnable : public nsRunnable
   public:
     ErrorRunnable(ErrorCallback* aErrorCallback, const nsAString& aName);
     ErrorRunnable(ErrorCallback* aErrorCallback, const nsresult& aError);
+    virtual ~ErrorRunnable();
 
     NS_IMETHOD Run();
 
@@ -109,6 +112,7 @@ class FileSystemRunnable : public nsRunnable
 {
   public:
     FileSystemRunnable(ErrorCallback* aErrorCallback, Entry* aEntry);
+    virtual ~FileSystemRunnable();
 
   protected:
     nsRefPtr<ErrorCallback> mErrorCallback;
@@ -119,6 +123,7 @@ class GetMetadataRunnable : public FileSystemRunnable
 {
   public:
     GetMetadataRunnable(MetadataCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    ~GetMetadataRunnable();
 
     NS_IMETHOD Run();
 
@@ -130,6 +135,7 @@ class RemoveRunnable : public FileSystemRunnable
 {
   public:
     RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    ~RemoveRunnable();
 
     NS_IMETHOD Run();
 
@@ -137,10 +143,26 @@ class RemoveRunnable : public FileSystemRunnable
     nsRefPtr<VoidCallback> mSuccessCallback;
 };
 
+class GetFileRunnable : public FileSystemRunnable
+{
+  public:
+    GetFileRunnable(const nsAString& aPath, const Flags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    ~GetFileRunnable();
+
+    NS_IMETHOD Run();
+
+  private:
+    nsString mPath;
+    Flags mOptions;
+    nsRefPtr<EntryCallback> mSuccessCallback;
+};
+
+
 class RemoveRecursivelyRunnable : public FileSystemRunnable
 {
   public:
     RemoveRecursivelyRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    ~RemoveRecursivelyRunnable();
 
     NS_IMETHOD Run();
 

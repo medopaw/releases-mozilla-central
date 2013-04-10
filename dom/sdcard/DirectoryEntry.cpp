@@ -61,6 +61,22 @@ already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
     return reader.forget();
 }
 
+void DirectoryEntry::GetFile(const nsAString& path, const Flags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+    SDCARD_LOG("in DirectoryEntry.GetFile()");
+
+    EntryCallback* pSuccessCallback = nullptr;
+    ErrorCallback* pErrorCallback = nullptr;
+    if (successCallback.WasPassed()) {
+      pSuccessCallback = successCallback.Value().get();
+    }
+    if (errorCallback.WasPassed()) {
+      pErrorCallback = errorCallback.Value().get();
+    }
+    nsIRunnable* r = new GetFileRunnable(path, options, pSuccessCallback, pErrorCallback, this);
+    mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+}
+
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
     SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
