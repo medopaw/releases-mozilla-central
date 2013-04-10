@@ -133,6 +133,17 @@ class RemoveRunnable : public FileSystemRunnable
     nsRefPtr<VoidCallback> mSuccessCallback;
 };
 
+class RemoveRecursivelyRunnable : public FileSystemRunnable
+{
+  public:
+    RemoveRecursivelyRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+
+    NS_IMETHOD Run();
+
+  private:
+    nsRefPtr<VoidCallback> mSuccessCallback;
+};
+
 } // namespace sdcard
 } // namespace dom
 } // namespace mozilla

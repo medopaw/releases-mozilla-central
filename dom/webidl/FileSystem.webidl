@@ -40,8 +40,8 @@ interface DirectoryEntry : Entry {
     /*
     void            getFile (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     void            getDirectory (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
-    void            removeRecursively (VoidCallback successCallback, optional ErrorCallback errorCallback);
     */
+    void            removeRecursively (VoidCallback successCallback, optional ErrorCallback errorCallback);
 };
 
 interface FileEntry : Entry {

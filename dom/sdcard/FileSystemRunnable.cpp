@@ -96,7 +96,7 @@ NS_IMETHODIMP GetMetadataRunnable::Run()
   int64_t size;
   nsCOMPtr<nsIRunnable> r;
   nsresult rv = NS_OK;
-  if (mEntry->mIsDirectory) {
+  if (mEntry->IsDirectory()) {
     size = 0; // size is always 0 for directory
   } else {
     rv = mEntry->mFile->GetFileSize(&size);
@@ -131,6 +131,36 @@ NS_IMETHODIMP RemoveRunnable::Run()
     r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
   } else {
     rv = mEntry->mFile->Remove(false);
+    if (NS_FAILED(rv)) {
+      r = new ErrorRunnable(mErrorCallback.get(), rv);
+    } else {
+      r = new ResultRunnable<VoidCallback, void>(mSuccessCallback.get());
+    }
+  }
+
+  NS_DispatchToMainThread(r);
+
+  return rv;
+}
+
+RemoveRecursivelyRunnable::RemoveRecursivelyRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
+{
+  SDCARD_LOG("init RemoveRecursivelyRunnable");
+}
+
+NS_IMETHODIMP RemoveRecursivelyRunnable::Run()
+{
+  SDCARD_LOG("in RemoveRecursivelyRunnable.Run()!");
+  SDCARD_LOG("on main thread: %d", NS_IsMainThread());
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+  MOZ_ASSERT(!mEntry->mIsDirectory, "Only call on DirectoryEntry!");
+
+  nsCOMPtr<nsIRunnable> r;
+  nsresult rv = NS_OK;
+  if (mEntry->IsRoot()) {
+    r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
+  } else {
+    rv = mEntry->mFile->Remove(true);
     if (NS_FAILED(rv)) {
       r = new ErrorRunnable(mErrorCallback.get(), rv);
     } else {

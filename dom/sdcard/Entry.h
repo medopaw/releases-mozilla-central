@@ -79,15 +79,17 @@ public:
   bool Exists() const;
 
 public:
-  FileSystem* mFilesystem;
   nsRefPtr<Metadata> mMetadata;
   nsCOMPtr<nsIFile> mFile;
 
+  Entry* GetParentInternal();
+  bool IsRoot() const;
+
+protected:
+  FileSystem* mFilesystem;
   bool mIsFile;
   bool mIsDirectory;
 
-  Entry* GetParentInternal();
-  bool IsRoot() const;
 private:
   // The parent folder
   nsRefPtr<Entry> mParent;

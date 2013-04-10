@@ -9,6 +9,8 @@
 #include "nsContentUtils.h"
 
 // #include "DirectoryReader.h"
+#include "FileSystem.h"
+#include "FileSystemRunnable.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -58,6 +60,18 @@ already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
     nsRefPtr<DirectoryReader> reader = new DirectoryReader();
     NS_IF_ADDREF(reader);
     return reader.get();
+}
+
+void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+    SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
+
+    ErrorCallback* pErrorCallback = nullptr;
+    if (errorCallback.WasPassed()) {
+      pErrorCallback = errorCallback.Value().get();
+    }
+    nsIRunnable* r = new RemoveRecursivelyRunnable(&successCallback, pErrorCallback, this);
+    mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
 }
 
 } // namespace sdcard
