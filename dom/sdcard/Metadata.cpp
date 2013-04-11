@@ -59,6 +59,8 @@ uint64_t Metadata::Size() const
 
 void Metadata::SetModificationTime(PRTime mtime)
 {
+  SDCARD_LOG("in Metadata.SetModificationTime()");
+  SDCARD_LOG("size=%" PRIi64, mtime);
   mDate = static_cast<double>(mtime);
 }
 

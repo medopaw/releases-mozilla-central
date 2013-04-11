@@ -166,11 +166,11 @@ void GetMetadataRunnable::WorkerThreadRun()
       SetErrorCode(rv);
       return;
     }
-    rv = mFile->GetLastModifiedTime(&mTime);
-    if (NS_FAILED(rv)) {
-      SetErrorCode(rv);
-      return;
-    }
+  }
+  rv = mFile->GetLastModifiedTime(&mTime);
+  if (NS_FAILED(rv)) {
+    SetErrorCode(rv);
+    return;
   }
 }
 
@@ -187,10 +187,10 @@ void GetMetadataRunnable::MainThreadRun()
   } else {
     // success callback
     ErrorResult rv;
-    Metadata metadata;
-    metadata.SetSize(mFileSize);
-    metadata.SetModificationTime(mTime);
-    mSuccessCallback->Call(metadata, rv);
+    nsRefPtr<Metadata> metadata = new Metadata();
+    metadata->SetSize(mFileSize);
+    metadata->SetModificationTime(mTime);
+    mSuccessCallback->Call(*metadata, rv);
   }
 }
 
