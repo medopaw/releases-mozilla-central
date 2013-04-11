@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "FileSystemRunnable.h"
+#include "DirectoryEntry.h"
+#include "FileEntry.h"
 #include "Metadata.h"
 
 namespace mozilla {
@@ -24,7 +26,48 @@ ErrorRunnable::ErrorRunnable(ErrorCallback* aErrorCallback, const nsresult& aErr
   SDCARD_LOG("init ErrorRunnable!");
   SDCARD_LOG("on main thread: %d", NS_IsMainThread());
   // MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-  SDCARD_LOG("Error code: %d", aError);
+  nsString errorCode;
+  switch (aError) {
+    case NS_ERROR_FILE_INVALID_PATH:
+      errorCode.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
+      break;
+    case NS_ERROR_FILE_UNRECOGNIZED_PATH:
+      errorCode.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
+      break;
+    case NS_ERROR_FILE_DESTINATION_NOT_DIR:
+      errorCode.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
+      break;
+    case NS_ERROR_FILE_ACCESS_DENIED:
+      errorCode.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
+      break;
+    case NS_ERROR_FILE_DIR_NOT_EMPTY:
+      errorCode.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
+      break;
+    case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
+      errorCode.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
+      break;
+    case NS_ERROR_NOT_AVAILABLE:
+      errorCode.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
+      break;
+    case NS_ERROR_FILE_ALREADY_EXISTS:
+      errorCode.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
+      break;
+    case NS_ERROR_DOM_SECURITY_ERR:
+      errorCode.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
+    case NS_ERROR_OUT_OF_MEMORY:
+      errorCode.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
+      break;
+    case NS_ERROR_FILE_NOT_DIRECTORY:
+      errorCode.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
+      break;
+    case NS_ERROR_UNEXPECTED:
+      errorCode.AssignLiteral("NS_ERROR_UNEXPECTED");
+    default:
+      errorCode.AssignLiteral("Unknow Error Code");
+      SDCARD_LOG("Error Code: %u", aError);
+      break;
+  }
+  SDCARD_LOG("Error code: %s", NS_ConvertUTF16toUTF8(errorCode).get());
 
   nsString name;
   switch (aError) {
@@ -160,43 +203,80 @@ NS_IMETHODIMP RemoveRunnable::Run()
   return rv;
 }
 
-
-GetFileRunnable::GetFileRunnable(const nsAString& aPath, const FileSystemFlags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mPath(aPath), /*mOptions(aOptions), */mSuccessCallback(aSuccessCallback)
+GetEntryRunnable::GetEntryRunnable(const nsAString& aPath, bool aCreate, bool aExclusive, const unsigned long aType, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback) : FileSystemRunnable(aErrorCallback, nullptr), mPath(aPath), mCreate(aCreate), mExclusive(aExclusive), mType(aType), mSuccessCallback(aSuccessCallback)
 {
-  SDCARD_LOG("init GetFileRunnable");
- //  mOptions = aOptions;
+  SDCARD_LOG("init GetEntryRunnable");
 }
 
-GetFileRunnable::~GetFileRunnable()
+GetEntryRunnable::~GetEntryRunnable()
 {
 }
 
-NS_IMETHODIMP GetFileRunnable::Run()
+NS_IMETHODIMP GetEntryRunnable::Run()
 {
-  SDCARD_LOG("in RemoveRecursivelyRunnable.Run()!");
+  SDCARD_LOG("in GetEntryRunnable.Run()!");
   SDCARD_LOG("on main thread: %d", NS_IsMainThread());
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-  MOZ_ASSERT(!mEntry->mIsDirectory, "Only call on DirectoryEntry!");
+  MOZ_ASSERT(mEntry->IsDirectory() || mEntry->IsFile(), "Must be either directory or file!");
+  SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mPath).get());
 
-  /*
   nsCOMPtr<nsIRunnable> r;
-  nsresult rv = NS_OK;
-  if (mEntry->IsRoot()) {
-    r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
-  } else {
-    rv = mEntry->mFile->Remove(true);
-    if (NS_FAILED(rv)) {
-      r = new ErrorRunnable(mErrorCallback.get(), rv);
+  nsCOMPtr<nsIFile> file;
+  nsresult rv = NS_NewLocalFile(mPath, false, getter_AddRefs(file));
+  if (NS_SUCCEEDED(rv)) {
+    bool exists;
+    file->Exists(&exists);
+    // deal with fails
+    nsString errorName;
+    if (!mCreate && !exists) {
+      errorName = DOM_ERROR_NOT_FOUND;
+    } else if (mCreate && mExclusive && exists) {
+      errorName = DOM_ERROR_PATH_EXISTS;
+    } else if (!mCreate && exists) {
+      bool isDirectory, isFile;
+      file->IsDirectory(&isDirectory);
+      file->IsFile(&isFile);
+      if ((mType == nsIFile::NORMAL_FILE_TYPE && isDirectory) || (mType == nsIFile::DIRECTORY_TYPE && isFile)) {
+        errorName = DOM_ERROR_TYPE_MISMATCH;
+      }
+    }
+    if (!errorName.IsEmpty()) {
+      r = new ErrorRunnable(mErrorCallback, errorName);
     } else {
-      r = new ResultRunnable<VoidCallback, void>(mSuccessCallback.get());
+      if (mCreate && !exists) {
+        // create
+        rv = file->Create(mType, 0600);
+      } 
+      // retrieve
+      if (NS_SUCCEEDED(rv)) {
+        // create correspondng Entry
+        nsRefPtr<Entry> pEntry;
+        switch (mType) {
+          case nsIFile::NORMAL_FILE_TYPE:
+            pEntry = new FileEntry(mEntry->Filesystem(), file);
+            break;
+          case nsIFile::DIRECTORY_TYPE:
+            pEntry = new DirectoryEntry(mEntry->Filesystem(), file);
+            break;
+          default:
+            pEntry = nullptr;
+            break;
+        }
+        // create EntryCallback
+        if (pEntry) {
+          r = new ResultRunnable<EntryCallback, Entry>(mSuccessCallback.get(), pEntry.get());
+        } else {
+          r = new ErrorRunnable(mErrorCallback, DOM_ERROR_TYPE_MISMATCH);
+        }
+      }
     }
   }
-
+  if (NS_FAILED(rv)) {
+    r = new ErrorRunnable(mErrorCallback.get(), rv);
+  }
   NS_DispatchToMainThread(r);
 
   return rv;
-  */
-  return NS_OK;
 }
 
 
@@ -214,7 +294,7 @@ NS_IMETHODIMP RemoveRecursivelyRunnable::Run()
   SDCARD_LOG("in RemoveRecursivelyRunnable.Run()!");
   SDCARD_LOG("on main thread: %d", NS_IsMainThread());
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-  MOZ_ASSERT(!mEntry->mIsDirectory, "Only call on DirectoryEntry!");
+  MOZ_ASSERT(!mEntry->IsDirectory(), "Only call on DirectoryEntry!");
 
   nsCOMPtr<nsIRunnable> r;
   nsresult rv = NS_OK;

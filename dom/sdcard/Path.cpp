@@ -4,13 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/*
-#include "Metadata.h"
-#include "mozilla/dom/FileSystemBinding.h"
-#include "nsContentUtils.h"
-*/
-
 #include "Path.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
@@ -61,6 +56,7 @@ void Path::InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
   } else {
     aRealPath = Path::base + aInnerPath;
   }
+  SDCARD_LOG("turn inner path %s to real path %s", NS_ConvertUTF16toUTF8(aInnerPath).get(), NS_ConvertUTF16toUTF8(aRealPath).get());
 }
 
 bool Path::BeginsWithSeparator(const nsAString& aPath)

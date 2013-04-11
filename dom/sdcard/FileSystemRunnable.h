@@ -143,17 +143,32 @@ class RemoveRunnable : public FileSystemRunnable
     nsRefPtr<VoidCallback> mSuccessCallback;
 };
 
-class GetFileRunnable : public FileSystemRunnable
+class GetEntryRunnable : public FileSystemRunnable
 {
   public:
-    GetFileRunnable(const nsAString& aPath, const FileSystemFlags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
-    ~GetFileRunnable();
+    GetEntryRunnable(const nsAString& aPath, bool aCreate, bool aExclusive, const unsigned long aType, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback);
+    ~GetEntryRunnable();
 
     NS_IMETHOD Run();
 
   private:
     nsString mPath;
-    FileSystemFlags mOptions;
+    bool mCreate;
+    bool mExclusive;
+    const unsigned long mType;
+    nsRefPtr<EntryCallback> mSuccessCallback;
+};
+
+class FetchEntryRunnable : public FileSystemRunnable
+{
+  public:
+    FetchEntryRunnable(const nsAString& aPath, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    ~FetchEntryRunnable();
+
+    NS_IMETHOD Run();
+
+  private:
+    nsString mPath;
     nsRefPtr<EntryCallback> mSuccessCallback;
 };
 

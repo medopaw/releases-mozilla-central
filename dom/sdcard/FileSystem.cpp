@@ -32,10 +32,10 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
   if (NS_FAILED(rv)) {
-    SDCARD_LOG("Create root nsIFile failed");
+    SDCARD_LOG("Fail to create root nsIFile.");
     mRoot = nullptr;
   } else {
-    SDCARD_LOG("Create root nsIFile successful");
+    SDCARD_LOG("Create root nsIFile successfully.");
     mRoot = new DirectoryEntry(this, rootDir);
   }
   mWorkerThread = nullptr;

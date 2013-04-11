@@ -21,7 +21,7 @@ namespace sdcard {
 // FileSystem path utilities. All methods in this class are static.
 class Path {
 public:
-    static const nsString separator; // separator must be a single char, this is just for convenience
+    static const nsString separator; // separator must be a single char, and this is just for convenience
     static const nsString selfReference;
     static const nsString parentReference;
     static const nsString root; // different from FileSystem.root, normally "/"

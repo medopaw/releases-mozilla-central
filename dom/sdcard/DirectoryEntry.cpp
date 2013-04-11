@@ -87,22 +87,43 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
     GetFullPath(fullPath);
     nsString absolutePath;
     Path::Absolutize(path, fullPath, absolutePath);
+    nsString realPath;
+    Path::InnerPathToRealPath(absolutePath, realPath);
 
-    /*
-    // check options.create to decide to create or to fetch
-    nsIRunnable* r;
-    if (options.mCreate) {
-      // create
-      r = new CreateEntryRunnable(path, pSuccessCallback, pErrorCallback, this);
-      mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
-    } else {
-      // fetch
-      r = new FetchEntryRunnable(path, pSuccessCallback, pErrorCallback, this);
-      mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
-    }
-    nsIRunnable* r = new GetFileRunnable(path, options, pSuccessCallback, pErrorCallback, this);
+    nsIRunnable* r = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::NORMAL_FILE_TYPE, pSuccessCallback, pErrorCallback);
     mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
-    */
+}
+
+void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+    SDCARD_LOG("in DirectoryEntry.GetDirectory()");
+
+    // if not passed, assign callback nullptr
+    EntryCallback* pSuccessCallback = nullptr;
+    ErrorCallback* pErrorCallback = nullptr;
+    if (successCallback.WasPassed()) {
+      pSuccessCallback = successCallback.Value().get();
+    }
+    if (errorCallback.WasPassed()) {
+      pErrorCallback = errorCallback.Value().get();
+    }
+
+    // check if path is valid
+    if (!Path::IsValidPath(path)) {
+      nsCOMPtr<nsIRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
+      NS_DispatchToMainThread(r);
+    }
+
+    // turn relative path to absolute
+    nsString fullPath;
+    GetFullPath(fullPath);
+    nsString absolutePath;
+    Path::Absolutize(path, fullPath, absolutePath);
+    nsString realPath;
+    Path::InnerPathToRealPath(absolutePath, realPath);
+
+    nsIRunnable* r = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::DIRECTORY_TYPE, pSuccessCallback, pErrorCallback);
+    mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
 }
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
