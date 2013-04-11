@@ -161,7 +161,7 @@ NS_IMETHODIMP RemoveRunnable::Run()
 }
 
 
-GetFileRunnable::GetFileRunnable(const nsAString& aPath, const Flags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mPath(aPath), /*mOptions(aOptions), */mSuccessCallback(aSuccessCallback)
+GetFileRunnable::GetFileRunnable(const nsAString& aPath, const FileSystemFlags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mPath(aPath), /*mOptions(aOptions), */mSuccessCallback(aSuccessCallback)
 {
   SDCARD_LOG("init GetFileRunnable");
  //  mOptions = aOptions;

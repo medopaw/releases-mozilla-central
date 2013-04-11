@@ -146,14 +146,14 @@ class RemoveRunnable : public FileSystemRunnable
 class GetFileRunnable : public FileSystemRunnable
 {
   public:
-    GetFileRunnable(const nsAString& aPath, const Flags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
+    GetFileRunnable(const nsAString& aPath, const FileSystemFlags& aOptions, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
     ~GetFileRunnable();
 
     NS_IMETHOD Run();
 
   private:
     nsString mPath;
-    Flags mOptions;
+    FileSystemFlags mOptions;
     nsRefPtr<EntryCallback> mSuccessCallback;
 };
 

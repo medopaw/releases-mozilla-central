@@ -22,19 +22,36 @@ namespace sdcard {
 class Path {
 public:
     static const nsString separator;
+    static const nsString selfReference;
+    static const nsString parentReference;
     static const nsString root; // different from FileSystem.root, normally "/"
     static const nsString base; // the real path of FileSystem.root, normally "/sdcard"
 
     static bool IsRoot(const nsAString& aPath);
     static bool IsBase(const nsAString& aPath);
+    static bool WithinBase(const nsAString& aPath);
 
     static void RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath);
     static void InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath);
 
     static bool StartsWith(const nsAString& aPath, const nsAString& aMaybeHead);
+    static bool StartsWithSeparator(const nsAString& aPath);
+    static bool EndsWith(const nsAString& aPath, const nsAString& aMaybeTail);
+    static bool EndsWithSeparator(const nsAString& aPath);
     static bool IsAbsolute(const nsAString& aPath);
+    static bool IsValidName(const nsAString& aPath);
+    static bool IsValidPath(const nsAString& aPath);
     static bool IsParentOf(const nsAString& aPath, const nsAString& aHead);
+
+    static void Split(const nsAString& aPath, nsTArray<nsString>& aComponents);
+
     static void Decapitate(nsString& aPath, const nsAString& aHead);
+    static void EnsureDirectory(nsString& aPath);
+    static void Append(nsString& aPath, const nsAString& aToAppend);
+    static void Append(const nsAString& aParent, const nsAString& aToAppend, nsString& retval);
+    static void Absolutize(nsString& aPath, const nsAString& aParent);
+    static void Absolutize(const nsAString& aPath, const nsAString& aParent, nsString& retval);
+    static void RemoveExtraParentReferences(nsString& aPath);
 };
 
 } // namespace sdcard

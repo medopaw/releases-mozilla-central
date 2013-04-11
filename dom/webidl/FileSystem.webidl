@@ -37,9 +37,9 @@ interface Entry {
 interface DirectoryEntry : Entry {
     [Creator]
     DirectoryReader createReader ();
-    void            getFile (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
+    void            getFile (DOMString path, optional FileSystemFlags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     /*
-    void            getDirectory (DOMString path, optional Flags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
+    void            getDirectory (DOMString path, optional FileSystemFlags options, optional EntryCallback successCallback, optional ErrorCallback errorCallback);
     */
     void            removeRecursively (VoidCallback successCallback, optional ErrorCallback errorCallback);
 };
@@ -60,9 +60,9 @@ interface Metadata {
     readonly attribute unsigned long long size;
 };
 
-dictionary Flags {
-    boolean create;
-    boolean exclusive;
+dictionary FileSystemFlags {
+    boolean create = false;
+    boolean exclusive = false;
 };
 
 callback EntryCallback = void (Entry entry);

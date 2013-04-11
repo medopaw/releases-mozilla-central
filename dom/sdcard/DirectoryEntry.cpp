@@ -11,6 +11,7 @@
 // #include "DirectoryReader.h"
 #include "FileSystem.h"
 #include "FileSystemRunnable.h"
+#include "Path.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -61,10 +62,11 @@ already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
     return reader.forget();
 }
 
-void DirectoryEntry::GetFile(const nsAString& path, const Flags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
     SDCARD_LOG("in DirectoryEntry.GetFile()");
 
+    // if not passed, assign callback nullptr
     EntryCallback* pSuccessCallback = nullptr;
     ErrorCallback* pErrorCallback = nullptr;
     if (successCallback.WasPassed()) {
@@ -73,8 +75,34 @@ void DirectoryEntry::GetFile(const nsAString& path, const Flags& options, const 
     if (errorCallback.WasPassed()) {
       pErrorCallback = errorCallback.Value().get();
     }
+
+    // check if path is valid
+    if (!Path::IsValidPath(path)) {
+      nsCOMPtr<nsIRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
+      NS_DispatchToMainThread(r);
+    }
+
+    // turn relative path to absolute
+    nsString fullPath;
+    GetFullPath(fullPath);
+    nsString absolutePath;
+    Path::Absolutize(path, fullPath, absolutePath);
+
+    /*
+    // check if to create or to fetch
+    nsIRunnable* r;
+    if (options.mCreate) {
+      // create
+      r = new CreateEntryRunnable(path, pSuccessCallback, pErrorCallback, this);
+      mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+    } else {
+      // fetch
+      r = new FetchEntryRunnable(path, pSuccessCallback, pErrorCallback, this);
+      mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+    }
     nsIRunnable* r = new GetFileRunnable(path, options, pSuccessCallback, pErrorCallback, this);
     mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+    */
 }
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
