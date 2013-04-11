@@ -51,10 +51,14 @@ NS_IMETHODIMP GetParentRunnable::Run()
         mSuccessCallback, parent);
   } else {
     // error callback
-    mainThreadRunnable = new ErrorRunnable(mErrorCallback, rv);
+    if (mErrorCallback) {
+      mainThreadRunnable = new ErrorRunnable(mErrorCallback, rv);
+    }
   }
 
-  NS_DispatchToMainThread(mainThreadRunnable);
+  if (mainThreadRunnable) {
+    NS_DispatchToMainThread(mainThreadRunnable);
+  }
   return NS_OK;
 }
 

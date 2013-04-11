@@ -14,6 +14,7 @@
 #include "Path.h"
 #include "Utils.h"
 #include "GetParentRunnable.h"
+#include "CopyAndMoveToRunnable.h"
 
 namespace mozilla {
 namespace dom {
@@ -104,6 +105,44 @@ FileSystem* Entry::Filesystem() const
   SDCARD_LOG("in Entry.Filesystem()");
   nsRefPtr<FileSystem> fileSystem(mFilesystem);
   return fileSystem.forget().get();
+}
+
+void Entry::MoveTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+    const Optional<OwningNonNull<EntryCallback> >& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
+{
+  CopyAndMoveTo(parent, newName, successCallback, errorCallback, false);
+}
+
+void Entry::CopyTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+    const Optional<OwningNonNull<EntryCallback> >& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
+{
+  CopyAndMoveTo(parent, newName, successCallback, errorCallback, true);
+}
+
+void Entry::CopyAndMoveTo(DirectoryEntry& parent,
+    const Optional<nsAString >& newName,
+    const Optional<OwningNonNull<EntryCallback> >& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback,
+    bool isCopy)
+{
+  const nsAString* newNamePtr = nullptr;
+  if (newName.WasPassed()) {
+    newNamePtr = &newName.Value();
+  }
+  EntryCallback* successCallbackPtr = nullptr;
+  if (successCallback.WasPassed()) {
+    successCallbackPtr = successCallback.Value().get();
+  }
+  ErrorCallback* errorCallbackPtr = nullptr;
+  if (errorCallback.WasPassed()) {
+    errorCallbackPtr = errorCallback.Value().get();
+  }
+
+  nsIRunnable* r = new CopyAndMoveToRunnable(&parent, newNamePtr, successCallbackPtr,
+      errorCallbackPtr, this, isCopy);
+  mFilesystem->DispatchToWorkerThread(r, errorCallbackPtr);
 }
 
 void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)

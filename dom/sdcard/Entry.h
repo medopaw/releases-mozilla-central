@@ -58,11 +58,15 @@ public:
 
   FileSystem* Filesystem() const;
 
+  void MoveTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+      const Optional<OwningNonNull<EntryCallback> >& successCallback,
+      const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
+
+  void CopyTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+      const Optional<OwningNonNull<EntryCallback> >& successCallback,
+      const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
+
 /*
-  void MoveTo(mozilla::dom::sdcard::DirectoryEntry& parent, const Optional< nsAString >& newName, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
-
-  void CopyTo(mozilla::dom::sdcard::DirectoryEntry& parent, const Optional< nsAString >& newName, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
-
   void ToURL(nsString& retval);
 */
 
@@ -93,6 +97,13 @@ protected:
   nsRefPtr<FileSystem> mFilesystem;
   bool mIsFile;
   bool mIsDirectory;
+
+private:
+  void CopyAndMoveTo(DirectoryEntry& parent,
+      const Optional<nsAString >& newName,
+      const Optional<OwningNonNull<EntryCallback> >& successCallback,
+      const Optional<OwningNonNull<ErrorCallback> >& errorCallback,
+      bool isCopy);
 };
 
 } // namespace sdcard
