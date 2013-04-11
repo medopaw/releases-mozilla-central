@@ -148,20 +148,6 @@ class GetEntryRunnable : public FileSystemRunnable
     nsRefPtr<EntryCallback> mSuccessCallback;
 };
 
-class FetchEntryRunnable : public FileSystemRunnable
-{
-  public:
-    FetchEntryRunnable(const nsAString& aPath, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
-    ~FetchEntryRunnable();
-
-    NS_IMETHOD Run();
-
-  private:
-    nsString mPath;
-    nsRefPtr<EntryCallback> mSuccessCallback;
-};
-
-
 class RemoveRecursivelyRunnable : public FileSystemRunnable
 {
   public:
