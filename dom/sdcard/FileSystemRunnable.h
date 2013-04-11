@@ -12,18 +12,7 @@
 #include "Utils.h"
 #include "Entry.h"
 #include "Metadata.h"
-
-#define DOM_ERROR_ENCODING                    NS_LITERAL_STRING("EncodingError")
-#define DOM_ERROR_INVALID_MODIFICATION        NS_LITERAL_STRING("InvalidModificationError")
-#define DOM_ERROR_INVALID_STATE               NS_LITERAL_STRING("InvalidStateError")
-#define DOM_ERROR_NOT_FOUND                   NS_LITERAL_STRING("NotFoundError")
-#define DOM_ERROR_NOT_READABLE                NS_LITERAL_STRING("NotReadableError")
-#define DOM_ERROR_NO_MODIFICATION_ALLOWED     NS_LITERAL_STRING("NoModificationAllowedError")
-#define DOM_ERROR_PATH_EXISTS                 NS_LITERAL_STRING("PathExistsError")
-#define DOM_ERROR_QUOTA_EXCEEDED              NS_LITERAL_STRING("QuotaExceededError")
-#define DOM_ERROR_SECURITY                    NS_LITERAL_STRING("SecurityError")
-#define DOM_ERROR_TYPE_MISMATCH               NS_LITERAL_STRING("TypeMismatchError")
-#define DOM_ERROR_UNKNOWN                     NS_LITERAL_STRING("Unknown")
+#include "CombinedRunnable.h"
 
 namespace mozilla {
 namespace dom {
