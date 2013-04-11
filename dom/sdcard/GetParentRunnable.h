@@ -7,13 +7,14 @@
 
 #pragma once
 
-#include "FileSystemRunnable.h"
+#include "CombinedRunnable.h"
+#include "mozilla/dom/FileSystemBinding.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class GetParentRunnable : public FileSystemRunnable
+class GetParentRunnable : public CombinedRunnable
 {
 public:
   GetParentRunnable(EntryCallback* aSuccessCallback,
@@ -22,11 +23,18 @@ public:
 
   virtual ~GetParentRunnable();
 
-  // Overrides nsRunnable
-  NS_IMETHOD Run() MOZ_OVERRIDE;
+protected:
+  virtual void WorkerThreadRun();
+  virtual void MainThreadRun();
 
 private:
+  nsCOMPtr<nsIFile> mFile;
+  nsCOMPtr<nsIFile> mParentFile;
+
+  // not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
+  // not thread safe
+  nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 } // namespace sdcard

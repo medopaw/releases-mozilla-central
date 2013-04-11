@@ -6,7 +6,6 @@
  */
 
 #include "CopyAndMoveToRunnable.h"
-#include "Entry.h"
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
 #include "Path.h"

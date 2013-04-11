@@ -6,7 +6,9 @@
  */
 
 #include "GetParentRunnable.h"
-#include "DirectoryEntry.h"
+#include "Entry.h"
+#include "Path.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
@@ -15,53 +17,54 @@ namespace sdcard {
 GetParentRunnable::GetParentRunnable(EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry) :
-    FileSystemRunnable(aErrorCallback, aEntry),
-        mSuccessCallback(aSuccessCallback)
+    CombinedRunnable(aEntry),
+    mSuccessCallback(aSuccessCallback),
+    mErrorCallback(aErrorCallback)
 {
+  mFile = aEntry->GetFileInternal();
 }
 
 GetParentRunnable::~GetParentRunnable()
 {
 }
 
-NS_IMETHODIMP GetParentRunnable::Run()
+void GetParentRunnable::WorkerThreadRun()
 {
-  SDCARD_LOG("in GetParentRunnable.Run()!");
-  SDCARD_LOG("on main thread:%d", NS_IsMainThread());
-  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-
-  nsCOMPtr<nsIRunnable> mainThreadRunnable;
-  nsresult rv = NS_OK;
-  Entry* parent = nullptr;
-
-  if (mEntry->IsRoot()) {
+  SDCARD_LOG("in GetParentRunnable.WorkerThreadRun()!");
+  nsString path;
+  mFile->GetPath(path);
+  if (Path::IsBase(path)) {
     // The parent folder of the root is itself.
-    parent = mEntry;
+    mParentFile = mFile;
   } else {
-    nsCOMPtr<nsIFile> parentFile;
-    rv = mEntry->GetFileInternal()->GetParent(getter_AddRefs(parentFile));
-    if (NS_SUCCEEDED(rv) ) {
-      parent = new DirectoryEntry(mEntry->GetFilesystem(), parentFile);
+    nsresult rv = mFile->GetParent(getter_AddRefs(mParentFile));
+    if (NS_FAILED(rv) ) {
+      // Failed to copy/move
+      SetErrorCode(rv);
     }
   }
-
-  if (parent) {
-    // success callback
-    nsCOMPtr<nsIRunnable> r = new ResultRunnable<EntryCallback, Entry>(
-        mSuccessCallback, parent);
-  } else {
-    // error callback
-    if (mErrorCallback) {
-      mainThreadRunnable = new ErrorRunnable(mErrorCallback, rv);
-    }
-  }
-
-  if (mainThreadRunnable) {
-    NS_DispatchToMainThread(mainThreadRunnable);
-  }
-  return NS_OK;
 }
 
+void GetParentRunnable::MainThreadRun()
+{
+  SDCARD_LOG("in GetParentRunnable.MainThreadRun()!");
+  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
+  if (error) {
+    // error callback
+    if (mErrorCallback) {
+      ErrorResult rv;
+      mErrorCallback->Call(error, rv);
+    }
+  } else {
+    // success callback
+    if (mSuccessCallback) {
+      ErrorResult rv;
+      nsRefPtr<Entry> newEntry = Entry::FromFile(GetEntry()->GetFilesystem(),
+          mParentFile.get());
+      mSuccessCallback->Call(*newEntry, rv);
+    }
+  }
+}
 
 } // namespace sdcard
 } // namespace dom
