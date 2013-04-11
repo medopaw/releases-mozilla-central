@@ -57,12 +57,10 @@ void GetParentRunnable::MainThreadRun()
     }
   } else {
     // success callback
-    if (mSuccessCallback) {
-      ErrorResult rv;
-      nsRefPtr<Entry> newEntry = Entry::FromFile(GetEntry()->GetFilesystem(),
-          mParentFile.get());
-      mSuccessCallback->Call(*newEntry, rv);
-    }
+    ErrorResult rv;
+    nsRefPtr<Entry> newEntry = Entry::FromFile(GetEntry()->GetFilesystem(),
+        mParentFile.get());
+    mSuccessCallback->Call(*newEntry, rv);
   }
 }
 

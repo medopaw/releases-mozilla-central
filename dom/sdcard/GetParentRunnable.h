@@ -24,8 +24,8 @@ public:
   virtual ~GetParentRunnable();
 
 protected:
-  virtual void WorkerThreadRun();
-  virtual void MainThreadRun();
+  virtual void WorkerThreadRun() MOZ_OVERRIDE;
+  virtual void MainThreadRun() MOZ_OVERRIDE;
 
 private:
   nsCOMPtr<nsIFile> mFile;

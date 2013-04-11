@@ -174,9 +174,9 @@ void Entry::GetParent(EntryCallback& successCallback,
   if (errorCallback.WasPassed()) {
     errorCallbackPtr = errorCallback.Value().get();
   }
-  nsIRunnable* r = new GetParentRunnable(&successCallback,
+  nsRefPtr<GetParentRunnable> runnable = new GetParentRunnable(&successCallback,
       errorCallbackPtr, this);
-  mFilesystem->DispatchToWorkerThread(r, errorCallbackPtr);
+  runnable->Start();
 }
 
 bool Entry::Exists() const

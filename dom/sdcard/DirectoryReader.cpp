@@ -42,23 +42,13 @@ DirectoryReader::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap
 void DirectoryReader::ReadEntries(EntriesCallback& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
-  nsCOMPtr<nsIThread> thread;
-  nsresult rv = NS_NewThread(getter_AddRefs(thread));
   ErrorCallback* errorCallbackPtr = nullptr;
   if (errorCallback.WasPassed()) {
     errorCallbackPtr = errorCallback.Value().get();
   }
-  if (NS_FAILED(rv) ) {
-    if (errorCallbackPtr) {
-      nsString errorName = DOM_ERROR_UNKNOWN;
-      nsCOMPtr<nsIRunnable> r = new ErrorRunnable(errorCallbackPtr, errorName);
-      NS_DispatchToMainThread(r);
-    }
-  } else {
-    nsCOMPtr<nsIRunnable> r = new ReadEntriesRunnable(&successCallback,
-        errorCallbackPtr, mEntry);
-    thread->Dispatch(r, NS_DISPATCH_NORMAL);
-  }
+  nsCOMPtr<ReadEntriesRunnable> runnable = new ReadEntriesRunnable(&successCallback,
+          errorCallbackPtr, mEntry);
+  runnable->Start();
 }
 
 } // namespace sdcard

@@ -7,8 +7,8 @@
 
 #include "ReadEntriesRunnable.h"
 #include "nsISimpleEnumerator.h"
-#include "FileEntry.h"
-#include "DirectoryEntry.h"
+#include "Entry.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
@@ -17,80 +17,78 @@ namespace sdcard {
 ReadEntriesRunnable::ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry) :
-    FileSystemRunnable(aErrorCallback, aEntry),
-        mSuccessCallback(aSuccessCallback)
+    CombinedRunnable(aEntry),
+    mSuccessCallback(aSuccessCallback),
+    mErrorCallback(aErrorCallback)
 {
+  mFile = aEntry->GetFileInternal();
 }
 
 ReadEntriesRunnable::~ReadEntriesRunnable()
 {
 }
 
-
-NS_IMETHODIMP ReadEntriesRunnable::Run()
+void ReadEntriesRunnable::WorkerThreadRun()
 {
-  SDCARD_LOG("in ReadEntriesRunnable.Run()!");
-  SDCARD_LOG("on main thread:%d", NS_IsMainThread());
-  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-
-  nsCOMPtr<nsIRunnable> mainThreadRunnable;
+  SDCARD_LOG("in ReadEntriesRunnable.WorkerThreadRun()!");
   nsresult rv = NS_OK;
 
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
-  rv = mEntry->GetFileInternal()->GetDirectoryEntries(
-      getter_AddRefs(childEnumerator));
-  if (NS_SUCCEEDED(rv) )
+  rv = mFile->GetDirectoryEntries(getter_AddRefs(childEnumerator));
+  if (NS_FAILED(rv))
   {
-    Sequence<OwningNonNull<Entry> >* entries = new Sequence<
-        OwningNonNull<Entry> >();
-    bool hasElements;
-    while (NS_SUCCEEDED(childEnumerator->HasMoreElements(&hasElements))
-        && hasElements) {
-      nsCOMPtr<nsISupports> child;
-      rv = childEnumerator->GetNext(getter_AddRefs(child));
-      NS_ENSURE_SUCCESS(rv, rv);
+    SetErrorCode(rv);
+  }
 
-      nsCOMPtr<nsIFile> childFile = do_QueryInterface(child);
-      NS_ENSURE_TRUE(childFile, NS_NOINTERFACE);
-
-      nsRefPtr<Entry> entry;
-
-      bool isDir;
-      rv = childFile->IsDirectory(&isDir);
-      NS_ENSURE_SUCCESS(rv, rv);
-      if (isDir) {
-        entry = dynamic_cast<Entry *>(new DirectoryEntry(
-            mEntry->GetFilesystem(), childFile));
-      }
-
-      bool isFile;
-      rv = childFile->IsFile(&isFile);
-      NS_ENSURE_SUCCESS(rv, rv);
-      if (isFile) {
-        entry = dynamic_cast<Entry *>(new FileEntry(mEntry->GetFilesystem(),
-            childFile));
-      }
-
-      if (entry) {
-        *entries->AppendElement() = entry.forget();
-      }
+  bool hasElements;
+  while (NS_SUCCEEDED(childEnumerator->HasMoreElements(&hasElements))
+      && hasElements) {
+    nsCOMPtr<nsISupports> child;
+    rv = childEnumerator->GetNext(getter_AddRefs(child));
+    if (NS_FAILED(rv)) {
+      SetErrorCode(rv);
+      return;
     }
-    // success callback
-    mainThreadRunnable = new ResultRunnable<EntriesCallback,
-        Sequence<OwningNonNull<Entry> >, true>(
-        mSuccessCallback, entries);
-  } else {
+
+    nsCOMPtr<nsIFile> childFile = do_QueryInterface(child);
+
+    nsRefPtr<Entry> entry;
+
+    bool isDir;
+    childFile->IsDirectory(&isDir);
+    bool isFile;
+    childFile->IsFile(&isFile);
+
+    if (isDir || isFile) {
+      mChildren.AppendElement(childFile);
+    }
+  }
+}
+
+void ReadEntriesRunnable::MainThreadRun()
+{
+  SDCARD_LOG("in GetParentRunnable.MainThreadRun()!");
+  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
+  if (error) {
     // error callback
     if (mErrorCallback) {
-      mainThreadRunnable = new ErrorRunnable(mErrorCallback, rv);
+      ErrorResult rv;
+      mErrorCallback->Call(error, rv);
     }
+  } else {
+    // success callback
+    Sequence<OwningNonNull<Entry> > entries;
+    int n = mChildren.Length();
+    for (int i = 0; i < n; i++) {
+      nsRefPtr<Entry> entry = Entry::FromFile(GetEntry()->GetFilesystem(),
+          mChildren[i].get());
+      *entries.AppendElement() = entry.forget();
+    }
+    ErrorResult rv;
+    mSuccessCallback->Call(entries, rv);
   }
-
-  if (mainThreadRunnable) {
-    NS_DispatchToMainThread(mainThreadRunnable);
-  }
-  return NS_OK;
 }
+
 
 } /* namespace sdcard */
 } /* namespace dom */

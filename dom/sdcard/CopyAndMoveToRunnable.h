@@ -25,8 +25,8 @@ public:
   virtual ~CopyAndMoveToRunnable();
 
 protected:
-  virtual void WorkerThreadRun();
-  virtual void MainThreadRun();
+  virtual void WorkerThreadRun() MOZ_OVERRIDE;
+  virtual void MainThreadRun() MOZ_OVERRIDE;
 
 private:
   bool IsDirectoryEmpty(nsIFile* dir);
