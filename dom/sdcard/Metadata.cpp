@@ -42,7 +42,7 @@ Metadata::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 uint64_t Metadata::Size() const
 {
   SDCARD_LOG("in Metadata.Size()");
-  SDCARD_LOG("size=%lld", mSize);
+  SDCARD_LOG("size=%llud", mSize);
   return mSize;
 }
 

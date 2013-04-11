@@ -89,7 +89,7 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
     Path::Absolutize(path, fullPath, absolutePath);
 
     /*
-    // check if to create or to fetch
+    // check options.create to decide to create or to fetch
     nsIRunnable* r;
     if (options.mCreate) {
       // create

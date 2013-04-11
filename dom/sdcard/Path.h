@@ -21,7 +21,7 @@ namespace sdcard {
 // FileSystem path utilities. All methods in this class are static.
 class Path {
 public:
-    static const nsString separator;
+    static const nsString separator; // separator must be a single char, this is just for convenience
     static const nsString selfReference;
     static const nsString parentReference;
     static const nsString root; // different from FileSystem.root, normally "/"
@@ -34,9 +34,7 @@ public:
     static void RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath);
     static void InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath);
 
-    static bool StartsWith(const nsAString& aPath, const nsAString& aMaybeHead);
-    static bool StartsWithSeparator(const nsAString& aPath);
-    static bool EndsWith(const nsAString& aPath, const nsAString& aMaybeTail);
+    static bool BeginsWithSeparator(const nsAString& aPath);
     static bool EndsWithSeparator(const nsAString& aPath);
     static bool IsAbsolute(const nsAString& aPath);
     static bool IsValidName(const nsAString& aPath);

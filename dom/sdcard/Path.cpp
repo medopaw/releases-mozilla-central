@@ -63,29 +63,19 @@ void Path::InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
   }
 }
 
-bool Path::StartsWith(const nsAString& aPath, const nsAString& aMayBeHead)
+bool Path::BeginsWithSeparator(const nsAString& aPath)
 {
-  return aMayBeHead == Substring(aPath, 0, aMayBeHead.Length());
-}
-
-bool Path::StartsWithSeparator(const nsAString& aPath)
-{
-  return Path::StartsWith(aPath, Path::separator);
-}
-
-bool Path::EndsWith(const nsAString& aPath, const nsAString& aMayBeTail)
-{
-  return aMayBeTail == Substring(aPath, aPath.Length() - aMayBeTail.Length(), aMayBeTail.Length());
+  return StringBeginsWith(aPath, Path::separator);
 }
 
 bool Path::EndsWithSeparator(const nsAString& aPath)
 {
-  return Path::EndsWith(aPath, Path::separator);
+  return StringEndsWith(aPath, Path::separator);
 }
 
 bool Path::IsAbsolute(const nsAString& aPath)
 {
-  return Path::StartsWith(aPath, Path::root);
+  return StringBeginsWith(aPath, Path::root);
 }
 
 bool Path::IsValidName(const nsAString& aName)
@@ -117,7 +107,7 @@ bool Path::IsParentOf(const nsAString& aParent, const nsAString& aMayBeChild)
 {
   MOZ_ASSERT(Path::IsAbsolute(aParent) && Path::IsAbsolute(aMayBeChild), "Path must be absolute!");
   // check length
-  if (aParent.Length() >= aMayBeChild.Length() || !Path::StartsWith(aParent, aMayBeChild)) {
+  if (aParent.Length() >= aMayBeChild.Length() || !StringBeginsWith(aParent, aMayBeChild)) {
     return false;
   }
   // check separator
@@ -127,31 +117,23 @@ bool Path::IsParentOf(const nsAString& aParent, const nsAString& aMayBeChild)
   return true;
 }
 
-void Path::Split(const nsAString& aPath, nsTArray<nsString>& aComponents)
+void Path::Split(const nsAString& aPath, nsTArray<nsString>& aArray)
 {
-  /* There are 4 cases
-   * /xxx/xxx/
-   * /xxx/xxx
-   * xxx/xxx/
-   * xxx/xxx
-   */
-  nsString path(aPath);
-  Path::EnsureDirectory(path); // make sure it ends with separator
-  int32_t separatorLen = Path::separator.Length(); // theoretically separator could be made of multiple characters
-  int32_t start = Path::StartsWithSeparator(path) ? separatorLen : 0; // set the start postion correctly
-  int32_t cur = start;
+  MOZ_ASSERT(Path::separator.Length() == 1, "Path separator must be a single character!");
 
-  // find the next separator and extract the component
-  for (aComponents.Clear(); cur < path.Length(); cur += separatorLen) {
-    cur = path.Find(Path::separator, start);
-    MOZ_ASSERT(cur != kNotFound, "If the algorithm is correct, this shouldn't happen.");
-    aComponents.AppendElement(Substring(path, start, cur - start));
+  // nsCString conversion needed here
+  nsTArray<nsCString> array;
+  ParseString(NS_ConvertUTF16toUTF8(aPath), NS_ConvertUTF16toUTF8(Path::separator)[0], array);
+
+  // no need to clear aArray first
+  for (PRUint32 i = 0; i < array.Length(); i++) {
+    aArray.AppendElement(NS_ConvertUTF8toUTF16(array[i]));
   }
 }
 
 void Path::Decapitate(nsString& aPath, const nsAString& aHead)
 {
-  MOZ_ASSERT(Path::StartsWith(aPath, aHead), "aPath must starts with aHead");
+  MOZ_ASSERT(StringBeginsWith(aPath, aHead), "aPath must starts with aHead");
   aPath = Substring(aPath, aHead.Length(), aPath.Length() - aHead.Length());
 }
 
@@ -199,8 +181,6 @@ void Path::RemoveExtraParentReferences(nsString& aPath)
 
   nsTArray<nsString> components;
   nsTArray<nsString> canonicalized;
-  int32_t last = 0;
-  int32_t cur = 1;
 
   Path::Split(aPath, components);
 
