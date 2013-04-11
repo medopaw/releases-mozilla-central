@@ -15,6 +15,8 @@
 #include "Utils.h"
 #include "GetParentRunnable.h"
 #include "CopyAndMoveToRunnable.h"
+#include "FileEntry.h"
+#include "DirectoryEntry.h"
 
 namespace mozilla {
 namespace dom {
@@ -26,13 +28,20 @@ NS_INTERFACE_MAP_BEGIN(Entry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-/*
-Entry::Entry(FileSystem* aFilesystem, const nsAString& aFullPath) : mFilesystem(aFilesystem), mFullPath(aFullPath)
+Entry* Entry::FromFile(FileSystem* aFilesystem, nsIFile* aFile)
 {
-  SDCARD_LOG("init Entry");
-  NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
+  MOZ_ASSERT(aFile, "Entry::FromFile creation failed. aFile can't be null.");
+  bool isFile;
+  aFile->IsFile(&isFile);
+  bool isDirectory;
+  aFile->IsDirectory(&isDirectory);
+  if (isFile) {
+    return new FileEntry(aFilesystem, aFile);
+  } else {
+    return new DirectoryEntry(aFilesystem, aFile);
+  }
+  return nullptr;
 }
-*/
 
 Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory) : mFilesystem(aFilesystem), mIsFile(aIsFile), mIsDirectory(aIsDirectory)
 {
@@ -140,9 +149,10 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
     errorCallbackPtr = errorCallback.Value().get();
   }
 
-  nsIRunnable* r = new CopyAndMoveToRunnable(&parent, newNamePtr, successCallbackPtr,
+  nsRefPtr<CopyAndMoveToRunnable> runnable = new CopyAndMoveToRunnable(&parent,
+      newNamePtr, successCallbackPtr,
       errorCallbackPtr, this, isCopy);
-  mFilesystem->DispatchToWorkerThread(r, errorCallbackPtr);
+  runnable->Start();
 }
 
 void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)

@@ -13,7 +13,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class CopyAndMoveToRunnable : public FileSystemRunnable
+class CopyAndMoveToRunnable : public nsRunnable
 {
 public:
   CopyAndMoveToRunnable(DirectoryEntry* aParent, const nsAString* aNewName,
@@ -23,14 +23,43 @@ public:
 
   virtual ~CopyAndMoveToRunnable();
 
-  // Overrides nsRunnable
+  /*
+   * Start the runnable thread.
+   * First it will call WorkerThreadRun to perform worker thread operations.
+   * After that it calls MainThreadRun to perform main thread operations.
+   */
+  void Start();
+
+  // Overrides nsIRunnable
   NS_IMETHOD Run() MOZ_OVERRIDE;
+
+protected:
+  virtual void WorkerThreadRun();
+  virtual void MainThreadRun();
+
+  already_AddRefed<nsIDOMDOMError> GetDOMError() const;
+
+private:
+  // not thread safe. don't use it in worker thread.
+  nsRefPtr<Entry> mEntry;
+
+  nsCOMPtr<nsIFile> mFile;
+  nsCOMPtr<nsIFile> mNewParenFile;
+  nsCOMPtr<nsIFile> mNewFile;
+  nsString mNewName;
+  nsresult mErrorCode;
+  nsString mErrorName;
+
 private:
   bool IsDirectoryEmpty(nsIFile* dir);
 
+  // It will only be used on main thread, so doesn't need a lock.
+  static nsCOMPtr<nsIThread> sWorkerThread;
+
+  // not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
-  nsRefPtr<DirectoryEntry> mNewParent;
-  nsString mNewName;
+  // not thread safe
+  nsRefPtr<ErrorCallback> mErrorCallback;
   bool mIsCopy;
 };
 

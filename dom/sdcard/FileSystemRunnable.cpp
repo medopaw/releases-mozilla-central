@@ -154,7 +154,7 @@ NS_IMETHODIMP GetMetadataRunnable::Run()
   if (mEntry->IsDirectory()) {
     size = 0; // size is always 0 for directory
   } else {
-    rv = mEntry->mFile->GetFileSize(&size);
+    rv = mEntry->GetFileInternal()->GetFileSize(&size);
     if (NS_FAILED(rv)) {
       r = new ErrorRunnable(mErrorCallback.get(), rv);
     }
@@ -190,7 +190,7 @@ NS_IMETHODIMP RemoveRunnable::Run()
   if (mEntry->IsRoot()) {
     r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
   } else {
-    rv = mEntry->mFile->Remove(false);
+    rv = mEntry->GetFileInternal()->Remove(false);
     if (NS_FAILED(rv)) {
       r = new ErrorRunnable(mErrorCallback.get(), rv);
     } else {
@@ -301,7 +301,7 @@ NS_IMETHODIMP RemoveRecursivelyRunnable::Run()
   if (mEntry->IsRoot()) {
     r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
   } else {
-    rv = mEntry->mFile->Remove(true);
+    rv = mEntry->GetFileInternal()->Remove(true);
     if (NS_FAILED(rv)) {
       r = new ErrorRunnable(mErrorCallback.get(), rv);
     } else {

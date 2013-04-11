@@ -30,11 +30,8 @@ public:
   NS_DECL_ISUPPORTS
 
 public:
-  // full path in filesystem
-  // explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
-  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory);
   // nsIFile to Entry
-  explicit Entry(nsIFile* aFile);
+  static Entry* FromFile(FileSystem* aFilesystem, nsIFile* aFile);
 
   virtual ~Entry();
 
@@ -91,10 +88,14 @@ public:
   }
 
   nsRefPtr<Metadata> mMetadata;
-  nsCOMPtr<nsIFile> mFile;
 
 protected:
+  // full path in filesystem
+  // explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
+  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory);
+
   nsRefPtr<FileSystem> mFilesystem;
+  nsCOMPtr<nsIFile> mFile;
   bool mIsFile;
   bool mIsDirectory;
 
