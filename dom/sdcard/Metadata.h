@@ -27,7 +27,7 @@ public:
 public:
   Metadata();
 
-  ~Metadata();
+  virtual ~Metadata();
 
   // TODO: return something sensible here, and change the return type
   Metadata* GetParentObject() const
@@ -36,14 +36,23 @@ public:
   }
 
   virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
-/*
+
   JS::Value ModificationTime(JSContext* cx) const;
-  */
 
   uint64_t Size() const;
 
 public:
+  void SetModificationTime(PRTime mtime);
+
+  void SetSize(uint64_t value)
+  {
+    mSize = value;
+  }
+
+private:
   uint64_t mSize;
+  // Modification timestamp in milliseconds
+  double mDate;
 };
 
 } // namespace sdcard

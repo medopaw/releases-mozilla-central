@@ -7,7 +7,8 @@
 #include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
-
+#define __STDC_FORMAT_MACROS
+#include "inttypes.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -23,7 +24,9 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Metadata)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-Metadata::Metadata()
+Metadata::Metadata() :
+    mSize(0),
+    mDate(0)
 {
   SDCARD_LOG("init Metadata");
   SetIsDOMBinding();
@@ -39,11 +42,24 @@ Metadata::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
   return MetadataBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
 
+JS::Value Metadata::ModificationTime(JSContext* cx) const
+{
+  JSObject* date = JS_NewDateObjectMsec(cx, mDate);
+  JS::Value value;
+  value.setObject(*date);
+  return value;
+}
+
 uint64_t Metadata::Size() const
 {
   SDCARD_LOG("in Metadata.Size()");
-  SDCARD_LOG("size=%llud", mSize);
+  SDCARD_LOG("size=%" PRIu64, mSize);
   return mSize;
+}
+
+void Metadata::SetModificationTime(PRTime mtime)
+{
+  mDate = static_cast<double>(mtime);
 }
 
 } // namespace sdcard

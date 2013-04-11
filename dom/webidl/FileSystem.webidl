@@ -51,8 +51,7 @@ interface DirectoryReader {
 };
 
 interface Metadata {
-//    readonly attribute any               modificationTime;
-    // readonly attribute Date               modificationTime;
+    readonly attribute any                modificationTime;
     readonly attribute unsigned long long size;
 };
 

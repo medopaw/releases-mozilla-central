@@ -6,17 +6,15 @@
 
 #pragma once
 
-#include "nsThreadUtils.h"
 #include "mozilla/dom/FileSystemBinding.h"
-#include "mozilla/dom/DOMError.h"
-#include "Utils.h"
-#include "Entry.h"
-#include "Metadata.h"
 #include "CombinedRunnable.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
+
+class Metadata;
 
 template <class T, class U, bool NEED_DELETION = false>
 class ResultRunnable : public nsRunnable
@@ -108,16 +106,26 @@ class FileSystemRunnable : public nsRunnable
     nsRefPtr<Entry> mEntry;
 };
 
-class GetMetadataRunnable : public FileSystemRunnable
+class GetMetadataRunnable : public CombinedRunnable
 {
-  public:
-    GetMetadataRunnable(MetadataCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
-    ~GetMetadataRunnable();
+public:
+  GetMetadataRunnable(MetadataCallback* aSuccessCallback,
+      ErrorCallback* aErrorCallback, Entry* aEntry);
+  ~GetMetadataRunnable();
 
-    NS_IMETHOD Run();
+protected:
+  virtual void WorkerThreadRun() MOZ_OVERRIDE;
+  virtual void MainThreadRun() MOZ_OVERRIDE;
 
-  private:
-    nsRefPtr<MetadataCallback> mSuccessCallback;
+private:
+  nsCOMPtr<nsIFile> mFile;
+  uint64_t mFileSize;
+  PRTime mTime;
+
+  // not thread safe
+  nsRefPtr<MetadataCallback> mSuccessCallback;
+  // not thread safe
+  nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 class RemoveRunnable : public FileSystemRunnable

@@ -9,6 +9,7 @@
 #include "nsContentUtils.h"
 #include "FileSystemRunnable.h"
 #include "Path.h"
+#include "Metadata.h"
 
 namespace mozilla {
 namespace dom {

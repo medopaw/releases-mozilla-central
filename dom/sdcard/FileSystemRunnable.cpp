@@ -133,42 +133,66 @@ FileSystemRunnable::~FileSystemRunnable()
 }
 
 
-GetMetadataRunnable::GetMetadataRunnable(MetadataCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
+GetMetadataRunnable::GetMetadataRunnable(MetadataCallback* aSuccessCallback,
+    ErrorCallback* aErrorCallback, Entry* aEntry) :
+    CombinedRunnable(aEntry),
+    mFileSize(0),
+    mTime(0),
+    mSuccessCallback(aSuccessCallback),
+    mErrorCallback(aErrorCallback)
 {
   SDCARD_LOG("init GetMetadataRunnable");
+  mFile = aEntry->GetFileInternal();
 }
 
 GetMetadataRunnable::~GetMetadataRunnable()
 {
 }
 
-NS_IMETHODIMP GetMetadataRunnable::Run()
+void GetMetadataRunnable::WorkerThreadRun()
 {
-  SDCARD_LOG("in GetMetadataRunnable.Run()!");
-  SDCARD_LOG("on main thread: %d", NS_IsMainThread());
-  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-
-  int64_t size;
+  SDCARD_LOG("in GetMetadataRunnable.WorkerThreadRun()!");
   nsCOMPtr<nsIRunnable> r;
   nsresult rv = NS_OK;
-  if (mEntry->IsDirectory()) {
-    size = 0; // size is always 0 for directory
+  bool isDirectory = false;
+  mFile->IsDirectory(&isDirectory);
+  if (isDirectory) {
+    mFileSize = 0; // size is always 0 for directory
   } else {
-    rv = mEntry->GetFileInternal()->GetFileSize(&size);
+    int64_t size = 0;
+    rv = mFile->GetFileSize(&size);
+    mFileSize = static_cast<uint64_t>(size);
     if (NS_FAILED(rv)) {
-      r = new ErrorRunnable(mErrorCallback.get(), rv);
+      SetErrorCode(rv);
+      return;
+    }
+    rv = mFile->GetLastModifiedTime(&mTime);
+    if (NS_FAILED(rv)) {
+      SetErrorCode(rv);
+      return;
     }
   }
-  if (NS_SUCCEEDED(rv)) {
-    mEntry->mMetadata->mSize = uint64_t(size);
-    r = new ResultRunnable<MetadataCallback, Metadata>(mSuccessCallback.get(), mEntry->mMetadata.get());
-  }
-
-  NS_DispatchToMainThread(r);
-
-  return rv;
 }
 
+void GetMetadataRunnable::MainThreadRun()
+{
+  SDCARD_LOG("in GetMetadataRunnable.MainThreadRun()!");
+  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
+  if (error) {
+    // error callback
+    if (mErrorCallback) {
+      ErrorResult rv;
+      mErrorCallback->Call(error, rv);
+    }
+  } else {
+    // success callback
+    ErrorResult rv;
+    Metadata metadata;
+    metadata.SetSize(mFileSize);
+    metadata.SetModificationTime(mTime);
+    mSuccessCallback->Call(metadata, rv);
+  }
+}
 
 RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
 {
