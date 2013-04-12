@@ -20,16 +20,15 @@ GetEntryRunnable::GetEntryRunnable(const nsAString& aPath,
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry) :
-      CombinedRunnable(aEntry),
+      CombinedRunnable(aEntry, aErrorCallback),
       mPath(aPath),
       mCreate(aCreate),
       mExclusive(aExclusive),
       mType(aType),
-      mSuccessCallback(aSuccessCallback),
-      mErrorCallback(aErrorCallback)
+      mSuccessCallback(aSuccessCallback)
 
 {
-	SDCARD_LOG("init GetEntryRunnable");
+  SDCARD_LOG("init GetEntryRunnable");
 }
 
 GetEntryRunnable::~GetEntryRunnable()
@@ -38,15 +37,16 @@ GetEntryRunnable::~GetEntryRunnable()
 
 bool GetEntryRunnable::Exists(nsIFile* aFile)
 {
-	bool exists;
-	aFile->Exists(&exists);
-	return exists;
+  bool exists;
+  aFile->Exists(&exists);
+  return exists;
 }
 
 void GetEntryRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetEntryRunnable.WorkerThreadRun()!");
   SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mPath).get());
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   nsresult rv = NS_NewLocalFile(mPath, false, getter_AddRefs(mResultFile));
   if (NS_FAILED(rv)) {
@@ -84,29 +84,16 @@ void GetEntryRunnable::WorkerThreadRun()
   }
 }
 
-void GetEntryRunnable::MainThreadRun()
+void GetEntryRunnable::OnSuccess()
 {
-  SDCARD_LOG("in GetEntryRunnable.MainThreadRun()!");
+  SDCARD_LOG("in GetEntryRunnable.OnSuccess()!");
+  MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
 
-  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
-  if (error) {
-    // error callback
-    SDCARD_LOG("Error Callback");
-    if (mErrorCallback) {
-      ErrorResult rv;
-      mErrorCallback->Call(error, rv);
-    }
-  } else {
-    // success callback
-    SDCARD_LOG("Success Callback");
-    if (mSuccessCallback) {
-      ErrorResult rv;
-      nsRefPtr<Entry> resultEntry = Entry::FromFile(GetEntry()->GetFilesystem(), mResultFile.get());
-      mSuccessCallback->Call(*resultEntry, rv);
-    }
-  }
+  ErrorResult rv;
+  nsRefPtr<Entry> resultEntry = Entry::FromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+  mSuccessCallback->Call(*resultEntry, rv);
 }
 
-} /* namespace sdcard */
-} /* namespace dom */
-} /* namespace mozilla */
+} // namespace sdcard
+} // namespace dom
+} // namespace mozilla

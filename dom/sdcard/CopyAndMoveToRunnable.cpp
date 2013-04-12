@@ -1,9 +1,8 @@
-/*
- * MoveToRunnable.cpp
- *
- *  Created on: Apr 10, 2013
- *      Author: yuan
- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=2 sw=2 sts=2 et cindent: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "CopyAndMoveToRunnable.h"
 #include "DirectoryEntry.h"
@@ -16,15 +15,13 @@ namespace sdcard {
 
 CopyAndMoveToRunnable::CopyAndMoveToRunnable(DirectoryEntry* aParent,
     const nsAString* aNewName,
+    bool aIsCopy,
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
-    Entry* aEntry,
-    bool aIsCopy) :
-    CombinedRunnable(aEntry),
+    Entry* aEntry) :
+    CombinedRunnable(aEntry, aErrorCallback),
     mSuccessCallback(aSuccessCallback),
-    mErrorCallback(aErrorCallback),
     mIsCopy(aIsCopy)
-
 {
   if (aNewName && !aNewName->IsEmpty()) {
     mNewName = *aNewName;
@@ -43,8 +40,9 @@ CopyAndMoveToRunnable::~CopyAndMoveToRunnable()
 void CopyAndMoveToRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in CopyAndMoveToRunnable.WorkerThreadRun()!");
-  nsresult rv = NS_OK;
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
+  nsresult rv = NS_OK;
   nsString path;
   rv = mFile->GetPath(path);
   if (Path::IsBase(path)) {
@@ -129,30 +127,20 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     rv = mResultFile->MoveTo(mNewParentDir, mNewName);
   }
   if (NS_FAILED(rv) ) {
-    // Failed to copy/move
+    // failed to copy/move
     SetErrorCode(rv);
     return;
   }
 }
 
-void CopyAndMoveToRunnable::MainThreadRun()
+void CopyAndMoveToRunnable::OnSuccess()
 {
-  SDCARD_LOG("in CopyAndMoveToRunnable.MainThreadRun()!");
-  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
-  if (error) {
-    // error callback
-    if (mErrorCallback) {
-      ErrorResult rv;
-      mErrorCallback->Call(error, rv);
-    }
-  } else {
-    // success callback
-    if (mSuccessCallback) {
-      ErrorResult rv;
-      nsRefPtr<Entry> newEntry = Entry::FromFile(GetEntry()->GetFilesystem(),
-          mResultFile.get());
-      mSuccessCallback->Call(*newEntry, rv);
-    }
+  SDCARD_LOG("in CopyAndMoveToRunnable.OnSuccess()!");
+
+  if (mSuccessCallback) { // successCallback is optional
+    ErrorResult rv;
+    nsRefPtr<Entry> resultEntry = Entry::FromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+    mSuccessCallback->Call(*resultEntry, rv);
   }
 }
 
@@ -171,6 +159,6 @@ bool CopyAndMoveToRunnable::IsDirectoryEmpty(nsIFile* dir)
   return true;
 }
 
-} /* namespace sdcard */
-} /* namespace dom */
-} /* namespace mozilla */
+} // namespace sdcard
+} // namespace dom
+} // namespace mozilla

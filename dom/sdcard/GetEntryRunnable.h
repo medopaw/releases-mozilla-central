@@ -28,7 +28,7 @@ public:
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  virtual void MainThreadRun() MOZ_OVERRIDE;
+  virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
   bool Exists(nsIFile* aFile);
@@ -42,8 +42,6 @@ private:
 
   // not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
-  // not thread safe
-  nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 } /* namespace sdcard */

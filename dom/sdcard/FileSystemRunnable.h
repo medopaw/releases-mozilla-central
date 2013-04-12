@@ -109,13 +109,12 @@ class FileSystemRunnable : public nsRunnable
 class GetMetadataRunnable : public CombinedRunnable
 {
 public:
-  GetMetadataRunnable(MetadataCallback* aSuccessCallback,
-      ErrorCallback* aErrorCallback, Entry* aEntry);
+  GetMetadataRunnable(MetadataCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
   ~GetMetadataRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  virtual void MainThreadRun() MOZ_OVERRIDE;
+  virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
   nsCOMPtr<nsIFile> mFile;
@@ -124,20 +123,17 @@ private:
 
   // not thread safe
   nsRefPtr<MetadataCallback> mSuccessCallback;
-  // not thread safe
-  nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 class RemoveRunnable : public CombinedRunnable
 {
 public:
-  RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback,
-      Entry* aEntry, bool aRecursive = false);
+  RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry, bool aRecursive = false);
   ~RemoveRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  virtual void MainThreadRun() MOZ_OVERRIDE;
+  virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
   nsCOMPtr<nsIFile> mFile;
@@ -145,27 +141,7 @@ private:
 
   // not thread safe
   nsRefPtr<VoidCallback> mSuccessCallback;
-  // not thread safe
-  nsRefPtr<ErrorCallback> mErrorCallback;
 };
-
-/*
-class GetEntryRunnable : public FileSystemRunnable
-{
-  public:
-    GetEntryRunnable(const nsAString& aPath, bool aCreate, bool aExclusive, const unsigned long aType, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback);
-    ~GetEntryRunnable();
-
-    NS_IMETHOD Run();
-
-  private:
-    nsString mPath;
-    bool mCreate;
-    bool mExclusive;
-    const unsigned long mType;
-    nsRefPtr<EntryCallback> mSuccessCallback;
-};
-*/
 
 } // namespace sdcard
 } // namespace dom

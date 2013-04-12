@@ -28,8 +28,9 @@ const nsString DOM_ERROR_SECURITY                =   NS_LITERAL_STRING("Security
 const nsString DOM_ERROR_TYPE_MISMATCH           =   NS_LITERAL_STRING("TypeMismatchError");
 const nsString DOM_ERROR_UNKNOWN                 =  NS_LITERAL_STRING("Unknown");
 
-CombinedRunnable::CombinedRunnable(Entry* entry) :
+CombinedRunnable::CombinedRunnable(Entry* entry, ErrorCallback* aErrorCallback) :
     mEntry(entry),
+    mErrorCallback(aErrorCallback),
     mErrorCode(NS_OK),
     mWorkerThread(nullptr)
 {
@@ -47,8 +48,9 @@ void CombinedRunnable::Start()
     nsresult rv = NS_NewThread(getter_AddRefs(mWorkerThread));
     if (NS_FAILED(rv)) {
       mWorkerThread = nullptr;
-      // we need to call errorcallback here
-      // mErrorCallback.Call(xxx);
+      // call error callback
+      SetErrorCode(rv);
+      MainThreadRun();
       return;
     }
   }
@@ -59,7 +61,7 @@ NS_IMETHODIMP CombinedRunnable::Run()
 {
   if (!NS_IsMainThread()) {
     SDCARD_LOG("CombinedRunnable.Run() on worker thread.");
-    // run worker thread tasks, majorly file io operations
+    // run worker thread tasks: file operations
     WorkerThreadRun();
     // dispatch itself to main thread
     NS_DispatchToMainThread(this);
@@ -69,13 +71,40 @@ NS_IMETHODIMP CombinedRunnable::Run()
     if (!mWorkerThread) {
       mWorkerThread->Shutdown();
     }
-    // run main thread tasks, majorly call callbacks
+    mWorkerThread = nullptr;
+    // run main thread tasks: call callbacks
     MainThreadRun();
     // ensure mEntry is released on main thread
     mEntry = nullptr;
   }
 
   return NS_OK;
+}
+
+void CombinedRunnable::MainThreadRun()
+{
+  SDCARD_LOG("in CombinedRunnable.MainThreadRun()!");
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
+  if (error) {
+    if (mErrorCallback) { // errorCallback is always optional
+      ErrorResult rv;
+      mErrorCallback->Call(error, rv);
+    }
+  } else {
+    OnSuccess();
+  }
+}
+
+
+void CombinedRunnable::SetErrorCode(nsresult errorCode)
+{
+  mErrorCode = errorCode;
+}
+
+void CombinedRunnable::SetErrorName(const nsString& errorName)
+{
+  mErrorName = errorName;
 }
 
 already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
@@ -126,13 +155,9 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
 Entry* CombinedRunnable::GetEntry() const
 {
   MOZ_ASSERT(NS_IsMainThread(), "only call on main thread!");
-  if (NS_IsMainThread()) {
-    return mEntry;
-  } else {
-    return nullptr;
-  }
+  return NS_IsMainThread() ? mEntry : nullptr;
 }
 
-} /* namespace sdcard */
-} /* namespace dom */
-} /* namespace mozilla */
+} // namespace sdcard
+} // namespace dom
+} // namespace mozilla

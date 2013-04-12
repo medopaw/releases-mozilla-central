@@ -136,11 +136,10 @@ FileSystemRunnable::~FileSystemRunnable()
 
 GetMetadataRunnable::GetMetadataRunnable(MetadataCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback, Entry* aEntry) :
-    CombinedRunnable(aEntry),
+    CombinedRunnable(aEntry, aErrorCallback),
     mFileSize(0),
     mTime(0),
-    mSuccessCallback(aSuccessCallback),
-    mErrorCallback(aErrorCallback)
+    mSuccessCallback(aSuccessCallback)
 {
   SDCARD_LOG("init GetMetadataRunnable");
   mFile = aEntry->GetFileInternal();
@@ -153,6 +152,8 @@ GetMetadataRunnable::~GetMetadataRunnable()
 void GetMetadataRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetMetadataRunnable.WorkerThreadRun()!");
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+
   nsresult rv = NS_OK;
   bool isDirectory = false;
   mFile->IsDirectory(&isDirectory);
@@ -174,32 +175,23 @@ void GetMetadataRunnable::WorkerThreadRun()
   }
 }
 
-void GetMetadataRunnable::MainThreadRun()
+void GetMetadataRunnable::OnSuccess()
 {
   SDCARD_LOG("in GetMetadataRunnable.MainThreadRun()!");
-  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
-  if (error) {
-    // error callback
-    if (mErrorCallback) {
-      ErrorResult rv;
-      mErrorCallback->Call(error, rv);
-    }
-  } else {
-    // success callback
-    ErrorResult rv;
-    nsRefPtr<Metadata> metadata = new Metadata();
-    metadata->SetSize(mFileSize);
-    metadata->SetModificationTime(mTime);
-    mSuccessCallback->Call(*metadata, rv);
-  }
+  MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
+
+  ErrorResult rv;
+  nsRefPtr<Metadata> metadata = new Metadata();
+  metadata->SetSize(mFileSize);
+  metadata->SetModificationTime(mTime);
+  mSuccessCallback->Call(*metadata, rv);
 }
 
 RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback, Entry* aEntry, bool aRecursive/* = false*/) :
-    CombinedRunnable(aEntry),
+    CombinedRunnable(aEntry, aErrorCallback),
     mRecursive(aRecursive),
-    mSuccessCallback(aSuccessCallback),
-    mErrorCallback(aErrorCallback)
+    mSuccessCallback(aSuccessCallback)
 {
   SDCARD_LOG("init RemoveRunnable");
   mFile = aEntry->GetFileInternal();
@@ -212,11 +204,13 @@ RemoveRunnable::~RemoveRunnable()
 void RemoveRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in RemoveRunnable.WorkerThreadRun()!");
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
+
   nsresult rv = NS_OK;
   nsString path;
   mFile->GetPath(path);
   if (Path::IsBase(path)) {
-    // Cannot remove root directory
+    // cannot remove root directory
     SetErrorName(DOM_ERROR_NO_MODIFICATION_ALLOWED);
     return;
   } else {
@@ -227,99 +221,14 @@ void RemoveRunnable::WorkerThreadRun()
   }
 }
 
-void RemoveRunnable::MainThreadRun()
+void RemoveRunnable::OnSuccess()
 {
   SDCARD_LOG("in RemoveRunnable.MainThreadRun()!");
-  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
-  if (error) {
-    // error callback
-    if (mErrorCallback) {
-      ErrorResult rv;
-      mErrorCallback->Call(error, rv);
-    }
-  } else {
-    // success callback
-    ErrorResult rv;
-    mSuccessCallback->Call(rv);
-  }
-}
-/*
-GetEntryRunnable::GetEntryRunnable(const nsAString& aPath, bool aCreate, bool aExclusive, const unsigned long aType, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback) : FileSystemRunnable(aErrorCallback, nullptr), mPath(aPath), mCreate(aCreate), mExclusive(aExclusive), mType(aType), mSuccessCallback(aSuccessCallback)
-{
-  SDCARD_LOG("init GetEntryRunnable");
-}
+  MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
 
-GetEntryRunnable::~GetEntryRunnable()
-{
+  ErrorResult rv;
+  mSuccessCallback->Call(rv);
 }
-
-NS_IMETHODIMP GetEntryRunnable::Run()
-{
-  SDCARD_LOG("in GetEntryRunnable.Run()!");
-  SDCARD_LOG("on main thread: %d", NS_IsMainThread());
-  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-  MOZ_ASSERT(mEntry->IsDirectory() || mEntry->IsFile(), "Must be either directory or file!");
-  SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mPath).get());
-
-  nsCOMPtr<nsIRunnable> r;
-  nsCOMPtr<nsIFile> file;
-  nsresult rv = NS_NewLocalFile(mPath, false, getter_AddRefs(file));
-  if (NS_SUCCEEDED(rv)) {
-    bool exists;
-    file->Exists(&exists);
-    // deal with fails
-    nsString errorName;
-    if (!mCreate && !exists) {
-      errorName = DOM_ERROR_NOT_FOUND;
-    } else if (mCreate && mExclusive && exists) {
-      errorName = DOM_ERROR_PATH_EXISTS;
-    } else if (!mCreate && exists) {
-      bool isDirectory, isFile;
-      file->IsDirectory(&isDirectory);
-      file->IsFile(&isFile);
-      if ((mType == nsIFile::NORMAL_FILE_TYPE && isDirectory) || (mType == nsIFile::DIRECTORY_TYPE && isFile)) {
-        errorName = DOM_ERROR_TYPE_MISMATCH;
-      }
-    }
-    if (!errorName.IsEmpty()) {
-      r = new ErrorRunnable(mErrorCallback, errorName);
-    } else {
-      if (mCreate && !exists) {
-        // create
-        rv = file->Create(mType, 0600);
-      }
-      // retrieve
-      if (NS_SUCCEEDED(rv)) {
-        // create correspondng Entry
-        nsRefPtr<Entry> pEntry;
-        switch (mType) {
-          case nsIFile::NORMAL_FILE_TYPE:
-            pEntry = new FileEntry(mEntry->Filesystem(), file);
-            break;
-          case nsIFile::DIRECTORY_TYPE:
-            pEntry = new DirectoryEntry(mEntry->Filesystem(), file);
-            break;
-          default:
-            pEntry = nullptr;
-            break;
-        }
-        // create EntryCallback
-        if (pEntry) {
-          r = new ResultRunnable<EntryCallback, Entry>(mSuccessCallback.get(), pEntry.get());
-        } else {
-          r = new ErrorRunnable(mErrorCallback, DOM_ERROR_TYPE_MISMATCH);
-        }
-      }
-    }
-  }
-  if (NS_FAILED(rv)) {
-    r = new ErrorRunnable(mErrorCallback.get(), rv);
-  }
-  NS_DispatchToMainThread(r);
-
-  return rv;
-}
-*/
 
 } // namespace sdcard
 } // namespace dom

@@ -8,6 +8,7 @@
 
 #include "nsThreadUtils.h"
 #include "mozilla/dom/DOMError.h"
+#include "mozilla/dom/FileSystemBinding.h"
 
 namespace mozilla {
 namespace dom {
@@ -30,48 +31,43 @@ extern const nsString DOM_ERROR_UNKNOWN;
 class CombinedRunnable : public nsRunnable
 {
 public:
-  CombinedRunnable(Entry* entry);
+  CombinedRunnable(Entry* entry, ErrorCallback* aErrorCallback);
   virtual ~CombinedRunnable();
 
   /*
    * Start the runnable thread.
-   * First it will call WorkerThreadRun to perform worker thread operations.
+   * First it calls WorkerThreadRun to perform worker thread operations.
    * After that it calls MainThreadRun to perform main thread operations.
    */
   void Start();
 
-  // Overrides nsIRunnable
+  // overrides nsIRunnable
   NS_IMETHOD Run() MOZ_OVERRIDE;
 
 protected:
   virtual void WorkerThreadRun() = 0;
-  virtual void MainThreadRun() = 0;
+  void MainThreadRun();
+  virtual void OnSuccess() = 0;
 
-  already_AddRefed<nsIDOMDOMError> GetDOMError() const;
-
-  void SetErrorCode(nsresult errorCode)
-  {
-    mErrorCode = errorCode;
-  }
-
-  void SetErrorName(const nsString& errorName)
-  {
-    mErrorName = errorName;
-  }
+  void SetErrorCode(nsresult errorCode);
+  void SetErrorName(const nsString& errorName);
 
   Entry* GetEntry() const;
 
 private:
   // It will only be used on main thread, so doesn't need a lock.
-  static nsCOMPtr<nsIThread> sWorkerThread;
-  // Not thread safe. Can't be used it in worker thread.
-  nsRefPtr<Entry> mEntry;
+  nsCOMPtr<nsIThread> mWorkerThread;
+
+  already_AddRefed<nsIDOMDOMError> GetDOMError() const;
+  nsRefPtr<ErrorCallback> mErrorCallback;
+
   nsresult mErrorCode;
   nsString mErrorName;
 
-  nsCOMPtr<nsIThread> mWorkerThread;
+  // Not thread safe. Can't be used on in worker thread.
+  nsRefPtr<Entry> mEntry;
 };
 
-} /* namespace sdcard */
-} /* namespace dom */
-} /* namespace mozilla */
+} // namespace sdcard
+} // namespace dom
+} // namespace mozilla

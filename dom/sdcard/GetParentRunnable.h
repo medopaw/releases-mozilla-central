@@ -1,9 +1,8 @@
-/*
- * GetParentRunnable.h
- *
- *  Created on: Apr 8, 2013
- *      Author: yuan
- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=2 sw=2 sts=2 et cindent: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #pragma once
 
@@ -25,7 +24,7 @@ public:
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  virtual void MainThreadRun() MOZ_OVERRIDE;
+  virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
   nsCOMPtr<nsIFile> mFile;
@@ -33,8 +32,6 @@ private:
 
   // not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
-  // not thread safe
-  nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 } // namespace sdcard

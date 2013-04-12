@@ -150,8 +150,8 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
   }
 
   nsRefPtr<CopyAndMoveToRunnable> runnable = new CopyAndMoveToRunnable(&parent,
-      newNamePtr, successCallbackPtr,
-      errorCallbackPtr, this, isCopy);
+      newNamePtr, isCopy, successCallbackPtr,
+      errorCallbackPtr, this);
   runnable->Start();
 }
 

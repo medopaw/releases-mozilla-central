@@ -1,9 +1,8 @@
-/*
- * ReadEntriesRunnable.cpp
- *
- *  Created on: Apr 10, 2013
- *      Author: yuan
- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=2 sw=2 sts=2 et cindent: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "ReadEntriesRunnable.h"
 #include "nsISimpleEnumerator.h"
@@ -17,9 +16,8 @@ namespace sdcard {
 ReadEntriesRunnable::ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry) :
-    CombinedRunnable(aEntry),
-    mSuccessCallback(aSuccessCallback),
-    mErrorCallback(aErrorCallback)
+    CombinedRunnable(aEntry, aErrorCallback),
+    mSuccessCallback(aSuccessCallback)
 {
   mFile = aEntry->GetFileInternal();
 }
@@ -31,8 +29,9 @@ ReadEntriesRunnable::~ReadEntriesRunnable()
 void ReadEntriesRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in ReadEntriesRunnable.WorkerThreadRun()!");
-  nsresult rv = NS_OK;
+  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
+  nsresult rv = NS_OK;
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   rv = mFile->GetDirectoryEntries(getter_AddRefs(childEnumerator));
   if (NS_FAILED(rv))
@@ -65,31 +64,22 @@ void ReadEntriesRunnable::WorkerThreadRun()
   }
 }
 
-void ReadEntriesRunnable::MainThreadRun()
+void ReadEntriesRunnable::OnSuccess()
 {
-  SDCARD_LOG("in GetParentRunnable.MainThreadRun()!");
-  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
-  if (error) {
-    // error callback
-    if (mErrorCallback) {
-      ErrorResult rv;
-      mErrorCallback->Call(error, rv);
-    }
-  } else {
-    // success callback
-    Sequence<OwningNonNull<Entry> > entries;
-    int n = mChildren.Length();
-    for (int i = 0; i < n; i++) {
-      nsRefPtr<Entry> entry = Entry::FromFile(GetEntry()->GetFilesystem(),
-          mChildren[i].get());
-      *entries.AppendElement() = entry.forget();
-    }
-    ErrorResult rv;
-    mSuccessCallback->Call(entries, rv);
+  SDCARD_LOG("in ReadEntriesRunnable.OnSuccess()!");
+  MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
+
+  Sequence<OwningNonNull<Entry> > entries;
+  int n = mChildren.Length();
+  for (int i = 0; i < n; i++) {
+    nsRefPtr<Entry> entry = Entry::FromFile(GetEntry()->GetFilesystem(), mChildren[i].get());
+    *entries.AppendElement() = entry.forget();
   }
+  ErrorResult rv;
+  mSuccessCallback->Call(entries, rv);
 }
 
 
-} /* namespace sdcard */
-} /* namespace dom */
-} /* namespace mozilla */
+} // namespace sdcard
+} // namespace dom
+} // namespace mozilla
