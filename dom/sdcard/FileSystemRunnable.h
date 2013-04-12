@@ -130,21 +130,23 @@ private:
 
 class RemoveRunnable : public CombinedRunnable
 {
-  public:
-    RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
-    ~RemoveRunnable();
+public:
+  RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback,
+      Entry* aEntry, bool aRecursive = false);
+  ~RemoveRunnable();
 
-  protected:
-    virtual void WorkerThreadRun() MOZ_OVERRIDE;
-    virtual void MainThreadRun() MOZ_OVERRIDE;
+protected:
+  virtual void WorkerThreadRun() MOZ_OVERRIDE;
+  virtual void MainThreadRun() MOZ_OVERRIDE;
 
-  private:
-    nsCOMPtr<nsIFile> mFile;
+private:
+  nsCOMPtr<nsIFile> mFile;
+  bool mRecursive;
 
-    // not thread safe
-    nsRefPtr<VoidCallback> mSuccessCallback;
-    // not thread safe
-    nsRefPtr<ErrorCallback> mErrorCallback;
+  // not thread safe
+  nsRefPtr<VoidCallback> mSuccessCallback;
+  // not thread safe
+  nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 class GetEntryRunnable : public FileSystemRunnable
@@ -161,18 +163,6 @@ class GetEntryRunnable : public FileSystemRunnable
     bool mExclusive;
     const unsigned long mType;
     nsRefPtr<EntryCallback> mSuccessCallback;
-};
-
-class RemoveRecursivelyRunnable : public FileSystemRunnable
-{
-  public:
-    RemoveRecursivelyRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
-    ~RemoveRecursivelyRunnable();
-
-    NS_IMETHOD Run();
-
-  private:
-    nsRefPtr<VoidCallback> mSuccessCallback;
 };
 
 } // namespace sdcard

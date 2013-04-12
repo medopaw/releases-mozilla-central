@@ -107,7 +107,7 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
     }
   }
   if (!name.IsEmpty()) {
-    domError = DOMError::CreateWithName(mErrorName);
+    domError = DOMError::CreateWithName(name);
   }
   return domError;
 }

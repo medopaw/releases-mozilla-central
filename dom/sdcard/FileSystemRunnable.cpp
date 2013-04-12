@@ -195,8 +195,9 @@ void GetMetadataRunnable::MainThreadRun()
 }
 
 RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback,
-    ErrorCallback* aErrorCallback, Entry* aEntry) :
+    ErrorCallback* aErrorCallback, Entry* aEntry, bool aRecursive/* = false*/) :
     CombinedRunnable(aEntry),
+    mRecursive(aRecursive),
     mSuccessCallback(aSuccessCallback),
     mErrorCallback(aErrorCallback)
 {
@@ -219,7 +220,7 @@ void RemoveRunnable::WorkerThreadRun()
     SetErrorName(DOM_ERROR_NO_MODIFICATION_ALLOWED);
     return;
   } else {
-    rv = mFile->Remove(false);
+    rv = mFile->Remove(mRecursive);
     if (NS_FAILED(rv)) {
       SetErrorCode(rv);
     }
@@ -314,40 +315,6 @@ NS_IMETHODIMP GetEntryRunnable::Run()
   if (NS_FAILED(rv)) {
     r = new ErrorRunnable(mErrorCallback.get(), rv);
   }
-  NS_DispatchToMainThread(r);
-
-  return rv;
-}
-
-RemoveRecursivelyRunnable::RemoveRecursivelyRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
-{
-  SDCARD_LOG("init RemoveRecursivelyRunnable");
-}
-
-RemoveRecursivelyRunnable::~RemoveRecursivelyRunnable()
-{
-}
-
-NS_IMETHODIMP RemoveRecursivelyRunnable::Run()
-{
-  SDCARD_LOG("in RemoveRecursivelyRunnable.Run()!");
-  SDCARD_LOG("on main thread: %d", NS_IsMainThread());
-  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-  MOZ_ASSERT(!mEntry->IsDirectory(), "Only call on DirectoryEntry!");
-
-  nsCOMPtr<nsIRunnable> r;
-  nsresult rv = NS_OK;
-  if (mEntry->IsRoot()) {
-    r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
-  } else {
-    rv = mEntry->GetFileInternal()->Remove(true);
-    if (NS_FAILED(rv)) {
-      r = new ErrorRunnable(mErrorCallback.get(), rv);
-    } else {
-      r = new ResultRunnable<VoidCallback, void>(mSuccessCallback.get());
-    }
-  }
-
   NS_DispatchToMainThread(r);
 
   return rv;

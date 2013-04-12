@@ -128,14 +128,15 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
-    SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
+  SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
 
-    ErrorCallback* pErrorCallback = nullptr;
-    if (errorCallback.WasPassed()) {
-      pErrorCallback = errorCallback.Value().get();
-    }
-    nsIRunnable* r = new RemoveRecursivelyRunnable(&successCallback, pErrorCallback, this);
-    mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+  ErrorCallback* pErrorCallback = nullptr;
+  if (errorCallback.WasPassed()) {
+    pErrorCallback = errorCallback.Value().get();
+  }
+  nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback,
+      pErrorCallback, this, true);
+  runnable->Start();
 }
 
 } // namespace sdcard
