@@ -1,22 +1,20 @@
-/*
- * CombinedRunnable.cpp
- *
- * Combines worker and main thread runnable into one.
- *
- *  Created on: Apr 11, 2013
- *      Author: yuan
- */
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=2 sw=2 sts=2 et cindent: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "CombinedRunnable.h"
 #include "Entry.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsString.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-nsCOMPtr<nsIThread> CombinedRunnable::sWorkerThread;
+// nsCOMPtr<nsIThread> CombinedRunnable::sWorkerThread;
 
 const nsString DOM_ERROR_ENCODING                =   NS_LITERAL_STRING("EncodingError");
 const nsString DOM_ERROR_INVALID_MODIFICATION    =   NS_LITERAL_STRING("InvalidModificationError");
@@ -32,7 +30,8 @@ const nsString DOM_ERROR_UNKNOWN                 =  NS_LITERAL_STRING("Unknown")
 
 CombinedRunnable::CombinedRunnable(Entry* entry) :
     mEntry(entry),
-        mErrorCode(NS_OK)
+    mErrorCode(NS_OK),
+    mWorkerThread(nullptr)
 {
 }
 
@@ -42,25 +41,37 @@ CombinedRunnable::~CombinedRunnable()
 
 void CombinedRunnable::Start()
 {
-  // Run on worker thread.
-  if (!sWorkerThread) {
-    nsresult rv = NS_NewThread(getter_AddRefs(sWorkerThread));
-    if (NS_FAILED(rv) ) {
-      sWorkerThread = nullptr;
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+  // run worker thread
+  if (!mWorkerThread) {
+    nsresult rv = NS_NewThread(getter_AddRefs(mWorkerThread));
+    if (NS_FAILED(rv)) {
+      mWorkerThread = nullptr;
+      // we need to call errorcallback here
+      // mErrorCallback.Call(xxx);
       return;
     }
   }
-  sWorkerThread->Dispatch(this, NS_DISPATCH_NORMAL);
+  mWorkerThread->Dispatch(this, NS_DISPATCH_NORMAL);
 }
 
 NS_IMETHODIMP CombinedRunnable::Run()
 {
   if (!NS_IsMainThread()) {
+    SDCARD_LOG("CombinedRunnable.Run() on worker thread.");
+    // run worker thread tasks, majorly file io operations
     WorkerThreadRun();
+    // dispatch itself to main thread
     NS_DispatchToMainThread(this);
   } else {
+    SDCARD_LOG("CombinedRunnable.Run() on main thread.");
+    // shutdown mWorkerThread
+    if (!mWorkerThread) {
+      mWorkerThread->Shutdown();
+    }
+    // run main thread tasks, majorly call callbacks
     MainThreadRun();
-    // Assure mEntry is released on main thread.
+    // ensure mEntry is released on main thread
     mEntry = nullptr;
   }
 
