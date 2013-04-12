@@ -13,19 +13,20 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-GetEntryRunnable::GetEntryRunnable(const nsAString& aPath,
+GetEntryRunnable::GetEntryRunnable(
+	const nsAString& aPath,
     bool aCreate,
     bool aExclusive,
-    const unsigned long aType,
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
-    Entry* aEntry) :
-      CombinedRunnable(aEntry, aErrorCallback),
+    Entry* aEntry,
+    const unsigned long aType) :
+      CombinedRunnable(aErrorCallback, aEntry),
       mPath(aPath),
       mCreate(aCreate),
       mExclusive(aExclusive),
-      mType(aType),
-      mSuccessCallback(aSuccessCallback)
+      mSuccessCallback(aSuccessCallback),
+      mType(aType)
 
 {
   SDCARD_LOG("init GetEntryRunnable");

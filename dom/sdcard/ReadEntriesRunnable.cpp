@@ -16,9 +16,10 @@ namespace sdcard {
 ReadEntriesRunnable::ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry) :
-    CombinedRunnable(aEntry, aErrorCallback),
+    CombinedRunnable(aErrorCallback, aEntry),
     mSuccessCallback(aSuccessCallback)
 {
+SDCARD_LOG("init ReadEntriesRunnabl!");
   mFile = aEntry->GetFileInternal();
 }
 

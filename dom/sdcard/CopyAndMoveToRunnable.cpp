@@ -13,13 +13,14 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-CopyAndMoveToRunnable::CopyAndMoveToRunnable(DirectoryEntry* aParent,
+CopyAndMoveToRunnable::CopyAndMoveToRunnable(
+    DirectoryEntry* aParent,
     const nsAString* aNewName,
-    bool aIsCopy,
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
-    Entry* aEntry) :
-    CombinedRunnable(aEntry, aErrorCallback),
+    Entry* aEntry,
+    bool aIsCopy) :
+    CombinedRunnable(aErrorCallback, aEntry),
     mSuccessCallback(aSuccessCallback),
     mIsCopy(aIsCopy)
 {

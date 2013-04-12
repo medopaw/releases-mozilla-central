@@ -15,12 +15,14 @@ namespace sdcard {
 class GetEntryRunnable : public CombinedRunnable
 {
 public:
-  GetEntryRunnable(const nsAString& aPath,
-  bool aCreate, bool aExclusive,
-  const unsigned long aType,
-  EntryCallback* aSuccessCallback,
-  ErrorCallback* aErrorCallback,
-  Entry* aEntry);
+  GetEntryRunnable(
+      const nsAString& aPath,
+      bool aCreate,
+      bool aExclusive,
+      EntryCallback* aSuccessCallback,
+      ErrorCallback* aErrorCallback,
+      Entry* aEntry,
+      const unsigned long aType);
 
   virtual ~GetEntryRunnable();
 
@@ -30,16 +32,16 @@ protected:
 
 private:
   bool Exists(nsIFile* aFile);
-
-  nsCOMPtr<nsIFile> mResultFile;
+  // not thread safe
 
   nsString mPath;
   bool mCreate;
   bool mExclusive;
+  nsRefPtr<EntryCallback> mSuccessCallback;
   const unsigned long mType;
 
-  // not thread safe
-  nsRefPtr<EntryCallback> mSuccessCallback;
+  nsCOMPtr<nsIFile> mResultFile;
+
 };
 
 } /* namespace sdcard */

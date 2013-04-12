@@ -16,9 +16,10 @@ namespace sdcard {
 GetParentRunnable::GetParentRunnable(EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry) :
-    CombinedRunnable(aEntry, aErrorCallback),
+    CombinedRunnable(aErrorCallback, aEntry),
     mSuccessCallback(aSuccessCallback)
 {
+  SDCARD_LOG("init GetParentRunnable!");
   mFile = aEntry->GetFileInternal();
 }
 

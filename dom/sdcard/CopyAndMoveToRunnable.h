@@ -15,10 +15,13 @@ namespace sdcard {
 class CopyAndMoveToRunnable : public CombinedRunnable
 {
 public:
-  CopyAndMoveToRunnable(DirectoryEntry* aParent, const nsAString* aNewName, bool aIsCopy,
+  CopyAndMoveToRunnable(
+      DirectoryEntry* aParent,
+      const nsAString* aNewName,
       EntryCallback* aSuccessCallback,
       ErrorCallback* aErrorCallback,
-      Entry* aEntry);
+      Entry* aEntry,
+      bool aIsCopy);
 
   virtual ~CopyAndMoveToRunnable();
 

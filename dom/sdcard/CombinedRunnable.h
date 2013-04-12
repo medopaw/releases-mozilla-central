@@ -14,8 +14,6 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class Entry;
-
 extern const nsString DOM_ERROR_ENCODING;
 extern const nsString DOM_ERROR_INVALID_MODIFICATION;
 extern const nsString DOM_ERROR_INVALID_STATE;
@@ -28,10 +26,12 @@ extern const nsString DOM_ERROR_SECURITY;
 extern const nsString DOM_ERROR_TYPE_MISMATCH;
 extern const nsString DOM_ERROR_UNKNOWN;
 
+class Entry;
+
 class CombinedRunnable : public nsRunnable
 {
 public:
-  CombinedRunnable(Entry* entry, ErrorCallback* aErrorCallback);
+  CombinedRunnable(ErrorCallback* aErrorCallback, Entry* entry);
   virtual ~CombinedRunnable();
 
   /*
@@ -55,17 +55,18 @@ protected:
   Entry* GetEntry() const;
 
 private:
-  // It will only be used on main thread, so doesn't need a lock.
-  nsCOMPtr<nsIThread> mWorkerThread;
-
   already_AddRefed<nsIDOMDOMError> GetDOMError() const;
-  nsRefPtr<ErrorCallback> mErrorCallback;
 
   nsresult mErrorCode;
   nsString mErrorName;
 
-  // Not thread safe. Can't be used on in worker thread.
+  nsRefPtr<ErrorCallback> mErrorCallback;
+
+  // Not thread safe. Can't be used on worker thread.
   nsRefPtr<Entry> mEntry;
+
+  // It will only be used on main thread, so doesn't need a lock.
+  nsCOMPtr<nsIThread> mWorkerThread;
 };
 
 } // namespace sdcard

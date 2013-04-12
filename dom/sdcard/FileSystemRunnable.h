@@ -117,8 +117,8 @@ protected:
 
 private:
   nsCOMPtr<nsIFile> mFile;
-  uint64_t mFileSize;
   PRTime mTime;
+  uint64_t mFileSize;
 
   // not thread safe
   nsRefPtr<MetadataCallback> mSuccessCallback;

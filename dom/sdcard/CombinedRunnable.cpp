@@ -14,8 +14,6 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-// nsCOMPtr<nsIThread> CombinedRunnable::sWorkerThread;
-
 const nsString DOM_ERROR_ENCODING                =   NS_LITERAL_STRING("EncodingError");
 const nsString DOM_ERROR_INVALID_MODIFICATION    =   NS_LITERAL_STRING("InvalidModificationError");
 const nsString DOM_ERROR_INVALID_STATE           =   NS_LITERAL_STRING("InvalidStateError");
@@ -28,9 +26,9 @@ const nsString DOM_ERROR_SECURITY                =   NS_LITERAL_STRING("Security
 const nsString DOM_ERROR_TYPE_MISMATCH           =   NS_LITERAL_STRING("TypeMismatchError");
 const nsString DOM_ERROR_UNKNOWN                 =  NS_LITERAL_STRING("Unknown");
 
-CombinedRunnable::CombinedRunnable(Entry* entry, ErrorCallback* aErrorCallback) :
-    mEntry(entry),
+CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback, Entry* entry) :
     mErrorCallback(aErrorCallback),
+    mEntry(entry),
     mErrorCode(NS_OK),
     mWorkerThread(nullptr)
 {

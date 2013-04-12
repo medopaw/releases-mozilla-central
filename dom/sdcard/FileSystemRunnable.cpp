@@ -136,10 +136,10 @@ FileSystemRunnable::~FileSystemRunnable()
 
 GetMetadataRunnable::GetMetadataRunnable(MetadataCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback, Entry* aEntry) :
-    CombinedRunnable(aEntry, aErrorCallback),
-    mFileSize(0),
+    CombinedRunnable(aErrorCallback, aEntry),
+    mSuccessCallback(aSuccessCallback),
     mTime(0),
-    mSuccessCallback(aSuccessCallback)
+    mFileSize(0)
 {
   SDCARD_LOG("init GetMetadataRunnable");
   mFile = aEntry->GetFileInternal();
@@ -187,11 +187,14 @@ void GetMetadataRunnable::OnSuccess()
   mSuccessCallback->Call(*metadata, rv);
 }
 
-RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback,
-    ErrorCallback* aErrorCallback, Entry* aEntry, bool aRecursive/* = false*/) :
-    CombinedRunnable(aEntry, aErrorCallback),
-    mRecursive(aRecursive),
-    mSuccessCallback(aSuccessCallback)
+RemoveRunnable::RemoveRunnable(
+    VoidCallback* aSuccessCallback,
+    ErrorCallback* aErrorCallback,
+    Entry* aEntry,
+    bool aRecursive) :
+    CombinedRunnable(aErrorCallback, aEntry),
+    mSuccessCallback(aSuccessCallback),
+    mRecursive(aRecursive)
 {
   SDCARD_LOG("init RemoveRunnable");
   mFile = aEntry->GetFileInternal();

@@ -79,7 +79,7 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
     nsString realPath;
     Path::InnerPathToRealPath(absolutePath, realPath);
 
-    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::NORMAL_FILE_TYPE, pSuccessCallback, pErrorCallback, this);
+    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, nsIFile::NORMAL_FILE_TYPE);
     runnable->Start();
 }
 
@@ -111,7 +111,7 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
     nsString realPath;
     Path::InnerPathToRealPath(absolutePath, realPath);
 
-    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::DIRECTORY_TYPE, pSuccessCallback, pErrorCallback, this);
+    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, nsIFile::DIRECTORY_TYPE);
     runnable->Start();
 }
 
