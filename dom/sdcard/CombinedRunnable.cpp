@@ -41,6 +41,7 @@ CombinedRunnable::~CombinedRunnable()
 void CombinedRunnable::Start()
 {
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
   // run worker thread
   if (!mWorkerThread) {
     nsresult rv = NS_NewThread(getter_AddRefs(mWorkerThread));
@@ -95,14 +96,14 @@ void CombinedRunnable::MainThreadRun()
 }
 
 
-void CombinedRunnable::SetErrorCode(nsresult errorString)
+void CombinedRunnable::SetErrorCode(const nsresult& aErrorCode)
 {
-  mErrorCode = errorString;
+  mErrorCode = aErrorCode;
 }
 
-void CombinedRunnable::SetErrorName(const nsString& errorName)
+void CombinedRunnable::SetErrorName(const nsAString& aErrorName)
 {
-  mErrorName = errorName;
+  mErrorName = aErrorName;
 }
 
 already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const

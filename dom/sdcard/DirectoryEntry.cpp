@@ -12,6 +12,7 @@
 #include "FileSystem.h"
 #include "GetEntryRunnable.h"
 #include "RemoveRunnable.h"
+#include "ErrorRunnable.h"
 #include "Path.h"
 #include "Utils.h"
 
@@ -67,8 +68,8 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
 
     // check if path is valid
     if (!Path::IsValidPath(path)) {
-      // nsCOMPtr<nsIRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
-      // NS_DispatchToMainThread(r);
+      nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
+      r->Start();
     }
 
     // turn relative path to absolute
@@ -99,8 +100,8 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
 
     // check if path is valid
     if (!Path::IsValidPath(path)) {
-      // nsCOMPtr<nsIRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
-      // NS_DispatchToMainThread(r);
+      nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
+      r->Start();
     }
 
     // turn relative path to absolute

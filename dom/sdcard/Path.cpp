@@ -90,10 +90,15 @@ bool Path::IsValidPath(const nsAString& aPath)
   if (aPath.IsEmpty() || Path::IsRoot(aPath)) {
     return true;
   }
-  if (FindInReadable(NS_LITERAL_STRING("\0"), aPath)) {
+
+  nsReadingIterator<PRUnichar> begin;
+  nsReadingIterator<PRUnichar> end;
+  aPath.BeginReading(begin);
+  aPath.EndReading(end);
+  if (FindCharInReadable(PRUnichar('\0'), begin, end)) {
     return false;
   }
-  if (FindInReadable(NS_LITERAL_STRING("\\"), aPath)) {
+  if (FindCharInReadable(PRUnichar('\\'), begin, end)) {
     return false;
   }
   return true;

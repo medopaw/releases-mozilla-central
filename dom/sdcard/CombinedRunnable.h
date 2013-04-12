@@ -49,8 +49,8 @@ protected:
   void MainThreadRun();
   virtual void OnSuccess() = 0;
 
-  void SetErrorCode(nsresult errorCode);
-  void SetErrorName(const nsString& errorName);
+  void SetErrorCode(const nsresult& aErrorCode);
+  void SetErrorName(const nsAString& aErrorName);
 
   Entry* GetEntry() const;
 

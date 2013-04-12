@@ -46,6 +46,7 @@ CPPSRCS = \
   GetParentRunnable.cpp \
   GetEntryRunnable.cpp \
   ReadEntriesRunnable.cpp \
+  ErrorRunnable.cpp \
   $(NULL)
 
 XPIDLSRCS = \
