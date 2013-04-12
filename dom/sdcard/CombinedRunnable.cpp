@@ -97,9 +97,9 @@ void CombinedRunnable::MainThreadRun()
 }
 
 
-void CombinedRunnable::SetErrorCode(nsresult errorCode)
+void CombinedRunnable::SetErrorCode(nsresult errorString)
 {
-  mErrorCode = errorCode;
+  mErrorCode = errorString;
 }
 
 void CombinedRunnable::SetErrorName(const nsString& errorName)
@@ -114,6 +114,49 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
   if (!mErrorName.IsEmpty()) {
     name = mErrorName;
   } else if (mErrorCode != NS_OK) {
+    nsString errorString;
+    switch (mErrorCode) {
+      case NS_ERROR_FILE_INVALID_PATH:
+        errorString.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
+        break;
+      case NS_ERROR_FILE_UNRECOGNIZED_PATH:
+        errorString.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
+        break;
+      case NS_ERROR_FILE_DESTINATION_NOT_DIR:
+        errorString.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
+        break;
+      case NS_ERROR_FILE_ACCESS_DENIED:
+        errorString.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
+        break;
+      case NS_ERROR_FILE_DIR_NOT_EMPTY:
+        errorString.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
+        break;
+      case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
+        errorString.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
+        break;
+      case NS_ERROR_NOT_AVAILABLE:
+        errorString.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
+        break;
+      case NS_ERROR_FILE_ALREADY_EXISTS:
+        errorString.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
+        break;
+      case NS_ERROR_DOM_SECURITY_ERR:
+        errorString.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
+      case NS_ERROR_OUT_OF_MEMORY:
+        errorString.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
+        break;
+      case NS_ERROR_FILE_NOT_DIRECTORY:
+        errorString.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
+        break;
+      case NS_ERROR_UNEXPECTED:
+        errorString.AssignLiteral("NS_ERROR_UNEXPECTED");
+      default:
+        errorString.AssignLiteral("Unknow Error Code");
+        SDCARD_LOG("Error Code: %u", mErrorCode);
+        break;
+    }
+    SDCARD_LOG("Error code: %s", NS_ConvertUTF16toUTF8(errorString).get());
+
     switch (mErrorCode) {
     case NS_ERROR_FILE_INVALID_PATH:
     case NS_ERROR_FILE_UNRECOGNIZED_PATH:
