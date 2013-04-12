@@ -10,11 +10,12 @@
 
 #include "FileSystem.h"
 #include "Metadata.h"
-#include "FileSystemRunnable.h"
 #include "Path.h"
 #include "Utils.h"
 #include "GetParentRunnable.h"
 #include "CopyAndMoveToRunnable.h"
+#include "GetMetadataRunnable.h"
+#include "RemoveRunnable.h"
 #include "FileEntry.h"
 #include "DirectoryEntry.h"
 

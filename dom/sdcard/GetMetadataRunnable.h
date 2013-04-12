@@ -12,36 +12,26 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class GetEntryRunnable : public CombinedRunnable
+class GetMetadataRunnable : public CombinedRunnable
 {
 public:
-  GetEntryRunnable(
-      const nsAString& aPath,
-      bool aCreate,
-      bool aExclusive,
-      EntryCallback* aSuccessCallback,
+  GetMetadataRunnable(
+      MetadataCallback* aSuccessCallback,
       ErrorCallback* aErrorCallback,
-      Entry* aEntry,
-      const unsigned long aType);
-
-  virtual ~GetEntryRunnable();
+      Entry* aEntry);
+  virtual ~GetMetadataRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
-  bool Exists(nsIFile* aFile);
   // not thread safe
+  nsRefPtr<MetadataCallback> mSuccessCallback;
 
-  nsString mPath;
-  bool mCreate;
-  bool mExclusive;
-  nsRefPtr<EntryCallback> mSuccessCallback;
-  const unsigned long mType;
-
-  nsCOMPtr<nsIFile> mResultFile;
-
+  nsCOMPtr<nsIFile> mFile;
+  PRTime mTime;
+  uint64_t mFileSize;
 };
 
 } // namespace sdcard

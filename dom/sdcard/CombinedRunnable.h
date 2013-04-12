@@ -31,7 +31,7 @@ class Entry;
 class CombinedRunnable : public nsRunnable
 {
 public:
-  CombinedRunnable(ErrorCallback* aErrorCallback, Entry* entry);
+  CombinedRunnable(ErrorCallback* aErrorCallback, Entry* aEntry);
   virtual ~CombinedRunnable();
 
   /*
@@ -57,13 +57,13 @@ protected:
 private:
   already_AddRefed<nsIDOMDOMError> GetDOMError() const;
 
-  nsresult mErrorCode;
-  nsString mErrorName;
-
   nsRefPtr<ErrorCallback> mErrorCallback;
 
   // Not thread safe. Can't be used on worker thread.
   nsRefPtr<Entry> mEntry;
+
+  nsresult mErrorCode;
+  nsString mErrorName;
 
   // It will only be used on main thread, so doesn't need a lock.
   nsCOMPtr<nsIThread> mWorkerThread;

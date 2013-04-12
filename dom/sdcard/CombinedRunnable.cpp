@@ -26,9 +26,9 @@ const nsString DOM_ERROR_SECURITY                =   NS_LITERAL_STRING("Security
 const nsString DOM_ERROR_TYPE_MISMATCH           =   NS_LITERAL_STRING("TypeMismatchError");
 const nsString DOM_ERROR_UNKNOWN                 =  NS_LITERAL_STRING("Unknown");
 
-CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback, Entry* entry) :
+CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback, Entry* aEntry) :
     mErrorCallback(aErrorCallback),
-    mEntry(entry),
+    mEntry(aEntry),
     mErrorCode(NS_OK),
     mWorkerThread(nullptr)
 {

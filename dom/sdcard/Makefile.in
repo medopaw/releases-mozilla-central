@@ -39,12 +39,13 @@ CPPSRCS = \
   FileEntry.cpp \
   Metadata.cpp \
   Path.cpp \
-  FileSystemRunnable.cpp \
-  GetParentRunnable.cpp \
-  ReadEntriesRunnable.cpp \
-  CopyAndMoveToRunnable.cpp \
-  GetEntryRunnable.cpp \
   CombinedRunnable.cpp \
+  GetMetadataRunnable.cpp \
+  CopyAndMoveToRunnable.cpp \
+  RemoveRunnable.cpp \
+  GetParentRunnable.cpp \
+  GetEntryRunnable.cpp \
+  ReadEntriesRunnable.cpp \
   $(NULL)
 
 XPIDLSRCS = \
