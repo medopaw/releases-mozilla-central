@@ -67,34 +67,13 @@ void FileSystem::GetName(nsString& retval) const
 already_AddRefed<DirectoryEntry> FileSystem::Root()
 {
     SDCARD_LOG("in FileSystem.Root()");
-    NS_IF_ADDREF(mRoot);
-    return mRoot.get();
-
-    // DirectoryEntry* root = mRoot;
-    // NS_IF_ADDREF(root);
-    // return root;
-
-    // nsCOMPtr<DirectoryEntry> root(do_QueryInterface(mRoot));
-    // return root.forget();
+    nsRefPtr<DirectoryEntry> root(mRoot);
+    return root.forget().get();
 }
 
 bool FileSystem::IsValid() const
 {
     return mRoot && mRoot->Exists();
-}
-
-void FileSystem::DispatchToWorkerThread(nsCOMPtr<nsIRunnable> aRunnable, nsRefPtr<ErrorCallback> aErrorCallback)
-{
-  nsresult rv = NS_OK;
-  if (!mWorkerThread) {
-    rv = NS_NewThread(getter_AddRefs(mWorkerThread));
-  }
-  if (NS_FAILED(rv)) {
-    nsCOMPtr<nsIRunnable> r = new ErrorRunnable(aErrorCallback, rv);
-    NS_DispatchToMainThread(r);
-  } else {
-    mWorkerThread->Dispatch(aRunnable, NS_DISPATCH_NORMAL);
-  }
 }
 
 } // namespace sdcard

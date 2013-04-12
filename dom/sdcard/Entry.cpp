@@ -109,11 +109,11 @@ void Entry::GetFullPath(nsString& retval) const
   retval = fullPath;
 }
 
-FileSystem* Entry::Filesystem() const
+already_AddRefed<FileSystem> Entry::Filesystem() const
 {
   SDCARD_LOG("in Entry.Filesystem()");
   nsRefPtr<FileSystem> fileSystem(mFilesystem);
-  return fileSystem.forget().get();
+  return fileSystem.forget();
 }
 
 void Entry::MoveTo(DirectoryEntry& parent, const Optional<nsAString >& newName,

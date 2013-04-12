@@ -42,19 +42,7 @@ DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 {
   return DirectoryEntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
 }
-/*
-bool DirectoryEntry::IsFile() const
-{
-  SDCARD_LOG("in DirectoryEntry.IsFile()!!!");
-  return false;
-}
 
-bool DirectoryEntry::IsDirectory() const
-{
-  SDCARD_LOG("in DirectoryEntry.IsDirectory()!!!");
-  return true;
-}
-*/
 already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
 {
     SDCARD_LOG("in DirectoryEntry.CreateReader()");
@@ -91,7 +79,6 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
     Path::InnerPathToRealPath(absolutePath, realPath);
 
     nsIRunnable* r = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::NORMAL_FILE_TYPE, pSuccessCallback, pErrorCallback);
-    mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
 }
 
 void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
@@ -123,7 +110,6 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
     Path::InnerPathToRealPath(absolutePath, realPath);
 
     nsIRunnable* r = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::DIRECTORY_TYPE, pSuccessCallback, pErrorCallback);
-    mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
 }
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)

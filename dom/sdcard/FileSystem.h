@@ -47,27 +47,8 @@ public:
 
   // Mark this as resultNotAddRefed to return raw pointers
   already_AddRefed<DirectoryEntry> Root();
-/*  {
-    printf("\nin FileSystem.Root()\n");
-    if (!mRoot) {
-      mRoot = nullptr;
-      mRoot = new DirectoryEntry();
-    }
-    NS_IF_ADDREF(mRoot);
-    return mRoot.get();
-
-    // DirectoryEntry* root = mRoot;
-    // NS_IF_ADDREF(root);
-    // return root;
-
-    // nsCOMPtr<DirectoryEntry> root(do_QueryInterface(mRoot));
-    // return root.forget();
-  }
-*/
 
   bool IsValid() const;
-
-  void DispatchToWorkerThread(nsCOMPtr<nsIRunnable> aRunnable, nsRefPtr<ErrorCallback> aErrorCallback);
 
 private:
   nsCOMPtr<nsIDOMNavigator> mNavigator;

@@ -53,7 +53,7 @@ public:
 
   void GetFullPath(nsString& retval) const;
 
-  FileSystem* Filesystem() const;
+  already_AddRefed<FileSystem> Filesystem() const;
 
   void MoveTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
       const Optional<OwningNonNull<EntryCallback> >& successCallback,
