@@ -7,7 +7,6 @@
 #pragma once
 
 #include "CombinedRunnable.h"
-#include "mozilla/dom/FileSystemBinding.h"
 
 namespace mozilla {
 namespace dom {

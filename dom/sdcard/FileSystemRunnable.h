@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include "mozilla/dom/FileSystemBinding.h"
 #include "CombinedRunnable.h"
 #include "Utils.h"
 
