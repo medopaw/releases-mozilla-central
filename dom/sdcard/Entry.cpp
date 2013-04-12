@@ -163,8 +163,8 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsIRunnable* r = new RemoveRunnable(&successCallback, pErrorCallback, this);
-  mFilesystem->DispatchToWorkerThread(r, pErrorCallback);
+  nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this);
+  runnable->Start();
 }
 
 void Entry::GetParent(EntryCallback& successCallback,

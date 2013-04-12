@@ -8,6 +8,7 @@
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
 #include "Metadata.h"
+#include "Path.h"
 
 namespace mozilla {
 namespace dom {
@@ -152,7 +153,6 @@ GetMetadataRunnable::~GetMetadataRunnable()
 void GetMetadataRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetMetadataRunnable.WorkerThreadRun()!");
-  nsCOMPtr<nsIRunnable> r;
   nsresult rv = NS_OK;
   bool isDirectory = false;
   mFile->IsDirectory(&isDirectory);
@@ -194,37 +194,53 @@ void GetMetadataRunnable::MainThreadRun()
   }
 }
 
-RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
+RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback,
+    ErrorCallback* aErrorCallback, Entry* aEntry) :
+    CombinedRunnable(aEntry),
+    mSuccessCallback(aSuccessCallback),
+    mErrorCallback(aErrorCallback)
 {
   SDCARD_LOG("init RemoveRunnable");
+  mFile = aEntry->GetFileInternal();
 }
 
 RemoveRunnable::~RemoveRunnable()
 {
 }
 
-NS_IMETHODIMP RemoveRunnable::Run()
+void RemoveRunnable::WorkerThreadRun()
 {
-  SDCARD_LOG("in RemoveRunnable.Run()!");
-  SDCARD_LOG("on main thread: %d", NS_IsMainThread());
-  MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
-
-  nsCOMPtr<nsIRunnable> r;
+  SDCARD_LOG("in RemoveRunnable.WorkerThreadRun()!");
   nsresult rv = NS_OK;
-  if (mEntry->IsRoot()) {
-    r = new ErrorRunnable(mErrorCallback.get(), DOM_ERROR_NO_MODIFICATION_ALLOWED);
+  nsString path;
+  mFile->GetPath(path);
+  if (Path::IsBase(path)) {
+    // Cannot remove root directory
+    SetErrorName(DOM_ERROR_NO_MODIFICATION_ALLOWED);
+    return;
   } else {
-    rv = mEntry->GetFileInternal()->Remove(false);
+    rv = mFile->Remove(false);
     if (NS_FAILED(rv)) {
-      r = new ErrorRunnable(mErrorCallback.get(), rv);
-    } else {
-      r = new ResultRunnable<VoidCallback, void>(mSuccessCallback.get());
+      SetErrorCode(rv);
     }
   }
+}
 
-  NS_DispatchToMainThread(r);
-
-  return rv;
+void RemoveRunnable::MainThreadRun()
+{
+  SDCARD_LOG("in RemoveRunnable.MainThreadRun()!");
+  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
+  if (error) {
+    // error callback
+    if (mErrorCallback) {
+      ErrorResult rv;
+      mErrorCallback->Call(error, rv);
+    }
+  } else {
+    // success callback
+    ErrorResult rv;
+    mSuccessCallback->Call(rv);
+  }
 }
 
 GetEntryRunnable::GetEntryRunnable(const nsAString& aPath, bool aCreate, bool aExclusive, const unsigned long aType, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback) : FileSystemRunnable(aErrorCallback, nullptr), mPath(aPath), mCreate(aCreate), mExclusive(aExclusive), mType(aType), mSuccessCallback(aSuccessCallback)
@@ -302,7 +318,6 @@ NS_IMETHODIMP GetEntryRunnable::Run()
 
   return rv;
 }
-
 
 RemoveRecursivelyRunnable::RemoveRecursivelyRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry) : FileSystemRunnable(aErrorCallback, aEntry), mSuccessCallback(aSuccessCallback)
 {

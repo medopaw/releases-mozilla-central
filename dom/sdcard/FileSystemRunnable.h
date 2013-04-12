@@ -128,16 +128,23 @@ private:
   nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
-class RemoveRunnable : public FileSystemRunnable
+class RemoveRunnable : public CombinedRunnable
 {
   public:
     RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry);
     ~RemoveRunnable();
 
-    NS_IMETHOD Run();
+  protected:
+    virtual void WorkerThreadRun() MOZ_OVERRIDE;
+    virtual void MainThreadRun() MOZ_OVERRIDE;
 
   private:
+    nsCOMPtr<nsIFile> mFile;
+
+    // not thread safe
     nsRefPtr<VoidCallback> mSuccessCallback;
+    // not thread safe
+    nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
 class GetEntryRunnable : public FileSystemRunnable
