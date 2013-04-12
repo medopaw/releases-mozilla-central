@@ -26,14 +26,14 @@ CopyAndMoveToRunnable::CopyAndMoveToRunnable(DirectoryEntry* aParent,
     mIsCopy(aIsCopy)
 
 {
-  if (aNewName) {
+  if (aNewName && !aNewName->IsEmpty()) {
     mNewName = *aNewName;
   } else {
     // If the no new name is specified, set it to the entry's current name.
     aEntry->GetName(mNewName);
   }
   mFile = aEntry->GetFileInternal();
-  mNewParenFile = aParent->GetFileInternal();
+  mNewParentDir = aParent->GetFileInternal();
 }
 
 CopyAndMoveToRunnable::~CopyAndMoveToRunnable()
@@ -65,8 +65,8 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   }
 
     // Create destination nsIFile object
-  mNewParenFile->Clone(getter_AddRefs(mNewFile));
-  rv = mNewFile->Append(mNewName);
+  mNewParentDir->Clone(getter_AddRefs(mResultFile));
+  rv = mResultFile->Append(mNewName);
   if (NS_FAILED(rv)) {
     SetErrorCode(rv);
     return;
@@ -74,15 +74,15 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
 
   // Check if destination exists
   bool newFileExits = false;
-  mNewFile->Exists(&newFileExits);
+  mResultFile->Exists(&newFileExits);
 
   // Whether the destination is a file
   bool isNewFile = false;
   // Whether the destination is a directory
   bool isNewDirectory = false;
   if (newFileExits) {
-    mNewFile->IsFile(&isNewFile);
-    mNewFile->IsDirectory(&isNewDirectory);
+    mResultFile->IsFile(&isNewFile);
+    mResultFile->IsDirectory(&isNewDirectory);
     if (!(isNewFile || isNewDirectory)) {
       // Cannot overwrite a special file
       SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
@@ -91,7 +91,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   }
 
   nsString newPath;
-  mNewFile->GetPath(newPath);
+  mResultFile->GetPath(newPath);
 
   // The destination is the same with the source
   if (path == newPath) {
@@ -101,7 +101,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-  if (isNewDirectory && !IsDirectoryEmpty(mNewFile)) {
+  if (isNewDirectory && !IsDirectoryEmpty(mResultFile)) {
     // Cannot copy/move to a path occupied by a directory which is not empty.
     SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
     return;
@@ -121,12 +121,12 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   }
 
     // copy/Move the entry
-  mFile->Clone(getter_AddRefs(mNewFile));
+  mFile->Clone(getter_AddRefs(mResultFile));
 
   if (mIsCopy) {
-    rv = mNewFile->CopyTo(mNewParenFile, mNewName);
+    rv = mResultFile->CopyTo(mNewParentDir, mNewName);
   } else {
-    rv = mNewFile->MoveTo(mNewParenFile, mNewName);
+    rv = mResultFile->MoveTo(mNewParentDir, mNewName);
   }
   if (NS_FAILED(rv) ) {
     // Failed to copy/move
@@ -150,7 +150,7 @@ void CopyAndMoveToRunnable::MainThreadRun()
     if (mSuccessCallback) {
       ErrorResult rv;
       nsRefPtr<Entry> newEntry = Entry::FromFile(GetEntry()->GetFilesystem(),
-          mNewFile.get());
+          mResultFile.get());
       mSuccessCallback->Call(*newEntry, rv);
     }
   }

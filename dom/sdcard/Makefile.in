@@ -43,6 +43,7 @@ CPPSRCS = \
   GetParentRunnable.cpp \
   ReadEntriesRunnable.cpp \
   CopyAndMoveToRunnable.cpp \
+  GetEntryRunnable.cpp \
   CombinedRunnable.cpp \
   $(NULL)
 

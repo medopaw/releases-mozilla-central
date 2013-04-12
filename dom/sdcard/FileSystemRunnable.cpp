@@ -243,7 +243,7 @@ void RemoveRunnable::MainThreadRun()
     mSuccessCallback->Call(rv);
   }
 }
-
+/*
 GetEntryRunnable::GetEntryRunnable(const nsAString& aPath, bool aCreate, bool aExclusive, const unsigned long aType, EntryCallback* aSuccessCallback, ErrorCallback* aErrorCallback) : FileSystemRunnable(aErrorCallback, nullptr), mPath(aPath), mCreate(aCreate), mExclusive(aExclusive), mType(aType), mSuccessCallback(aSuccessCallback)
 {
   SDCARD_LOG("init GetEntryRunnable");
@@ -287,7 +287,7 @@ NS_IMETHODIMP GetEntryRunnable::Run()
       if (mCreate && !exists) {
         // create
         rv = file->Create(mType, 0600);
-      } 
+      }
       // retrieve
       if (NS_SUCCEEDED(rv)) {
         // create correspondng Entry
@@ -319,6 +319,7 @@ NS_IMETHODIMP GetEntryRunnable::Run()
 
   return rv;
 }
+*/
 
 } // namespace sdcard
 } // namespace dom

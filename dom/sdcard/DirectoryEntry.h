@@ -12,7 +12,6 @@
 #include "nsWrapperCache.h"
 
 #include "Entry.h"
-#include "DirectoryReader.h"
 #include "Utils.h"
 
 struct JSContext;
@@ -20,6 +19,8 @@ struct JSContext;
 namespace mozilla {
 namespace dom {
 namespace sdcard {
+
+class DirectoryEntry;
 
 class DirectoryEntry MOZ_FINAL : public Entry
                                  /* public nsWrapperCache Change wrapperCache in the binding configuration if you don't want this ,*/

@@ -114,7 +114,7 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
 
 Entry* CombinedRunnable::GetEntry() const
 {
-  MOZ_ASSERT(NS_IsMainThread(), "Should only be called on main thread!");
+  MOZ_ASSERT(NS_IsMainThread(), "only call on main thread!");
   if (NS_IsMainThread()) {
     return mEntry;
   } else {

@@ -32,8 +32,8 @@ private:
   bool IsDirectoryEmpty(nsIFile* dir);
 
   nsCOMPtr<nsIFile> mFile;
-  nsCOMPtr<nsIFile> mNewParenFile;
-  nsCOMPtr<nsIFile> mNewFile;
+  nsCOMPtr<nsIFile> mNewParentDir;
+  nsCOMPtr<nsIFile> mResultFile;
   nsString mNewName;
 
   // not thread safe

@@ -149,6 +149,7 @@ private:
   nsRefPtr<ErrorCallback> mErrorCallback;
 };
 
+/*
 class GetEntryRunnable : public FileSystemRunnable
 {
   public:
@@ -164,6 +165,7 @@ class GetEntryRunnable : public FileSystemRunnable
     const unsigned long mType;
     nsRefPtr<EntryCallback> mSuccessCallback;
 };
+*/
 
 } // namespace sdcard
 } // namespace dom

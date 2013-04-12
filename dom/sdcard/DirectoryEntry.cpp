@@ -8,9 +8,10 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
-// #include "DirectoryReader.h"
+#include "DirectoryReader.h"
 #include "FileSystem.h"
 #include "FileSystemRunnable.h"
+#include "GetEntryRunnable.h"
 #include "Path.h"
 #include "Utils.h"
 
@@ -78,7 +79,8 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
     nsString realPath;
     Path::InnerPathToRealPath(absolutePath, realPath);
 
-    nsIRunnable* r = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::NORMAL_FILE_TYPE, pSuccessCallback, pErrorCallback);
+    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::NORMAL_FILE_TYPE, pSuccessCallback, pErrorCallback, this);
+    runnable->Start();
 }
 
 void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
@@ -109,7 +111,8 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
     nsString realPath;
     Path::InnerPathToRealPath(absolutePath, realPath);
 
-    nsIRunnable* r = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::DIRECTORY_TYPE, pSuccessCallback, pErrorCallback);
+    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, nsIFile::DIRECTORY_TYPE, pSuccessCallback, pErrorCallback, this);
+    runnable->Start();
 }
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
