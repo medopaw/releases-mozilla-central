@@ -47,46 +47,38 @@ DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
 
 already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
 {
-    SDCARD_LOG("in DirectoryEntry.CreateReader()");
-    nsRefPtr<DirectoryReader> reader = new DirectoryReader(this);
-    return reader.forget();
+  SDCARD_LOG("in DirectoryEntry.CreateReader()");
+  nsRefPtr<DirectoryReader> reader = new DirectoryReader(this);
+  return reader.forget();
 }
 
 void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
-    SDCARD_LOG("in DirectoryEntry.GetFile()");
-
-    // if not passed, assign callback nullptr
-    EntryCallback* pSuccessCallback = nullptr;
-    ErrorCallback* pErrorCallback = nullptr;
-    if (successCallback.WasPassed()) {
-      pSuccessCallback = successCallback.Value().get();
-    }
-    if (errorCallback.WasPassed()) {
-      pErrorCallback = errorCallback.Value().get();
-    }
-
-    // check if path is valid
-    if (!Path::IsValidPath(path)) {
-      nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
-      r->Start();
-    }
-
-    // turn relative path to absolute
-    nsString fullPath;
-    GetFullPath(fullPath);
-    nsString absolutePath;
-    Path::Absolutize(path, fullPath, absolutePath);
-    nsString realPath;
-    Path::InnerPathToRealPath(absolutePath, realPath);
-
-    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, nsIFile::NORMAL_FILE_TYPE);
-    runnable->Start();
+  SDCARD_LOG("in DirectoryEntry.GetFile()");
+  GetEntry(path, options, successCallback, errorCallback, true);
 }
 
 void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
-    SDCARD_LOG("in DirectoryEntry.GetDirectory()");
+  SDCARD_LOG("in DirectoryEntry.GetDirectory()");
+  GetEntry(path, options, successCallback, errorCallback, true);
+}
+
+void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+{
+  SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
+
+  ErrorCallback* pErrorCallback = nullptr;
+  if (errorCallback.WasPassed()) {
+    pErrorCallback = errorCallback.Value().get();
+  }
+  nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this, true);
+  runnable->Start();
+}
+
+void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isDirectory)
+{
+    SDCARD_LOG("in DirectoryEntry.GetEntry()");
 
     // if not passed, assign callback nullptr
     EntryCallback* pSuccessCallback = nullptr;
@@ -100,6 +92,7 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
 
     // check if path is valid
     if (!Path::IsValidPath(path)) {
+      SDCARD_LOG("Path not valid!");
       nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
       r->Start();
       return;
@@ -113,21 +106,8 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
     nsString realPath;
     Path::InnerPathToRealPath(absolutePath, realPath);
 
-    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, nsIFile::DIRECTORY_TYPE);
+    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, isDirectory);
     runnable->Start();
-}
-
-void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
-{
-  SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
-
-  ErrorCallback* pErrorCallback = nullptr;
-  if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
-  }
-  nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback,
-      pErrorCallback, this, true);
-  runnable->Start();
 }
 
 } // namespace sdcard

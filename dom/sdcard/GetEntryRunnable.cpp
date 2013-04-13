@@ -20,13 +20,13 @@ GetEntryRunnable::GetEntryRunnable(
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry,
-    const unsigned long aType) :
+    bool aIsDirectory) :
       CombinedRunnable(aErrorCallback, aEntry),
       mPath(aPath),
       mCreate(aCreate),
       mExclusive(aExclusive),
       mSuccessCallback(aSuccessCallback),
-      mType(aType)
+      mIsDirectory(aIsDirectory)
 
 {
   SDCARD_LOG("init GetEntryRunnable");
@@ -43,6 +43,11 @@ bool GetEntryRunnable::Exists(nsIFile* aFile)
   return exists;
 }
 
+unsigned long GetEntryRunnable::Type(bool isDirectory)
+{
+  return isDirectory ? nsIFile::DIRECTORY_TYPE : nsIFile::NORMAL_FILE_TYPE;
+}
+
 void GetEntryRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetEntryRunnable.WorkerThread.Run()!");
@@ -55,6 +60,7 @@ void GetEntryRunnable::WorkerThreadRun()
     return;
   }
 
+  unsigned long type = Type(mIsDirectory);
   bool exists = Exists(mResultFile);
   if (!mCreate && !exists) {
     SetErrorName(DOM_ERROR_NOT_FOUND);
@@ -66,9 +72,9 @@ void GetEntryRunnable::WorkerThreadRun()
       bool isDirectory, isFile;
       mResultFile->IsDirectory(&isDirectory);
       mResultFile->IsFile(&isFile);
-      if (!(mType == nsIFile::NORMAL_FILE_TYPE || mType == nsIFile::DIRECTORY_TYPE)
-          || (mType == nsIFile::NORMAL_FILE_TYPE && isDirectory)
-          || (mType == nsIFile::DIRECTORY_TYPE && isFile)) {
+      if (!(type == nsIFile::NORMAL_FILE_TYPE || type == nsIFile::DIRECTORY_TYPE)
+          || (type == nsIFile::NORMAL_FILE_TYPE && isDirectory)
+          || (type == nsIFile::DIRECTORY_TYPE && isFile)) {
         SetErrorName(DOM_ERROR_TYPE_MISMATCH);
         return;
       }
@@ -77,7 +83,7 @@ void GetEntryRunnable::WorkerThreadRun()
   if (mCreate && !exists) {
     // create
     SDCARD_LOG("Create %s", NS_ConvertUTF16toUTF8(mPath).get());
-    rv = mResultFile->Create(mType, 0600);
+    rv = mResultFile->Create(type, 0600);
     if (NS_FAILED(rv)) {
       SetErrorCode(rv);
       return;

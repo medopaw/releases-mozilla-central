@@ -91,14 +91,16 @@ bool Path::IsValidPath(const nsAString& aPath)
     return true;
   }
 
-  nsReadingIterator<PRUnichar> begin;
+  nsReadingIterator<PRUnichar> start;
   nsReadingIterator<PRUnichar> end;
-  aPath.BeginReading(begin);
+  aPath.BeginReading(start);
   aPath.EndReading(end);
-  if (FindCharInReadable(PRUnichar('\0'), begin, end)) {
+  if (FindCharInReadable(PRUnichar('\0'), start, end)) {
+    SDCARD_LOG("Embedded NULs are not allowed.");
     return false;
   }
-  if (FindCharInReadable(PRUnichar('\\'), begin, end)) {
+  if (FindCharInReadable(PRUnichar('\\'), start, end)) {
+    SDCARD_LOG("Backslashes are not allowed!");
     return false;
   }
   return true;
