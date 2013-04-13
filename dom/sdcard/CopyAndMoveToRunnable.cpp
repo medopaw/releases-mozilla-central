@@ -24,10 +24,12 @@ CopyAndMoveToRunnable::CopyAndMoveToRunnable(
     mSuccessCallback(aSuccessCallback),
     mIsCopy(aIsCopy)
 {
+  SDCARD_LOG("init CopyAndMoveToRunnable");
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
   if (aNewName && !aNewName->IsEmpty()) {
     mNewName = *aNewName;
-  } else {
-    // If the no new name is specified, set it to the entry's current name.
+  } else { // if new name not specified, set it to the entry's current name
     aEntry->GetName(mNewName);
   }
   mFile = aEntry->GetFileInternal();

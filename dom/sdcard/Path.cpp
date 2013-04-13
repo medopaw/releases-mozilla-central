@@ -87,9 +87,11 @@ bool Path::IsValidName(const nsAString& aName)
   if (FindInReadable(Path::separator, aName)) {
     return false;
   }
+
   if (aName == Path::selfReference || aName == Path::parentReference) {
     return false;
   }
+
   return Path::IsValidPath(aName);
 }
 
@@ -98,40 +100,17 @@ bool Path::IsValidPath(const nsAString& aPath)
   if (aPath.IsEmpty() || Path::IsRoot(aPath)) {
     return true;
   }
-  /*
-  nsString s = NS_LITERAL_STRING("\\");
-  nsAString::const_iterator _start, _end;
-  s.BeginReading(_start);
-  s.EndReading(_end);
-  SDCARD_LOG("test1: %d", FindInReadable(NS_LITERAL_STRING("\\"), s));
-  SDCARD_LOG("test2: %d", FindCharInReadable(PRUnichar('\\'), _start, _end));
-  aPath.BeginReading(_start);
-  aPath.EndReading(_end);
-  SDCARD_LOG("test3: %d", FindInReadable(NS_LITERAL_STRING("\\"), aPath));
-  SDCARD_LOG("test4: %d", FindCharInReadable(PRUnichar('\\'), _start, _end));
-*/
-/*
-  nsACString::const_iterator start, end;
-  nsCString cPath = NS_ConvertUTF16toUTF8(aPath);
-  cPath.BeginReading(start);
-  cPath.EndReading(end);
-  if (FindCharInReadable(Path::nulChar, start, end)) {
-    SDCARD_LOG("Embedded NULs are not allowed!");
-    return false;
-  }
-  if (FindCharInReadable(Path::backslashChar, start, end)) {
-    SDCARD_LOG("Backslashes are not allowed!");
-    return false;
-  }
-  */
+
   if (FindInReadable(Path::nul, aPath)) {
     SDCARD_LOG("Embedded NULs are not allowed!");
     return false;
   }
+
   if (FindInReadable(Path::backslash, aPath)) {
     SDCARD_LOG("Backslashes are not allowed!");
     return false;
   }
+
   return true;
 }
 

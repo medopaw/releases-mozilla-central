@@ -55,11 +55,15 @@ public:
 
   already_AddRefed<FileSystem> Filesystem() const;
 
-  void MoveTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+  void MoveTo(
+      DirectoryEntry& parent,
+      const Optional<nsAString >& newName,
       const Optional<OwningNonNull<EntryCallback> >& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void CopyTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+  void CopyTo(
+      DirectoryEntry& parent,
+      const Optional<nsAString >& newName,
       const Optional<OwningNonNull<EntryCallback> >& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
@@ -67,9 +71,12 @@ public:
   void ToURL(nsString& retval);
 */
 
-  void Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+  void Remove(
+      VoidCallback& successCallback,
+      const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void GetParent(EntryCallback& successCallback,
+  void GetParent(
+      EntryCallback& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
   bool Exists() const;
@@ -87,11 +94,7 @@ public:
     return mFile;
   }
 
-  nsRefPtr<Metadata> mMetadata;
-
 protected:
-  // full path in filesystem
-  // explicit Entry(FileSystem* aFilesystem, const nsAString& aFullPath);
   explicit Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory);
 
   nsRefPtr<FileSystem> mFilesystem;

@@ -39,6 +39,7 @@ private:
 
   // not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
+
   bool mIsCopy;
 };
 

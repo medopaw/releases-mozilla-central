@@ -51,7 +51,6 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDire
   nsCOMPtr<nsIFile> file;
   aFile->Clone(getter_AddRefs(mFile));
   // NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
-  mMetadata = new Metadata;
 }
 
 Entry::~Entry()
