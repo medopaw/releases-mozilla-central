@@ -19,12 +19,14 @@ namespace sdcard {
 class Path {
 public:
   static const char separatorChar;
-  static const char nulChar;
-  static const char backslashChar;
-
   static const nsString separator; // Separator must be a single char. This is just for convenience.
+
+  static const nsString nul;
+  static const nsString backslash;
+
   static const nsString selfReference;
   static const nsString parentReference;
+
   static const nsString root; // FileSystem.root.fullPath, normally "/"
   static const nsString base; // the real path of FileSystem.root, normally "/sdcard"
 
