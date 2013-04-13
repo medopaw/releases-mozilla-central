@@ -11,7 +11,11 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-const nsString Path::separator = NS_LITERAL_STRING("/");
+const char Path::separatorChar = '/';
+const char Path::nulChar = '\0';
+const char Path::backslashChar = '\\';
+
+const nsString Path::separator = NS_LITERAL_STRING("/"); // nsString version of Path::separatorChar
 const nsString Path::selfReference = NS_LITERAL_STRING(".");
 const nsString Path::parentReference = NS_LITERAL_STRING("..");
 const nsString Path::root = Path::separator;
@@ -35,7 +39,7 @@ bool Path::WithinBase(const nsAString& aPath)
   return Path::IsParentOf(Path::base, aPath) || Path::IsBase(aPath);
 }
 
-void Path::RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath)
+void Path::RealPathToDOMPath(const nsAString& aRealPath, nsString& aInnerPath)
 {
   MOZ_ASSERT(Path::WithinBase(aRealPath), "Path must be within the scope of FileSystem!");
   // special case for root
@@ -45,9 +49,10 @@ void Path::RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath)
     aInnerPath = aRealPath;
     Path::Decapitate(aInnerPath, Path::base);
   }
+  SDCARD_LOG("Real path to DOM path: %s -> %s", NS_ConvertUTF16toUTF8(aInnerPath).get(), NS_ConvertUTF16toUTF8(aRealPath).get());
 }
 
-void Path::InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
+void Path::DOMPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
 {
   MOZ_ASSERT(Path::IsAbsolute(aInnerPath), "Path must be absolute!");
   // special case for root
@@ -56,7 +61,7 @@ void Path::InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath)
   } else {
     aRealPath = Path::base + aInnerPath;
   }
-  SDCARD_LOG("turn inner path %s to real path %s", NS_ConvertUTF16toUTF8(aInnerPath).get(), NS_ConvertUTF16toUTF8(aRealPath).get());
+  SDCARD_LOG("DOM path to real path: %s -> %s", NS_ConvertUTF16toUTF8(aInnerPath).get(), NS_ConvertUTF16toUTF8(aRealPath).get());
 }
 
 bool Path::BeginsWithSeparator(const nsAString& aPath)
@@ -91,15 +96,14 @@ bool Path::IsValidPath(const nsAString& aPath)
     return true;
   }
 
-  nsReadingIterator<PRUnichar> start;
-  nsReadingIterator<PRUnichar> end;
+  nsAString::const_iterator start, end;
   aPath.BeginReading(start);
   aPath.EndReading(end);
-  if (FindCharInReadable(PRUnichar('\0'), start, end)) {
-    SDCARD_LOG("Embedded NULs are not allowed.");
+  if (FindCharInReadable(Path::nulChar, start, end)) {
+    SDCARD_LOG("Embedded NULs are not allowed!");
     return false;
   }
-  if (FindCharInReadable(PRUnichar('\\'), start, end)) {
+  if (FindCharInReadable(Path::backslashChar, start, end)) {
     SDCARD_LOG("Backslashes are not allowed!");
     return false;
   }
@@ -122,11 +126,11 @@ bool Path::IsParentOf(const nsAString& aParent, const nsAString& aMayBeChild)
 
 void Path::Split(const nsAString& aPath, nsTArray<nsString>& aArray)
 {
-  MOZ_ASSERT(Path::separator.Length() == 1, "Path separator must be a single character!");
-
   // nsCString conversion needed here
   nsTArray<nsCString> array;
-  ParseString(NS_ConvertUTF16toUTF8(aPath), NS_ConvertUTF16toUTF8(Path::separator)[0], array);
+
+  // call ParseString utility to do the work
+  ParseString(NS_ConvertUTF16toUTF8(aPath), Path::separatorChar, array);
 
   // no need to clear aArray first
   for (PRUint32 i = 0; i < array.Length(); i++) {
@@ -176,6 +180,7 @@ void Path::Absolutize(const nsAString& aPath, const nsAString& aParent, nsString
     retval = aPath;
   }
   Path::RemoveExtraParentReferences(retval);
+  SDCARD_LOG("Absolutize path: %s -> %s", NS_ConvertUTF16toUTF8(aPath).get(), NS_ConvertUTF16toUTF8(retval).get());
 }
 
 void Path::RemoveExtraParentReferences(nsString& aPath)
@@ -193,7 +198,7 @@ void Path::RemoveExtraParentReferences(nsString& aPath)
     }
     if (components[i] == Path::parentReference) {
       if (!canonicalized.IsEmpty()) {
-        components.RemoveElementAt(components.Length() - 1);
+        canonicalized.RemoveElementAt(canonicalized.Length() - 1);
       }
       continue;
     }

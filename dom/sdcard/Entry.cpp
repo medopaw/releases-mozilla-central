@@ -105,7 +105,7 @@ void Entry::GetFullPath(nsString& retval) const
   nsString path, fullPath;
   mFile->GetPath(path);
   SDCARD_LOG("mFile Path=%s", NS_ConvertUTF16toUTF8(path).get());
-  Path::RealPathToInnerPath(path, fullPath);
+  Path::RealPathToDOMPath(path, fullPath);
   SDCARD_LOG("entry fullPath=%s", NS_ConvertUTF16toUTF8(fullPath).get());
   retval = fullPath;
 }

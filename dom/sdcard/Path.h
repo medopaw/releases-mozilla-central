@@ -6,50 +6,51 @@
 
 #pragma once
 
-/*
-#include "mozilla/Attributes.h"
-#include "mozilla/ErrorResult.h"
-#include "nsCycleCollectionParticipant.h"
-#include "nsWrapperCache.h"
-*/
 #include "nsString.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-// FileSystem path utilities. All methods in this class are static.
+/*
+ * FileSystem path utilities.
+ * All methods in this class are static.
+ */
 class Path {
 public:
-    static const nsString separator; // Separator must be a single char. This is just for convenience.
-    static const nsString selfReference;
-    static const nsString parentReference;
-    static const nsString root; // different from FileSystem.root, normally "/"
-    static const nsString base; // the real path of FileSystem.root, normally "/sdcard"
+  static const char separatorChar;
+  static const char nulChar;
+  static const char backslashChar;
 
-    static bool IsRoot(const nsAString& aPath);
-    static bool IsBase(const nsAString& aPath);
-    static bool WithinBase(const nsAString& aPath);
+  static const nsString separator; // Separator must be a single char. This is just for convenience.
+  static const nsString selfReference;
+  static const nsString parentReference;
+  static const nsString root; // FileSystem.root.fullPath, normally "/"
+  static const nsString base; // the real path of FileSystem.root, normally "/sdcard"
 
-    static void RealPathToInnerPath(const nsAString& aRealPath, nsString& aInnerPath);
-    static void InnerPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath);
+  static bool IsRoot(const nsAString& aPath);
+  static bool IsBase(const nsAString& aPath);
+  static bool WithinBase(const nsAString& aPath);
 
-    static bool BeginsWithSeparator(const nsAString& aPath);
-    static bool EndsWithSeparator(const nsAString& aPath);
-    static bool IsAbsolute(const nsAString& aPath);
-    static bool IsValidName(const nsAString& aPath);
-    static bool IsValidPath(const nsAString& aPath);
-    static bool IsParentOf(const nsAString& aPath, const nsAString& aHead);
+  static void RealPathToDOMPath(const nsAString& aRealPath, nsString& aInnerPath);
+  static void DOMPathToRealPath(const nsAString& aInnerPath, nsString& aRealPath);
 
-    static void Split(const nsAString& aPath, nsTArray<nsString>& aComponents);
+  static bool BeginsWithSeparator(const nsAString& aPath);
+  static bool EndsWithSeparator(const nsAString& aPath);
+  static bool IsAbsolute(const nsAString& aPath);
+  static bool IsValidName(const nsAString& aPath);
+  static bool IsValidPath(const nsAString& aPath);
+  static bool IsParentOf(const nsAString& aPath, const nsAString& aHead);
 
-    static void Decapitate(nsString& aPath, const nsAString& aHead);
-    static void EnsureDirectory(nsString& aPath);
-    static void Append(nsString& aPath, const nsAString& aToAppend);
-    static void Append(const nsAString& aParent, const nsAString& aToAppend, nsString& retval);
-    static void Absolutize(nsString& aPath, const nsAString& aParent);
-    static void Absolutize(const nsAString& aPath, const nsAString& aParent, nsString& retval);
-    static void RemoveExtraParentReferences(nsString& aPath);
+  static void Split(const nsAString& aPath, nsTArray<nsString>& aComponents);
+
+  static void Decapitate(nsString& aPath, const nsAString& aHead);
+  static void EnsureDirectory(nsString& aPath);
+  static void Append(nsString& aPath, const nsAString& aToAppend);
+  static void Append(const nsAString& aParent, const nsAString& aToAppend, nsString& retval);
+  static void Absolutize(nsString& aPath, const nsAString& aParent);
+  static void Absolutize(const nsAString& aPath, const nsAString& aParent, nsString& retval);
+  static void RemoveExtraParentReferences(nsString& aPath);
 };
 
 } // namespace sdcard

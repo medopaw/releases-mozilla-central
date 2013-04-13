@@ -78,36 +78,36 @@ void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Opti
 
 void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isDirectory)
 {
-    SDCARD_LOG("in DirectoryEntry.GetEntry()");
+  SDCARD_LOG("in DirectoryEntry.GetEntry()");
 
-    // if not passed, assign callback nullptr
-    EntryCallback* pSuccessCallback = nullptr;
-    ErrorCallback* pErrorCallback = nullptr;
-    if (successCallback.WasPassed()) {
-      pSuccessCallback = successCallback.Value().get();
-    }
-    if (errorCallback.WasPassed()) {
-      pErrorCallback = errorCallback.Value().get();
-    }
+  // if not passed, assign callback nullptr
+  EntryCallback* pSuccessCallback = nullptr;
+  ErrorCallback* pErrorCallback = nullptr;
+  if (successCallback.WasPassed()) {
+    pSuccessCallback = successCallback.Value().get();
+  }
+  if (errorCallback.WasPassed()) {
+    pErrorCallback = errorCallback.Value().get();
+  }
 
-    // check if path is valid
-    if (!Path::IsValidPath(path)) {
-      SDCARD_LOG("Path not valid!");
-      nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
-      r->Start();
-      return;
-    }
+  // check if path is valid
+  if (!Path::IsValidPath(path)) {
+    SDCARD_LOG("Invalid path!");
+    nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
+    r->Start();
+    return;
+  }
 
-    // turn relative path to absolute
-    nsString fullPath;
-    GetFullPath(fullPath);
-    nsString absolutePath;
-    Path::Absolutize(path, fullPath, absolutePath);
-    nsString realPath;
-    Path::InnerPathToRealPath(absolutePath, realPath);
+  // turn relative path to absolute
+  nsString fullPath;
+  GetFullPath(fullPath);
+  nsString absolutePath;
+  Path::Absolutize(path, fullPath, absolutePath);
+  nsString realPath;
+  Path::DOMPathToRealPath(absolutePath, realPath);
 
-    nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, isDirectory);
-    runnable->Start();
+  nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, isDirectory);
+  runnable->Start();
 }
 
 } // namespace sdcard

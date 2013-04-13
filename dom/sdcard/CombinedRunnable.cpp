@@ -84,6 +84,7 @@ void CombinedRunnable::MainThreadRun()
 {
   SDCARD_LOG("in CombinedRunnable.MainThreadRun()!");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
   nsRefPtr<nsIDOMDOMError> error = GetDOMError();
   if (error) {
     if (mErrorCallback) { // errorCallback is always optional
@@ -108,11 +109,15 @@ void CombinedRunnable::SetErrorName(const nsAString& aErrorName)
 
 already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
 {
+  SDCARD_LOG("in CombinedRunnable.GetDOMError()!");
+
   already_AddRefed<nsIDOMDOMError> domError = nullptr;
-  nsString name;
   if (!mErrorName.IsEmpty()) {
-    name = mErrorName;
+    SDCARD_LOG("Create DOMError with %s", NS_ConvertUTF16toUTF8(mErrorName).get());
+    domError = DOMError::CreateWithName(mErrorName);
   } else if (mErrorCode != NS_OK) {
+    domError = DOMError::CreateForNSResult(mErrorCode);
+
     nsString errorString;
     switch (mErrorCode) {
       case NS_ERROR_FILE_INVALID_PATH:
@@ -150,12 +155,14 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
       case NS_ERROR_UNEXPECTED:
         errorString.AssignLiteral("NS_ERROR_UNEXPECTED");
       default:
-        errorString.AssignLiteral("Unknow Error Code");
-        SDCARD_LOG("Error Code: %u", mErrorCode);
         break;
     }
-    SDCARD_LOG("Error code: %s", NS_ConvertUTF16toUTF8(errorString).get());
-
+    if (errorString.IsEmpty()) {
+      SDCARD_LOG("Create DOMError from nsresult %ul", mErrorCode);
+    } else {
+      SDCARD_LOG("Create DOMError from nsresult %s", NS_ConvertUTF16toUTF8(errorString).get());
+    }
+/*
     switch (mErrorCode) {
     case NS_ERROR_FILE_INVALID_PATH:
     case NS_ERROR_FILE_UNRECOGNIZED_PATH:
@@ -187,10 +194,9 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
       name = DOM_ERROR_UNKNOWN;
       break;
     }
+  */
   }
-  if (!name.IsEmpty()) {
-    domError = DOMError::CreateWithName(name);
-  }
+
   return domError;
 }
 

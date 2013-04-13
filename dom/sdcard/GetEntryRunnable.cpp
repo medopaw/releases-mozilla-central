@@ -50,7 +50,7 @@ unsigned long GetEntryRunnable::Type(bool isDirectory)
 
 void GetEntryRunnable::WorkerThreadRun()
 {
-  SDCARD_LOG("in GetEntryRunnable.WorkerThread.Run()!");
+  SDCARD_LOG("in GetEntryRunnable.WorkerThreadRun()!");
   SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mPath).get());
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
