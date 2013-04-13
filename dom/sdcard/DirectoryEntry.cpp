@@ -102,6 +102,7 @@ void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& 
     if (!Path::IsValidPath(path)) {
       nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
       r->Start();
+      return;
     }
 
     // turn relative path to absolute

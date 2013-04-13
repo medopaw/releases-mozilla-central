@@ -67,7 +67,7 @@ NS_IMETHODIMP CombinedRunnable::Run()
   } else {
     SDCARD_LOG("CombinedRunnable.Run() on main thread.");
     // shutdown mWorkerThread
-    if (!mWorkerThread) {
+    if (mWorkerThread) {
       mWorkerThread->Shutdown();
     }
     mWorkerThread = nullptr;
