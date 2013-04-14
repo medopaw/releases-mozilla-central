@@ -79,22 +79,21 @@ public:
       EntryCallback& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
-  bool Exists() const;
-
 public:
+  bool Exists() const;
   bool IsRoot() const;
 
   FileSystem* GetFilesystem() const
   {
     return mFilesystem.get();
   }
-
   nsIFile* GetFileInternal() const
   {
     return mFile;
   }
 
 protected:
+  // protected constructor prevent direct call
   explicit Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory);
 
   nsRefPtr<FileSystem> mFilesystem;

@@ -30,7 +30,7 @@ protected:
   virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
-  bool IsDirectoryEmpty(nsIFile* dir);
+  nsresult IsDirectoryEmpty(nsIFile* dir, bool* retval);
 
   nsCOMPtr<nsIFile> mFile;
   nsCOMPtr<nsIFile> mNewParentDir;

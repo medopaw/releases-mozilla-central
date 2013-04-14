@@ -102,7 +102,14 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-  if (isNewDirectory && !IsDirectoryEmpty(mResultFile)) {
+  bool dirEmpty;
+  rv = IsDirectoryEmpty(mResultFile, &dirEmpty);
+  if (NS_FAILED(rv)) {
+	  SetErrorCode(rv);
+	  return;
+  }
+
+  if (isNewDirectory && !dirEmpty) {
     // Cannot copy/move to a path occupied by a directory which is not empty.
     SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
     return;
@@ -147,19 +154,22 @@ void CopyAndMoveToRunnable::OnSuccess()
   }
 }
 
-bool CopyAndMoveToRunnable::IsDirectoryEmpty(nsIFile* dir)
+nsresult CopyAndMoveToRunnable::IsDirectoryEmpty(nsIFile* dir, bool* retval)
 {
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   nsresult rv = dir->GetDirectoryEntries(getter_AddRefs(childEnumerator));
-  if (NS_SUCCEEDED(rv) )
-  {
-    bool hasElements;
-    while (NS_SUCCEEDED(childEnumerator->HasMoreElements(&hasElements))
-        && hasElements) {
-      return false;
-    }
+  if (NS_FAILED(rv)) {
+    return rv;
   }
-  return true;
+
+  bool hasElements;
+  rv = childEnumerator->HasMoreElements(&hasElements);
+  if (NS_FAILED(rv)) {
+    return rv;
+  }
+
+  *retval = hasElements;
+  return rv;
 }
 
 } // namespace sdcard
