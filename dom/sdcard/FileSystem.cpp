@@ -25,7 +25,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
 NS_INTERFACE_MAP_END
 
 
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName)//, mRoot(new DirectoryEntry(this, aPath))
+FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName)
 {
   SDCARD_LOG("init FileSystem");
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
@@ -38,14 +38,12 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
     SDCARD_LOG("Create root nsIFile successfully.");
     mRoot = new DirectoryEntry(this, rootDir);
   }
-  mWorkerThread = nullptr;
   SetIsDOMBinding();
 }
 
 FileSystem::~FileSystem()
 {
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
-  mWorkerThread->Shutdown();
 }
 
 JSObject*

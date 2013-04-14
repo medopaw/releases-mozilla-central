@@ -54,8 +54,6 @@ private:
   nsCOMPtr<nsIDOMNavigator> mNavigator;
   nsString mName;
   nsRefPtr<DirectoryEntry> mRoot;
-
-  nsCOMPtr<nsIThread> mWorkerThread;
 };
 
 } // namespace sdcard
