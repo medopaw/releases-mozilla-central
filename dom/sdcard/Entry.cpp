@@ -29,9 +29,10 @@ NS_INTERFACE_MAP_BEGIN(Entry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-Entry* Entry::FromFile(FileSystem* aFilesystem, nsIFile* aFile)
+Entry* Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
 {
-  MOZ_ASSERT(aFile, "Entry::FromFile creation failed. aFile can't be null.");
+  MOZ_ASSERT(aFile, "Entry::CreateFromFile creation failed. aFile can't be null.");
+
   bool isFile;
   aFile->IsFile(&isFile);
   bool isDirectory;

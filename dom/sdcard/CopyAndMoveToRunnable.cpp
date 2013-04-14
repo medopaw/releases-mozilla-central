@@ -8,6 +8,7 @@
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
 #include "Path.h"
+#include "Error.h"
 
 namespace mozilla {
 namespace dom {
@@ -50,7 +51,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   rv = mFile->GetPath(path);
   if (Path::IsBase(path)) {
     // Cannot copy/move the root directory
-    SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -61,7 +62,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
 
   if (!(isFile || isDirectory)) {
     // Cannot copy/move a special file
-    SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -86,7 +87,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     mResultFile->IsDirectory(&isNewDirectory);
     if (!(isNewFile || isNewDirectory)) {
       // Cannot overwrite a special file
-      SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+      SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
   }
@@ -98,7 +99,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   if (path == newPath) {
     // Cannot copy/move an entry into its parent if a name different from its
     // current one isn't provided
-    SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -111,20 +112,20 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
 
   if (isNewDirectory && !dirEmpty) {
     // Cannot copy/move to a path occupied by a directory which is not empty.
-    SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
   if ((isFile && isNewDirectory) || (isDirectory && isNewFile)) {
     // Cannot copy/move a file to a path occupied by a directory, or
     // copy/move a directory to a path occupied by a file
-    SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
   if (Path::IsParentOf(path, newPath)) {
     // Cannot copy/move a directory inside itself or to child at any depth
-    SetErrorName(DOM_ERROR_INVALID_MODIFICATION);
+    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -149,7 +150,7 @@ void CopyAndMoveToRunnable::OnSuccess()
 
   if (mSuccessCallback) { // successCallback is optional
     ErrorResult rv;
-    nsRefPtr<Entry> resultEntry = Entry::FromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
     mSuccessCallback->Call(*resultEntry, rv);
   }
 }

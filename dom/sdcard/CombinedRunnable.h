@@ -7,24 +7,11 @@
 #pragma once
 
 #include "nsThreadUtils.h"
-#include "mozilla/dom/DOMError.h"
 #include "mozilla/dom/FileSystemBinding.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
-
-extern const nsString DOM_ERROR_ENCODING;
-extern const nsString DOM_ERROR_INVALID_MODIFICATION;
-extern const nsString DOM_ERROR_INVALID_STATE;
-extern const nsString DOM_ERROR_NOT_FOUND;
-extern const nsString DOM_ERROR_NOT_READABLE;
-extern const nsString DOM_ERROR_NO_MODIFICATION_ALLOWED;
-extern const nsString DOM_ERROR_PATH_EXISTS;
-extern const nsString DOM_ERROR_QUOTA_EXCEEDED;
-extern const nsString DOM_ERROR_SECURITY;
-extern const nsString DOM_ERROR_TYPE_MISMATCH;
-extern const nsString DOM_ERROR_UNKNOWN;
 
 class Entry;
 
@@ -55,7 +42,7 @@ protected:
   Entry* GetEntry() const;
 
 private:
-  already_AddRefed<nsIDOMDOMError> GetDOMError() const;
+  // already_AddRefed<nsIDOMDOMError> GetDOMError() const;
 
   nsRefPtr<ErrorCallback> mErrorCallback;
 

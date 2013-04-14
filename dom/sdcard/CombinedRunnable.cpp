@@ -8,23 +8,12 @@
 #include "Entry.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsString.h"
+#include "Error.h"
 #include "Utils.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
-
-const nsString DOM_ERROR_ENCODING                =   NS_LITERAL_STRING("EncodingError");
-const nsString DOM_ERROR_INVALID_MODIFICATION    =   NS_LITERAL_STRING("InvalidModificationError");
-const nsString DOM_ERROR_INVALID_STATE           =   NS_LITERAL_STRING("InvalidStateError");
-const nsString DOM_ERROR_NOT_FOUND               =   NS_LITERAL_STRING("NotFoundError");
-const nsString DOM_ERROR_NOT_READABLE            =   NS_LITERAL_STRING("NotReadableError");
-const nsString DOM_ERROR_NO_MODIFICATION_ALLOWED =   NS_LITERAL_STRING("NoModificationAllowedError");
-const nsString DOM_ERROR_PATH_EXISTS             =   NS_LITERAL_STRING("PathExistsError");
-const nsString DOM_ERROR_QUOTA_EXCEEDED          =   NS_LITERAL_STRING("QuotaExceededError");
-const nsString DOM_ERROR_SECURITY                =   NS_LITERAL_STRING("SecurityError");
-const nsString DOM_ERROR_TYPE_MISMATCH           =   NS_LITERAL_STRING("TypeMismatchError");
-const nsString DOM_ERROR_UNKNOWN                 =  NS_LITERAL_STRING("Unknown");
 
 CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback, Entry* aEntry) :
     mErrorCallback(aErrorCallback),
@@ -85,6 +74,15 @@ void CombinedRunnable::MainThreadRun()
   SDCARD_LOG("in CombinedRunnable.MainThreadRun()!");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
+  if (!mErrorName.IsEmpty()) {
+    Error::HandleError(mErrorCallback, mErrorName);
+  } else if (mErrorCode != NS_OK) {
+    Error::HandleError(mErrorCallback, mErrorCode);
+  } else {
+    OnSuccess();
+  }
+
+  /*
   nsRefPtr<nsIDOMDOMError> error = GetDOMError();
   if (error) {
     if (mErrorCallback) { // errorCallback is always optional
@@ -94,6 +92,7 @@ void CombinedRunnable::MainThreadRun()
   } else {
     OnSuccess();
   }
+  */
 }
 
 
@@ -107,6 +106,7 @@ void CombinedRunnable::SetErrorName(const nsAString& aErrorName)
   mErrorName = aErrorName;
 }
 
+/*
 already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
 {
   SDCARD_LOG("in CombinedRunnable.GetDOMError()!");
@@ -162,7 +162,6 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
     } else {
       SDCARD_LOG("Create DOMError from nsresult %s", NS_ConvertUTF16toUTF8(errorString).get());
     }
-/*
     switch (mErrorCode) {
     case NS_ERROR_FILE_INVALID_PATH:
     case NS_ERROR_FILE_UNRECOGNIZED_PATH:
@@ -194,11 +193,11 @@ already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
       name = DOM_ERROR_UNKNOWN;
       break;
     }
-  */
   }
 
   return domError;
 }
+*/
 
 Entry* CombinedRunnable::GetEntry() const
 {

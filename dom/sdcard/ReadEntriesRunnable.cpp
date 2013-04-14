@@ -73,7 +73,7 @@ void ReadEntriesRunnable::OnSuccess()
   Sequence<OwningNonNull<Entry> > entries;
   int n = mChildren.Length();
   for (int i = 0; i < n; i++) {
-    nsRefPtr<Entry> entry = Entry::FromFile(GetEntry()->GetFilesystem(), mChildren[i].get());
+    nsRefPtr<Entry> entry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mChildren[i].get());
     *entries.AppendElement() = entry.forget();
   }
   ErrorResult rv;

@@ -52,7 +52,7 @@ void GetParentRunnable::OnSuccess()
   MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
 
   ErrorResult rv;
-  nsRefPtr<Entry> resultEntry = Entry::FromFile(GetEntry()->GetFilesystem(), mParentFile.get());
+  nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mParentFile.get());
   mSuccessCallback->Call(*resultEntry, rv);
 }
 

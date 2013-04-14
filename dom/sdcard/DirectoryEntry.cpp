@@ -12,7 +12,7 @@
 #include "FileSystem.h"
 #include "GetEntryRunnable.h"
 #include "RemoveRunnable.h"
-#include "ErrorRunnable.h"
+#include "Error.h"
 #include "Path.h"
 #include "Utils.h"
 
@@ -93,12 +93,13 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
   // check if path is valid
   if (!Path::IsValidPath(path)) {
     SDCARD_LOG("Invalid path!");
-    nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
-    r->Start();
+    Error::HandleError(pErrorCallback, Error::DOM_ERROR_ENCODING);
+    // nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
+    // r->Start();
     return;
   }
 
-  // turn relative path to absolute
+  // ensure path is absolute
   nsString fullPath;
   GetFullPath(fullPath);
   nsString absolutePath;

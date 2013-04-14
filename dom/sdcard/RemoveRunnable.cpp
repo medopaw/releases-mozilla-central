@@ -8,6 +8,7 @@
 #include "Entry.h"
 #include "Path.h"
 #include "Utils.h"
+#include "Error.h"
 
 namespace mozilla {
 namespace dom {
@@ -40,7 +41,7 @@ void RemoveRunnable::WorkerThreadRun()
   mFile->GetPath(path);
   if (Path::IsBase(path)) {
     // cannot remove root directory
-    SetErrorName(DOM_ERROR_NO_MODIFICATION_ALLOWED);
+    SetErrorName(Error::DOM_ERROR_NO_MODIFICATION_ALLOWED);
     return;
   } else {
     rv = mFile->Remove(mRecursive);

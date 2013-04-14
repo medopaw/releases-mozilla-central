@@ -31,7 +31,7 @@ public:
 
 public:
   // nsIFile to Entry
-  static Entry* FromFile(FileSystem* aFilesystem, nsIFile* aFile);
+  static Entry* CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile);
 
   virtual ~Entry();
 

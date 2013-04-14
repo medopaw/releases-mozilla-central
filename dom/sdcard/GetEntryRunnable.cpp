@@ -8,13 +8,14 @@
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
 #include "Path.h"
+#include "Error.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
 GetEntryRunnable::GetEntryRunnable(
-	const nsAString& aPath,
+    const nsAString& aPath,
     bool aCreate,
     bool aExclusive,
     EntryCallback* aSuccessCallback,
@@ -63,10 +64,10 @@ void GetEntryRunnable::WorkerThreadRun()
   unsigned long type = Type(mIsDirectory);
   bool exists = Exists(mResultFile);
   if (!mCreate && !exists) {
-    SetErrorName(DOM_ERROR_NOT_FOUND);
+    SetErrorName(Error::DOM_ERROR_NOT_FOUND);
     return;
   } else if (mCreate && mExclusive && exists) {
-    SetErrorName(DOM_ERROR_PATH_EXISTS);
+    SetErrorName(Error::DOM_ERROR_PATH_EXISTS);
     return;
   } else if (!mCreate && exists) {
       bool isDirectory, isFile;
@@ -75,7 +76,7 @@ void GetEntryRunnable::WorkerThreadRun()
       if (!(type == nsIFile::NORMAL_FILE_TYPE || type == nsIFile::DIRECTORY_TYPE)
           || (type == nsIFile::NORMAL_FILE_TYPE && isDirectory)
           || (type == nsIFile::DIRECTORY_TYPE && isFile)) {
-        SetErrorName(DOM_ERROR_TYPE_MISMATCH);
+        SetErrorName(Error::DOM_ERROR_TYPE_MISMATCH);
         return;
       }
   }
@@ -97,7 +98,7 @@ void GetEntryRunnable::OnSuccess()
   MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
 
   ErrorResult rv;
-  nsRefPtr<Entry> resultEntry = Entry::FromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+  nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
   mSuccessCallback->Call(*resultEntry, rv);
 }
 
