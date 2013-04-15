@@ -79,7 +79,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-  // Create destination nsIFile object
+  // assign mResultFile to target file first
   mNewParentDir->Clone(getter_AddRefs(mResultFile));
   rv = mResultFile->Append(mNewName);
   if (NS_FAILED(rv)) {
@@ -156,16 +156,27 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-    // copy/move the entry
+  // delete the existing entry as nsIFile.coptTo()/moveTo() cannot overwrite
+  if (newFileExits) {
+    rv = mResultFile->Remove(false);
+    if (NS_FAILED(rv)) {
+      SDCARD_LOG("Fail to remove existing target before copy/move.");
+      SetErrorCode(rv);
+      return;
+    }
+  }
+
+  // assigne mResultFile back to original file to copy/move
   mFile->Clone(getter_AddRefs(mResultFile));
 
+  // actually copy/move the entry
   if (mIsCopy) {
     rv = mResultFile->CopyTo(mNewParentDir, mNewName);
   } else {
     rv = mResultFile->MoveTo(mNewParentDir, mNewName);
   }
   if (NS_FAILED(rv) ) {
-    // failed to copy/move
+    // fail to copy/move
     SDCARD_LOG("Fail to copy/move.");
     SetErrorCode(rv);
     return;
