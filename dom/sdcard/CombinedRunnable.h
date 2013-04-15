@@ -33,7 +33,6 @@ public:
 
 protected:
   virtual void WorkerThreadRun() = 0;
-  void MainThreadRun();
   virtual void OnSuccess() = 0;
 
   void SetErrorCode(const nsresult& aErrorCode);
@@ -42,7 +41,7 @@ protected:
   Entry* GetEntry() const;
 
 private:
-  // already_AddRefed<nsIDOMDOMError> GetDOMError() const;
+  void MainThreadRun();
 
   nsRefPtr<ErrorCallback> mErrorCallback;
 

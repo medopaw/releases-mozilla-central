@@ -46,21 +46,24 @@ void GetEntryRunnable::WorkerThreadRun()
 
   nsresult rv = NS_NewLocalFile(mPath, false, getter_AddRefs(mResultFile));
   if (NS_FAILED(rv)) {
+    SDCARD_LOG("Error occurs when create mResultFile.");
     SetErrorCode(rv);
     return;
   }
 
-  unsigned long type = FileUtils::GetType(mIsFile);
   bool exists;
   rv = mResultFile->Exists(&exists);
   if (NS_FAILED(rv)) {
+    SDCARD_LOG("Error occurs when checking if mResultFile exists.");
     SetErrorCode(rv);
     return;
   }
   if (!mCreate && !exists) {
+    SDCARD_LOG("If create is not true and the path doesn't exist, getFile/getDirectory must fail.");
     SetErrorName(Error::DOM_ERROR_NOT_FOUND);
     return;
   } else if (mCreate && mExclusive && exists) {
+    SDCARD_LOG("If create and exclusive are both true, and the path already exists, getFile/getDirectory must fail.");
     SetErrorName(Error::DOM_ERROR_PATH_EXISTS);
     return;
   } else if (!mCreate && exists) {
@@ -68,17 +71,20 @@ void GetEntryRunnable::WorkerThreadRun()
       bool isDirectory = false;
       rv = mResultFile->IsFile(&isFile);
       if (NS_FAILED(rv)) {
+        SDCARD_LOG("Error occurs when getting isFile.");
         SetErrorCode(rv);
         return;
       }
       rv = mResultFile->IsDirectory(&isDirectory);
       if (NS_FAILED(rv)) {
+        SDCARD_LOG("Error occurs when getting isDirectory.");
         SetErrorCode(rv);
         return;
       }
       if (!(isFile || isDirectory)
-          || (type == nsIFile::NORMAL_FILE_TYPE && isDirectory)
-          || (type == nsIFile::DIRECTORY_TYPE && isFile)) {
+          || (mIsFile && isDirectory)
+          || (!mIsFile && isFile)) {
+        SDCARD_LOG("If create is not true and the path exists, but is a directory/file, getFile/getDirectory must fail.");
         SetErrorName(Error::DOM_ERROR_TYPE_MISMATCH);
         return;
       }
@@ -87,8 +93,12 @@ void GetEntryRunnable::WorkerThreadRun()
   if (mCreate && !exists) {
     // create
     SDCARD_LOG("Create %s", NS_ConvertUTF16toUTF8(mPath).get());
-    rv = mResultFile->Create(type, 0600);
+    // Only owner can access created item, and directory needs +x.
+    uint32_t permission = mIsFile ? 0600 : 0700;
+    // Note that any path segments that do not already exist will be created automatically, which I think is implied by w3c draft.
+    rv = mResultFile->Create(FileUtils::GetType(mIsFile), permission);
     if (NS_FAILED(rv)) {
+      SDCARD_LOG("Error occurs during creation.");
       SetErrorCode(rv);
       return;
     }

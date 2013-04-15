@@ -61,20 +61,20 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   bool isDirectory = false;
   rv = mFile->IsFile(&isFile);
   if (NS_FAILED(rv)) {
-    SDCARD_LOG("Error occurs when getting IsFile");
+    SDCARD_LOG("Error occurs when getting isFile.");
     SetErrorCode(rv);
     return;
   }
   rv = mFile->IsDirectory(&isDirectory);
   if (NS_FAILED(rv)) {
-    SDCARD_LOG("Error occurs when getting isDirectory");
+    SDCARD_LOG("Error occurs when getting isDirectory.");
     SetErrorCode(rv);
     return;
   }
 
   if (!(isFile || isDirectory)) {
     // Cannot copy/move a special file
-    SDCARD_LOG("mFile is neither a file nor directory");
+    SDCARD_LOG("mFile is neither a file nor directory.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
@@ -83,7 +83,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   mNewParentDir->Clone(getter_AddRefs(mResultFile));
   rv = mResultFile->Append(mNewName);
   if (NS_FAILED(rv)) {
-    SDCARD_LOG("Error occurs when append new name to mResultFile");
+    SDCARD_LOG("Error occurs when append new name to mResultFile.");
     SetErrorCode(rv);
     return;
   }
@@ -92,7 +92,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   bool newFileExits = false;
   rv = mResultFile->Exists(&newFileExits);
   if (NS_FAILED(rv)) {
-    SDCARD_LOG("Error occurs when checking if mResultFile exists");
+    SDCARD_LOG("Error occurs when checking if mResultFile exists.");
     SetErrorCode(rv);
     return;
   }
@@ -107,7 +107,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     mResultFile->IsDirectory(&isNewDirectory);
     if (!(isNewFile || isNewDirectory)) {
       // Cannot overwrite a special file
-      SDCARD_LOG("mResultFile is neither a file nor directory");
+      SDCARD_LOG("mResultFile is neither a file nor directory.");
       SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
@@ -129,7 +129,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     bool dirEmpty;
     rv = FileUtils::IsDirectoryEmpty(mResultFile, &dirEmpty);
     if (NS_FAILED(rv)) {
-      SDCARD_LOG("Error occurs when checking if directory is empty");
+      SDCARD_LOG("Error occurs when checking if directory is empty.");
       SetErrorCode(rv);
       return;
     }
@@ -144,14 +144,14 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   if ((isFile && isNewDirectory) || (isDirectory && isNewFile)) {
     // Cannot copy/move a file to a path occupied by a directory, or
     // copy/move a directory to a path occupied by a file
-    SDCARD_LOG("Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file");
+    SDCARD_LOG("Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
   if (Path::IsParentOf(path, newPath)) {
     // Cannot copy/move a directory inside itself or to child at any depth
-    SDCARD_LOG("Cannot copy/move a directory inside itself or to child at any depth");
+    SDCARD_LOG("Cannot copy/move a directory inside itself or to child at any depth.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
