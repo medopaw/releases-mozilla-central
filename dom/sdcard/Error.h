@@ -13,7 +13,8 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-/* Ths class is for error handling.
+/*
+ * This class is for error handling.
  * All methods in this class are static.
  */
 class Error
@@ -21,6 +22,10 @@ class Error
 public:
   static void HandleError(ErrorCallback* aErrorCallback, const nsAString& aErrorName);
   static void HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCode);
+
+private:
+  static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsAString& aErrorName);
+  static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsresult& aErrorCode);
 
 public:
   static const nsString DOM_ERROR_ENCODING;

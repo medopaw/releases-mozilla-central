@@ -27,19 +27,20 @@ const nsString Error::DOM_ERROR_UNKNOWN                 =   NS_LITERAL_STRING("U
 
 void Error::HandleError(ErrorCallback* aErrorCallback, const nsAString& aErrorName)
 {
-  SDCARD_LOG("in ErrorHandler::HandleError()");
+  SDCARD_LOG("in ErrorHandler::HandleError() with error name");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
   SDCARD_LOG("Create DOMError with %s", NS_ConvertUTF16toUTF8(aErrorName).get());
   if (aErrorCallback) { // errorCallback is always optional
+    nsCOMPtr<nsIDOMDOMError> error = GetDOMError(aErrorName);
     ErrorResult rv;
-    aErrorCallback->Call(DOMError::CreateWithName(aErrorName).get(), rv);
+    aErrorCallback->Call(error, rv);
   }
 }
 
 void Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCode)
 {
-  SDCARD_LOG("in ErrorHandler::HandleError()");
+  SDCARD_LOG("in ErrorHandler::HandleError() with error code");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
   if (aErrorCallback) { // errorCallback is always optional
@@ -88,9 +89,56 @@ void Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCod
       SDCARD_LOG("Create DOMError from nsresult %s", NS_ConvertUTF16toUTF8(errorString).get());
     }
 
+    nsCOMPtr<nsIDOMDOMError> error = GetDOMError(aErrorCode);
     ErrorResult rv;
-    aErrorCallback->Call(DOMError::CreateForNSResult(aErrorCode).get(), rv);
+    aErrorCallback->Call(error, rv);
   }
+}
+
+already_AddRefed<nsIDOMDOMError> Error::GetDOMError(const nsAString& aErrorName)
+{
+  SDCARD_LOG("in ErrorHandler::GetDOMError() with error name");
+  return DOMError::CreateWithName(aErrorName);
+}
+
+
+already_AddRefed<nsIDOMDOMError> Error::GetDOMError(const nsresult& aErrorCode)
+{
+  SDCARD_LOG("in ErrorHandler::GetDOMError() with error code");
+  MOZ_ASSERT(aErrorCode != NS_OK, "NS_OK is not an error.");
+  already_AddRefed<nsIDOMDOMError> domError = DOMError::CreateForNSResult(aErrorCode);
+  if (!domError.get()) {
+    nsString name;
+    switch (aErrorCode) {
+      case NS_ERROR_FILE_INVALID_PATH:
+      case NS_ERROR_FILE_UNRECOGNIZED_PATH:
+        name = DOM_ERROR_ENCODING;
+        break;
+      case NS_ERROR_FILE_DESTINATION_NOT_DIR:
+        name = DOM_ERROR_INVALID_MODIFICATION;
+        break;
+      case NS_ERROR_FILE_ACCESS_DENIED:
+      case NS_ERROR_FILE_DIR_NOT_EMPTY:
+        name = DOM_ERROR_NO_MODIFICATION_ALLOWED;
+        break;
+      case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
+      case NS_ERROR_NOT_AVAILABLE:
+        name = DOM_ERROR_NOT_FOUND;
+        break;
+      case NS_ERROR_FILE_ALREADY_EXISTS:
+        name = DOM_ERROR_PATH_EXISTS;
+        break;
+      case NS_ERROR_FILE_NOT_DIRECTORY:
+        name = DOM_ERROR_TYPE_MISMATCH;
+        break;
+      case NS_ERROR_UNEXPECTED:
+      default:
+        name = DOM_ERROR_UNKNOWN;
+        break;
+    }
+    domError = GetDOMError(name);
+  }
+  return domError;
 }
 
 } // namespace sdcard
