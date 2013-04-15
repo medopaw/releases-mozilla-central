@@ -7,6 +7,7 @@
 #include "GetEntryRunnable.h"
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
+#include "FileUtils.h"
 #include "Path.h"
 #include "Error.h"
 
@@ -21,13 +22,13 @@ GetEntryRunnable::GetEntryRunnable(
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry,
-    bool aIsDirectory) :
+    bool aIsFile) :
       CombinedRunnable(aErrorCallback, aEntry),
       mPath(aPath),
       mCreate(aCreate),
       mExclusive(aExclusive),
       mSuccessCallback(aSuccessCallback),
-      mIsDirectory(aIsDirectory)
+      mIsFile(aIsFile)
 
 {
   SDCARD_LOG("init GetEntryRunnable");
@@ -44,11 +45,6 @@ bool GetEntryRunnable::Exists(nsIFile* aFile)
   return exists;
 }
 
-unsigned long GetEntryRunnable::Type(bool isDirectory)
-{
-  return isDirectory ? nsIFile::DIRECTORY_TYPE : nsIFile::NORMAL_FILE_TYPE;
-}
-
 void GetEntryRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetEntryRunnable.WorkerThreadRun()!");
@@ -61,7 +57,7 @@ void GetEntryRunnable::WorkerThreadRun()
     return;
   }
 
-  unsigned long type = Type(mIsDirectory);
+  unsigned long type = FileUtils::GetType(mIsFile);
   bool exists = Exists(mResultFile);
   if (!mCreate && !exists) {
     SetErrorName(Error::DOM_ERROR_NOT_FOUND);
@@ -70,10 +66,19 @@ void GetEntryRunnable::WorkerThreadRun()
     SetErrorName(Error::DOM_ERROR_PATH_EXISTS);
     return;
   } else if (!mCreate && exists) {
-      bool isDirectory, isFile;
-      mResultFile->IsDirectory(&isDirectory);
-      mResultFile->IsFile(&isFile);
-      if (!(type == nsIFile::NORMAL_FILE_TYPE || type == nsIFile::DIRECTORY_TYPE)
+      bool isFile = false;
+      bool isDirectory = false;
+      rv = mResultFile->IsFile(&isFile);
+      if (NS_FAILED(rv)) {
+        SetErrorCode(rv);
+        return;
+      }
+      rv = mResultFile->IsDirectory(&isDirectory);
+      if (NS_FAILED(rv)) {
+        SetErrorCode(rv);
+        return;
+      }
+      if (!(isFile || isDirectory)
           || (type == nsIFile::NORMAL_FILE_TYPE && isDirectory)
           || (type == nsIFile::DIRECTORY_TYPE && isFile)) {
         SetErrorName(Error::DOM_ERROR_TYPE_MISMATCH);

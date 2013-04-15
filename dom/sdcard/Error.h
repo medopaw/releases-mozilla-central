@@ -13,8 +13,9 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-// class ErrorCallback;
-
+/* Ths class is for error handling.
+ * All methods in this class are static.
+ */
 class Error
 {
 public:

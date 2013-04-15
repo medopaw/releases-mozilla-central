@@ -7,6 +7,7 @@
 #include "CopyAndMoveToRunnable.h"
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
+#include "FileUtils.h"
 #include "Path.h"
 #include "Error.h"
 
@@ -57,8 +58,16 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
 
   bool isFile = false;
   bool isDirectory = false;
-  mFile->IsFile(&isFile);
-  mFile->IsDirectory(&isDirectory);
+  rv = mFile->IsFile(&isFile);
+  if (NS_FAILED(rv)) {
+    SetErrorCode(rv);
+    return;
+  }
+  rv = mFile->IsDirectory(&isDirectory);
+  if (NS_FAILED(rv)) {
+    SetErrorCode(rv);
+    return;
+  }
 
   if (!(isFile || isDirectory)) {
     // Cannot copy/move a special file
@@ -66,7 +75,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-    // Create destination nsIFile object
+  // Create destination nsIFile object
   mNewParentDir->Clone(getter_AddRefs(mResultFile));
   rv = mResultFile->Append(mNewName);
   if (NS_FAILED(rv)) {
@@ -104,10 +113,10 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   }
 
   bool dirEmpty;
-  rv = IsDirectoryEmpty(mResultFile, &dirEmpty);
+  rv = FileUtils::IsDirectoryEmpty(mResultFile, &dirEmpty);
   if (NS_FAILED(rv)) {
-	  SetErrorCode(rv);
-	  return;
+    SetErrorCode(rv);
+    return;
   }
 
   if (isNewDirectory && !dirEmpty) {
@@ -129,7 +138,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-    // copy/Move the entry
+    // copy/move the entry
   mFile->Clone(getter_AddRefs(mResultFile));
 
   if (mIsCopy) {
@@ -153,24 +162,6 @@ void CopyAndMoveToRunnable::OnSuccess()
     nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
     mSuccessCallback->Call(*resultEntry, rv);
   }
-}
-
-nsresult CopyAndMoveToRunnable::IsDirectoryEmpty(nsIFile* dir, bool* retval)
-{
-  nsCOMPtr<nsISimpleEnumerator> childEnumerator;
-  nsresult rv = dir->GetDirectoryEntries(getter_AddRefs(childEnumerator));
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-
-  bool hasElements;
-  rv = childEnumerator->HasMoreElements(&hasElements);
-  if (NS_FAILED(rv)) {
-    return rv;
-  }
-
-  *retval = hasElements;
-  return rv;
 }
 
 } // namespace sdcard

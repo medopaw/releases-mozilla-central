@@ -61,7 +61,7 @@ void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& optio
 void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in DirectoryEntry.GetDirectory()");
-  GetEntry(path, options, successCallback, errorCallback, true);
+  GetEntry(path, options, successCallback, errorCallback, false);
 }
 
 void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
@@ -76,7 +76,7 @@ void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Opti
   runnable->Start();
 }
 
-void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isDirectory)
+void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isFile)
 {
   SDCARD_LOG("in DirectoryEntry.GetEntry()");
 
@@ -107,7 +107,7 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
   nsString realPath;
   Path::DOMPathToRealPath(absolutePath, realPath);
 
-  nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, isDirectory);
+  nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, isFile);
   runnable->Start();
 }
 

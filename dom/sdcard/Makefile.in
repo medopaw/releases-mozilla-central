@@ -45,6 +45,7 @@ CPPSRCS = \
   GetParentRunnable.cpp \
   GetEntryRunnable.cpp \
   ReadEntriesRunnable.cpp \
+  FileUtils.cpp \
   Path.cpp \
   Error.cpp \
   $(NULL)

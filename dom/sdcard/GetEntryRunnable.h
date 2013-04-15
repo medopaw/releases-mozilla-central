@@ -22,7 +22,7 @@ public:
       EntryCallback* aSuccessCallback,
       ErrorCallback* aErrorCallback,
       Entry* aEntry,
-      bool aIsDirectory);
+      bool aIsFile);
 
   virtual ~GetEntryRunnable();
 
@@ -32,13 +32,12 @@ protected:
 
 private:
   bool Exists(nsIFile* aFile);
-  unsigned long Type(bool isDirectory);
 
   nsString mPath;
   bool mCreate;
   bool mExclusive;
   nsRefPtr<EntryCallback> mSuccessCallback;
-  bool mIsDirectory;
+  bool mIsFile;
 
   nsCOMPtr<nsIFile> mResultFile;
 
