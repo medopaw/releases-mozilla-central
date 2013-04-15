@@ -108,11 +108,12 @@ void GetEntryRunnable::WorkerThreadRun()
 void GetEntryRunnable::OnSuccess()
 {
   SDCARD_LOG("in GetEntryRunnable.OnSuccess()!");
-  MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
 
-  ErrorResult rv;
-  nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
-  mSuccessCallback->Call(*resultEntry, rv);
+  if (mSuccessCallback) { // successCallback is optional
+    ErrorResult rv;
+    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+    mSuccessCallback->Call(*resultEntry, rv);
+  }
 }
 
 } // namespace sdcard

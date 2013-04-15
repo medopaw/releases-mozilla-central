@@ -23,8 +23,8 @@ public:
 
   /*
    * Start the runnable thread.
-   * First it calls WorkerThreadRun to perform worker thread operations.
-   * After that it calls MainThreadRun to perform main thread operations.
+   * First it calls WorkerThreadRun() to perform worker thread operations.
+   * After that it calls MainThreadRun() to perform main thread operations.
    */
   void Start();
 
