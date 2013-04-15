@@ -31,8 +31,6 @@ protected:
   virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
-  bool Exists(nsIFile* aFile);
-
   nsString mPath;
   bool mCreate;
   bool mExclusive;

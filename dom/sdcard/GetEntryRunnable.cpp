@@ -38,13 +38,6 @@ GetEntryRunnable::~GetEntryRunnable()
 {
 }
 
-bool GetEntryRunnable::Exists(nsIFile* aFile)
-{
-  bool exists;
-  aFile->Exists(&exists);
-  return exists;
-}
-
 void GetEntryRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetEntryRunnable.WorkerThreadRun()!");
@@ -58,7 +51,12 @@ void GetEntryRunnable::WorkerThreadRun()
   }
 
   unsigned long type = FileUtils::GetType(mIsFile);
-  bool exists = Exists(mResultFile);
+  bool exists;
+  rv = mResultFile->Exists(&exists);
+  if (NS_FAILED(rv)) {
+    SetErrorCode(rv);
+    return;
+  }
   if (!mCreate && !exists) {
     SetErrorName(Error::DOM_ERROR_NOT_FOUND);
     return;
