@@ -116,9 +116,10 @@ bool Path::IsValidPath(const nsAString& aPath)
 
 bool Path::IsParentOf(const nsAString& aParent, const nsAString& aMayBeChild)
 {
+  SDCARD_LOG("Check if %s is the parent of %s", NS_ConvertUTF16toUTF8(aParent).get(), NS_ConvertUTF16toUTF8(aMayBeChild).get());
   MOZ_ASSERT(Path::IsAbsolute(aParent) && Path::IsAbsolute(aMayBeChild), "Path must be absolute!");
   // check length
-  if (aParent.Length() >= aMayBeChild.Length() || !StringBeginsWith(aParent, aMayBeChild)) {
+  if (aParent.Length() >= aMayBeChild.Length() || !StringBeginsWith(aMayBeChild, aParent)) {
     return false;
   }
   // check separator
