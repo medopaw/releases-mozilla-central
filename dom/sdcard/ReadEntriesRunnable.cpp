@@ -38,6 +38,7 @@ void ReadEntriesRunnable::WorkerThreadRun()
   if (NS_FAILED(rv))
   {
     SetErrorCode(rv);
+    return;
   }
 
   bool hasElements;
