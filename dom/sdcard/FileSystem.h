@@ -41,7 +41,7 @@ public:
     return mNavigator.get();
   }
 
-  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
+  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
 
   void GetName(nsString& retval) const;
 

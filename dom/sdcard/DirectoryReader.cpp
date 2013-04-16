@@ -34,9 +34,9 @@ DirectoryReader::~DirectoryReader()
 }
 
 JSObject*
-DirectoryReader::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+DirectoryReader::WrapObject(JSContext* aCx, JSObject* aScope)
 {
-  return DirectoryReaderBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return DirectoryReaderBinding::Wrap(aCx, aScope, this);
 }
 
 void DirectoryReader::ReadEntries(EntriesCallback& successCallback,

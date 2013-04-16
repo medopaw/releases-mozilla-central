@@ -35,9 +35,9 @@ FileEntry::~FileEntry()
 }
 
 JSObject*
-FileEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+FileEntry::WrapObject(JSContext* aCx, JSObject* aScope)
 {
-  return FileEntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return FileEntryBinding::Wrap(aCx, aScope, this);
 }
 /*
 bool FileEntry::IsFile() const

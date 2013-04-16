@@ -21,7 +21,6 @@ DOM_SRCDIRS = \
   dom/src/notification \
   dom/workers \
   dom/time \
-  dom/sdcard \
   content/xbl/src \
   content/xul/document/src \
   content/events/src \
@@ -58,6 +57,10 @@ endif
 
 ifdef MOZ_WEBSPEECH
 DOM_SRCDIRS += content/media/webspeech
+endif
+
+ifdef MOZ_SDCARD
+DOM_SRCDIRS += dom/sdcard
 endif
 
 LOCAL_INCLUDES += $(DOM_SRCDIRS:%=-I$(topsrcdir)/%)

@@ -40,9 +40,9 @@ DirectoryEntry::~DirectoryEntry()
 }
 
 JSObject*
-DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope)
 {
-  return DirectoryEntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return DirectoryEntryBinding::Wrap(aCx, aScope, this);
 }
 
 already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()

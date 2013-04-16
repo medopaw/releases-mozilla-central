@@ -60,9 +60,9 @@ Entry::~Entry()
 
 /*
 JSObject*
-Entry::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+Entry::WrapObject(JSContext* aCx, JSObject* aScope)
 {
-  return EntryBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return EntryBinding::Wrap(aCx, aScope, this);
 }
 */
 

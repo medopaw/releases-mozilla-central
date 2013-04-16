@@ -41,7 +41,7 @@ public:
     return NULL;
   }
 
-//  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
+//  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
 
   bool IsFile() const;
 

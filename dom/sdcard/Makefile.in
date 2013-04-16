@@ -9,27 +9,14 @@ VPATH            = @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
-MODULE           = dom
 LIBRARY_NAME     = dom_sdcard_s
-XPIDL_MODULE     = dom_sdcard
 LIBXUL_LIBRARY   = 1
 FORCE_STATIC_LIB = 1
-ifndef _MSC_VER
 FAIL_ON_WARNINGS := 1
-endif # !_MSC_VER
 
 include $(topsrcdir)/dom/dom-config.mk
 
 EXPORTS_NAMESPACES = mozilla/dom/sdcard
-
-EXPORTS_mozilla/dom/sdcard = \
-  FileSystem.h \
-  Entry.h \
-  DirectoryEntry.h \
-  DirectoryReader.h \
-  FileEntry.h \
-  Metadata.h \
-  $(NULL)
 
 CPPSRCS = \
   FileSystem.cpp \
@@ -50,16 +37,14 @@ CPPSRCS = \
   Error.cpp \
   $(NULL)
 
-XPIDLSRCS = \
-  nsIDOMNavigatorSDCard.idl \
-  $(NULL)
-
-LOCAL_INCLUDES = \
+EXPORTS_mozilla/dom/sdcard = \
+  FileSystem.h \
+  Entry.h \
+  DirectoryEntry.h \
+  DirectoryReader.h \
+  FileEntry.h \
+  Metadata.h \
   $(NULL)
 
 include $(topsrcdir)/config/config.mk
 include $(topsrcdir)/config/rules.mk
-
-XPIDL_FLAGS += \
- -I$(topsrcdir)/dom/interfaces/base \
- $(NULL)

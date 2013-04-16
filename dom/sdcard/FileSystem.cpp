@@ -47,9 +47,9 @@ FileSystem::~FileSystem()
 }
 
 JSObject*
-FileSystem::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+FileSystem::WrapObject(JSContext* aCx, JSObject* aScope)
 {
-  return FileSystemBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return FileSystemBinding::Wrap(aCx, aScope, this);
 }
 
 void FileSystem::GetName(nsString& retval) const

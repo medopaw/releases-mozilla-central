@@ -37,9 +37,9 @@ Metadata::~Metadata()
 }
 
 JSObject*
-Metadata::WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap)
+Metadata::WrapObject(JSContext* aCx, JSObject* aScope)
 {
-  return MetadataBinding::Wrap(aCx, aScope, this, aTriedToWrap);
+  return MetadataBinding::Wrap(aCx, aScope, this);
 }
 
 JS::Value Metadata::ModificationTime(JSContext* cx) const

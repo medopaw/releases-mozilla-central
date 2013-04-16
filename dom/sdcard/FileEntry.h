@@ -31,7 +31,7 @@ public:
 
   ~FileEntry();
 
-  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope, bool* aTriedToWrap);
+  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
 /*
   bool IsFile() const MOZ_OVERRIDE;
 
