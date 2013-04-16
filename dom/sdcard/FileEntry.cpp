@@ -26,7 +26,7 @@ NS_INTERFACE_MAP_END
 
 FileEntry::FileEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, true, false)
 {
-  SDCARD_LOG("init FileEntryn");
+  SDCARD_LOG("init FileEntry");
   SetIsDOMBinding();
 }
 
