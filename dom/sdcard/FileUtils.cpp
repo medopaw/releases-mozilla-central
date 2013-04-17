@@ -21,7 +21,9 @@ nsresult FileUtils::IsDirectoryEmpty(nsIFile* dir, bool* retval)
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   nsresult rv = dir->GetDirectoryEntries(getter_AddRefs(childEnumerator));
   if (NS_SUCCEEDED(rv)) {
-    rv = childEnumerator->HasMoreElements(retval);
+    bool hasElements;
+    rv = childEnumerator->HasMoreElements(&hasElements);
+    *retval = !hasElements;
   }
   return rv;
 }
