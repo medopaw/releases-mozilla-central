@@ -35,8 +35,7 @@ void ReadEntriesRunnable::WorkerThreadRun()
   nsresult rv = NS_OK;
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   rv = mFile->GetDirectoryEntries(getter_AddRefs(childEnumerator));
-  if (NS_FAILED(rv))
-  {
+  if (NS_FAILED(rv)) {
     SetErrorCode(rv);
     return;
   }
