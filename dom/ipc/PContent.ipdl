@@ -6,6 +6,7 @@
 
 include protocol PBlob;
 include protocol PBluetooth;
+include protocol PSDCard;
 include protocol PBrowser;
 include protocol PCompositor;
 include protocol PCrashReporter;
@@ -240,6 +241,7 @@ rpc protocol PContent
 
     manages PBlob;
     manages PBluetooth;
+    manages PSDCard;
     manages PBrowser;
     manages PCrashReporter;
     manages PDeviceStorageRequest;
@@ -397,6 +399,8 @@ parent:
     PStorage();
 
     PBluetooth();
+
+    PSDCard();
 
     // Services remoting
 

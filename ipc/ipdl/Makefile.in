@@ -26,6 +26,7 @@ IPDLDIRS =  \
   dom/devicestorage \
   dom/indexedDB/ipc \
   dom/bluetooth/ipc \
+  dom/sdcard/ipc \
   dom/plugins/ipc  \
   dom/ipc \
   dom/mobilemessage/src/ipc \
