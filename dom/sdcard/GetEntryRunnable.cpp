@@ -31,11 +31,12 @@ GetEntryRunnable::GetEntryRunnable(
       mIsFile(aIsFile)
 
 {
-  SDCARD_LOG("init GetEntryRunnable");
+  SDCARD_LOG("construct GetEntryRunnable");
 }
 
 GetEntryRunnable::~GetEntryRunnable()
 {
+  SDCARD_LOG("destruct GetEntryRunnable");
 }
 
 void GetEntryRunnable::WorkerThreadRun()

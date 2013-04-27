@@ -24,16 +24,16 @@ namespace sdcard {
 class SDCardParent :
     public PSDCardParent
 {
-    friend class mozilla::dom::ContentParent;
+  friend class mozilla::dom::ContentParent;
 
-    virtual bool
-    RecvRemove(
-            const nsString& path,
-            const bool& recursive);
+  virtual bool
+  RecvRemove(
+          const nsString& path,
+          const bool& recursive);
 
 protected:
-    SDCardParent();
-    virtual ~SDCardParent();
+  SDCardParent();
+  virtual ~SDCardParent();
 };
 } // namespace sdcard
 } // namespace dom

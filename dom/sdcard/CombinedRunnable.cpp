@@ -21,10 +21,12 @@ CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback, Entry* aEntry)
     mErrorCode(NS_OK),
     mWorkerThread(nullptr)
 {
+  SDCARD_LOG("construct CombinedRunnable");
 }
 
 CombinedRunnable::~CombinedRunnable()
 {
+  SDCARD_LOG("destruct CombinedRunnable");
 }
 
 void CombinedRunnable::Start()

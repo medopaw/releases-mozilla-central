@@ -26,7 +26,7 @@ CopyAndMoveToRunnable::CopyAndMoveToRunnable(
     mSuccessCallback(aSuccessCallback),
     mIsCopy(aIsCopy)
 {
-  SDCARD_LOG("init CopyAndMoveToRunnable");
+  SDCARD_LOG("construct CopyAndMoveToRunnable");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
   if (aNewName && !aNewName->IsEmpty()) {
@@ -40,6 +40,7 @@ CopyAndMoveToRunnable::CopyAndMoveToRunnable(
 
 CopyAndMoveToRunnable::~CopyAndMoveToRunnable()
 {
+  SDCARD_LOG("destruct CopyAndMoveToRunnable");
 }
 
 void CopyAndMoveToRunnable::WorkerThreadRun()

@@ -6,6 +6,7 @@
 
 
 #include "SDCardChild.h"
+#include "../Utils.h"
 
 namespace mozilla {
 namespace dom {
@@ -14,23 +15,27 @@ namespace sdcard {
 bool
 SDCardChild::RecvOnVoidResult()
 {
-    return false;
+  SDCARD_LOG("in SDCardChild.RecvOnVoidResult()");
+  return false;
 }
 
 bool
 SDCardChild::RecvOnError()
 {
-    return false;
+  SDCARD_LOG("in SDCardChild.RecvOnError()");
+  return false;
 }
 
 SDCardChild::SDCardChild()
 {
-    MOZ_COUNT_CTOR(SDCardChild);
+  SDCARD_LOG("construct SDCardChild");
+  MOZ_COUNT_CTOR(SDCardChild);
 }
 
 SDCardChild::~SDCardChild()
 {
-    MOZ_COUNT_DTOR(SDCardChild);
+  SDCARD_LOG("destruct SDCardChild");
+  MOZ_COUNT_DTOR(SDCardChild);
 }
 
 } // namespace sdcard

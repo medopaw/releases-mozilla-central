@@ -26,11 +26,13 @@ NS_INTERFACE_MAP_END
 DirectoryReader::DirectoryReader(DirectoryEntry* entry) :
     mEntry(entry)
 {
+  SDCARD_LOG("construct DirectoryReader");
   SetIsDOMBinding();
 }
 
 DirectoryReader::~DirectoryReader()
 {
+  SDCARD_LOG("destruct DirectoryReader");
 }
 
 JSObject*

@@ -31,12 +31,13 @@ NS_INTERFACE_MAP_END
 
 DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, false, true)
 {
-  SDCARD_LOG("init DirectoryEntry");
+  SDCARD_LOG("construct DirectoryEntry");
   SetIsDOMBinding();
 }
 
 DirectoryEntry::~DirectoryEntry()
 {
+  SDCARD_LOG("destruct DirectoryEntry");
 }
 
 JSObject*

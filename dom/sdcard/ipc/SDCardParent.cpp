@@ -5,6 +5,7 @@
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SDCardParent.h"
+#include "../Utils.h"
 
 namespace mozilla {
 namespace dom {
@@ -15,17 +16,20 @@ SDCardParent::RecvRemove(
         const nsString& path,
         const bool& recursive)
 {
-    return false;
+  SDCARD_LOG("in SDCardParent.RecvRemove()");
+  return false;
 }
 
 SDCardParent::SDCardParent()
 {
-    MOZ_COUNT_CTOR(SDCardParent);
+  SDCARD_LOG("construct SDCardParent");
+  MOZ_COUNT_CTOR(SDCardParent);
 }
 
 SDCardParent::~SDCardParent()
 {
-    MOZ_COUNT_DTOR(SDCardParent);
+  SDCARD_LOG("destruct SDCardParent");
+  MOZ_COUNT_DTOR(SDCardParent);
 }
 
 } // namespace sdcard

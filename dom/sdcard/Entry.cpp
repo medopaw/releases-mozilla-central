@@ -47,7 +47,8 @@ Entry* Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
 
 Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory) : mFilesystem(aFilesystem), mIsFile(aIsFile), mIsDirectory(aIsDirectory)
 {
-  SDCARD_LOG("init Entry");
+  SDCARD_LOG("construct Entry");
+
   // copy nsIFile object and hold it
   nsCOMPtr<nsIFile> file;
   aFile->Clone(getter_AddRefs(mFile));
@@ -56,6 +57,7 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDire
 
 Entry::~Entry()
 {
+  SDCARD_LOG("destruct Entry");
 }
 
 /*

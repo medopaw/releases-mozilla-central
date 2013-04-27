@@ -20,12 +20,13 @@ GetMetadataRunnable::GetMetadataRunnable(MetadataCallback* aSuccessCallback,
     mTime(0),
     mFileSize(0)
 {
-  SDCARD_LOG("init GetMetadataRunnable");
+  SDCARD_LOG("construct GetMetadataRunnable");
   mFile = aEntry->GetFileInternal();
 }
 
 GetMetadataRunnable::~GetMetadataRunnable()
 {
+  SDCARD_LOG("destruct GetMetadataRunnable");
 }
 
 void GetMetadataRunnable::WorkerThreadRun()

@@ -15,15 +15,15 @@ namespace sdcard {
 class SDCardChild :
     public PSDCardChild
 {
-    virtual bool
-    RecvOnVoidResult();
+  virtual bool
+  RecvOnVoidResult();
 
-    virtual bool
-    RecvOnError();
+  virtual bool
+  RecvOnError();
 
 protected:
-    SDCardChild();
-    virtual ~SDCardChild();
+  SDCardChild();
+  virtual ~SDCardChild();
 };
 } // namespace sdcard
 } // namespace dom

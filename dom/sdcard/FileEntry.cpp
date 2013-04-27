@@ -26,12 +26,13 @@ NS_INTERFACE_MAP_END
 
 FileEntry::FileEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, true, false)
 {
-  SDCARD_LOG("init FileEntry");
+  SDCARD_LOG("construct FileEntry");
   SetIsDOMBinding();
 }
 
 FileEntry::~FileEntry()
 {
+  SDCARD_LOG("destruct FileEntry");
 }
 
 JSObject*

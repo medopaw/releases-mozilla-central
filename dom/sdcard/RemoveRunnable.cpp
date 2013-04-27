@@ -23,12 +23,13 @@ RemoveRunnable::RemoveRunnable(
     mSuccessCallback(aSuccessCallback),
     mRecursive(aRecursive)
 {
-  SDCARD_LOG("init RemoveRunnable");
+  SDCARD_LOG("construct RemoveRunnable");
   mFile = aEntry->GetFileInternal();
 }
 
 RemoveRunnable::~RemoveRunnable()
 {
+  SDCARD_LOG("destruct RemoveRunnable");
 }
 
 void RemoveRunnable::WorkerThreadRun()

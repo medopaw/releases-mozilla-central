@@ -19,12 +19,13 @@ GetParentRunnable::GetParentRunnable(EntryCallback* aSuccessCallback,
     CombinedRunnable(aErrorCallback, aEntry),
     mSuccessCallback(aSuccessCallback)
 {
-  SDCARD_LOG("init GetParentRunnable!");
+  SDCARD_LOG("construct GetParentRunnable!");
   mFile = aEntry->GetFileInternal();
 }
 
 GetParentRunnable::~GetParentRunnable()
 {
+  SDCARD_LOG("destruct GetParentRunnable!");
 }
 
 void GetParentRunnable::WorkerThreadRun()

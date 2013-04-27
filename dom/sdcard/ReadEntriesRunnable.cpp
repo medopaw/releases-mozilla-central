@@ -19,12 +19,13 @@ ReadEntriesRunnable::ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
     CombinedRunnable(aErrorCallback, aEntry),
     mSuccessCallback(aSuccessCallback)
 {
-SDCARD_LOG("init ReadEntriesRunnabl!");
+  SDCARD_LOG("construct ReadEntriesRunnabl!");
   mFile = aEntry->GetFileInternal();
 }
 
 ReadEntriesRunnable::~ReadEntriesRunnable()
 {
+  SDCARD_LOG("destruct ReadEntriesRunnabl!");
 }
 
 void ReadEntriesRunnable::WorkerThreadRun()

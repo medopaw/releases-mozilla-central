@@ -28,12 +28,13 @@ Metadata::Metadata() :
     mSize(0),
     mDate(0)
 {
-  SDCARD_LOG("init Metadata");
+  SDCARD_LOG("construct Metadata");
   SetIsDOMBinding();
 }
 
 Metadata::~Metadata()
 {
+  SDCARD_LOG("destruct Metadata");
 }
 
 JSObject*

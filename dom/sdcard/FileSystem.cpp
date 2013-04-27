@@ -27,7 +27,7 @@ NS_INTERFACE_MAP_END
 
 FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName)
 {
-  SDCARD_LOG("init FileSystem");
+  SDCARD_LOG("construct FileSystem");
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
@@ -43,6 +43,7 @@ FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, cons
 
 FileSystem::~FileSystem()
 {
+  SDCARD_LOG("destruct FileSystem");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 }
 
