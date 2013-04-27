@@ -32,6 +32,7 @@
 #include "mozilla/dom/power/PowerManagerService.h"
 #include "mozilla/dom/DOMStorageIPC.h"
 #include "mozilla/dom/bluetooth/PBluetoothParent.h"
+#include "mozilla/dom/sdcard/PSDCardParent.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestParent.h"
 #include "SmsParent.h"
 #include "mozilla/Hal.h"
@@ -119,6 +120,10 @@ using namespace mozilla::system;
 #include "BluetoothService.h"
 #endif
 
+#ifdef MOZ_SDCARD
+#include "SDCardParent.h"
+#endif
+
 #include "Crypto.h"
 
 #ifdef MOZ_WEBSPEECH
@@ -131,6 +136,7 @@ static const char* sClipboardTextFlavors[] = { kUnicodeMime };
 using base::ChildPrivileges;
 using base::KillProcess;
 using namespace mozilla::dom::bluetooth;
+using namespace mozilla::dom::sdcard;
 using namespace mozilla::dom::devicestorage;
 using namespace mozilla::dom::indexedDB;
 using namespace mozilla::dom::power;
@@ -2019,6 +2025,30 @@ ContentParent::RecvPBluetoothConstructor(PBluetoothParent* aActor)
     MOZ_CRASH("No support for bluetooth on this platform!");
 #endif
 }
+
+PSDCardParent*
+ContentParent::AllocPSDCard()
+{
+#ifdef MOZ_SDCARD
+    return new mozilla::dom::sdcard::SDCardParent();
+#else
+    MOZ_NOT_REACHED("No support for sdcard on this platform!");
+    return nullptr;
+#endif
+}
+
+bool
+ContentParent::DeallocPSDCard(PSDCardParent* aActor)
+{
+#ifdef MOZ_SDCARD
+    delete aActor;
+    return true;
+#else
+    MOZ_NOT_REACHED("No support for sdcard on this platform!");
+    return false;
+#endif
+}
+
 
 PSpeechSynthesisParent*
 ContentParent::AllocPSpeechSynthesis()

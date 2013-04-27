@@ -148,6 +148,9 @@ public:
     virtual PBluetoothChild* AllocPBluetooth();
     virtual bool DeallocPBluetooth(PBluetoothChild* aActor);
 
+    virtual PSDCardChild* AllocPSDCard();
+    virtual bool DeallocPSDCard(PSDCardChild* aActor);
+
     virtual PSpeechSynthesisChild* AllocPSpeechSynthesis();
     virtual bool DeallocPSpeechSynthesis(PSpeechSynthesisChild* aActor);
 

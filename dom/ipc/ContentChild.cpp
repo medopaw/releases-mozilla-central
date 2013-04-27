@@ -93,6 +93,7 @@
 #include "mozilla/dom/mobilemessage/SmsChild.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestChild.h"
 #include "mozilla/dom/bluetooth/PBluetoothChild.h"
+#include "mozilla/dom/sdcard/PSDCardChild.h"
 #include "mozilla/ipc/InputStreamUtils.h"
 
 #ifdef MOZ_WEBSPEECH
@@ -115,6 +116,7 @@ using namespace base;
 using namespace mozilla;
 using namespace mozilla::docshell;
 using namespace mozilla::dom::bluetooth;
+using namespace mozilla::dom::sdcard;
 using namespace mozilla::dom::devicestorage;
 using namespace mozilla::dom::ipc;
 using namespace mozilla::dom::mobilemessage;
@@ -863,6 +865,29 @@ ContentChild::DeallocPBluetooth(PBluetoothChild* aActor)
 #endif
 }
 
+PSDCardChild*
+ContentChild::AllocPSDCard()
+{
+#ifdef MOZ_SDCARD
+    MOZ_NOT_REACHED("No one should be allocating PSDCardChild actors");
+    return nullptr;
+#else
+    MOZ_NOT_REACHED("No support for sdcard on this platform!");
+    return nullptr;
+#endif
+}
+
+bool
+ContentChild::DeallocPSDCard(PSDCardChild* aActor)
+{
+#ifdef MOZ_SDCARD
+    delete aActor;
+    return true;
+#else
+    MOZ_NOT_REACHED("No support for sdcard on this platform!");
+    return false;
+#endif
+}
 PSpeechSynthesisChild*
 ContentChild::AllocPSpeechSynthesis()
 {

@@ -4,40 +4,37 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-include protocol PContent;
+#pragma once
+
+
+#include "mozilla/dom/sdcard/PSDCardParent.h"
+
+namespace mozilla {
+namespace dom {
+
+class ContentParent;
+
+} // namespace dom
+} // namespace mozilla
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-async protocol PSDCard
+class SDCardParent :
+    public PSDCardParent
 {
-  manager PContent;
+    friend class mozilla::dom::ContentParent;
 
-child:
-  /**
-   * Sent when we need to call VoidCallback
-   */
-  OnVoidResult();
+    virtual bool
+    RecvRemove(
+            const nsString& path,
+            const bool& recursive);
 
-  /**
-   * Sent when we need to call ErrorCallback
-   */
-  OnError();
-
-parent:
-  /**
-   * Sent when mozSDCard is destructed
-   */
-  __delete__();
-
-  /**
-   * Sent when the child needs to receive signals related to the given node.
-   */
-  Remove(nsString path, bool recursive);
-
+protected:
+    SDCardParent();
+    virtual ~SDCardParent();
 };
-
 } // namespace sdcard
 } // namespace dom
 } // namespace mozilla

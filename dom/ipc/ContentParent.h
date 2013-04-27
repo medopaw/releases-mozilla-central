@@ -309,6 +309,9 @@ private:
     virtual bool DeallocPBluetooth(PBluetoothParent* aActor);
     virtual bool RecvPBluetoothConstructor(PBluetoothParent* aActor);
 
+    virtual PSDCardParent* AllocPSDCard();
+    virtual bool DeallocPSDCard(PSDCardParent* aActor);
+
     virtual PSpeechSynthesisParent* AllocPSpeechSynthesis();
     virtual bool DeallocPSpeechSynthesis(PSpeechSynthesisParent* aActor);
     virtual bool RecvPSpeechSynthesisConstructor(PSpeechSynthesisParent* aActor);

@@ -9,6 +9,8 @@ VPATH            = @srcdir@
 
 include $(DEPTH)/config/autoconf.mk
 
+VPATH += $(srcdir)/ipc
+
 LIBRARY_NAME     = dom_sdcard_s
 LIBXUL_LIBRARY   = 1
 FORCE_STATIC_LIB = 1
@@ -35,6 +37,8 @@ CPPSRCS = \
   FileUtils.cpp \
   Path.cpp \
   Error.cpp \
+  SDCardParent.cpp \
+  SDCardChild.cpp \
   $(NULL)
 
 EXPORTS_mozilla/dom/sdcard = \
@@ -52,6 +56,8 @@ EXPORTS_mozilla/dom/sdcard = \
 # 		-I$(topsrcdir)/content/base/src \
 # 		$(NULL)
 
+LOCAL_INCLUDES += $(VPATH:%=-I%)
+
 include $(topsrcdir)/config/config.mk
 include $(topsrcdir)/config/rules.mk
-# include $(topsrcdir)/ipc/chromium/chromium-config.mk
+include $(topsrcdir)/ipc/chromium/chromium-config.mk

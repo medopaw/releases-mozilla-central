@@ -4,39 +4,34 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-include protocol PContent;
+
+#include "SDCardChild.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-async protocol PSDCard
+bool
+SDCardChild::RecvOnVoidResult()
 {
-  manager PContent;
+    return false;
+}
 
-child:
-  /**
-   * Sent when we need to call VoidCallback
-   */
-  OnVoidResult();
+bool
+SDCardChild::RecvOnError()
+{
+    return false;
+}
 
-  /**
-   * Sent when we need to call ErrorCallback
-   */
-  OnError();
+SDCardChild::SDCardChild()
+{
+    MOZ_COUNT_CTOR(SDCardChild);
+}
 
-parent:
-  /**
-   * Sent when mozSDCard is destructed
-   */
-  __delete__();
-
-  /**
-   * Sent when the child needs to receive signals related to the given node.
-   */
-  Remove(nsString path, bool recursive);
-
-};
+SDCardChild::~SDCardChild()
+{
+    MOZ_COUNT_DTOR(SDCardChild);
+}
 
 } // namespace sdcard
 } // namespace dom
