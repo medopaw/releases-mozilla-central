@@ -8,8 +8,12 @@
 
 #define DEBUGGING
 #ifdef DEBUGGING
-// #define SDCARD_LOG printf
+#if defined(MOZ_WIDGET_GONK)
+#include <android/log.h>
+#define SDCARD_LOG(args...)  __android_log_print(ANDROID_LOG_INFO, "SDCard" , ## args)
+#else
 #define SDCARD_LOG(fmt, ...) printf("\n\n"); printf(fmt, ##__VA_ARGS__)
+#endif
 #else
 #define SDCARD_LOG(fmt, ...)
 #endif
