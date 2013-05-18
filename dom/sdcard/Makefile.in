@@ -39,6 +39,8 @@ CPPSRCS = \
   Error.cpp \
   SDCardParent.cpp \
   SDCardChild.cpp \
+  SDCardRequestParent.cpp \
+  SDCardRequestChild.cpp \
   $(NULL)
 
 EXPORTS_mozilla/dom/sdcard = \
