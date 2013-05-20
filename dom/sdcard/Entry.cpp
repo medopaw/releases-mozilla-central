@@ -19,6 +19,9 @@
 #include "FileEntry.h"
 #include "DirectoryEntry.h"
 
+#include "mozilla/dom/ContentChild.h"
+#include "SDCardRequestChild.h"
+
 namespace mozilla {
 namespace dom {
 namespace sdcard {
@@ -166,8 +169,15 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this);
-  runnable->Start();
+
+  if (XRE_GetProcessType() == GeckoProcessType_Default) {
+    nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this);
+    runnable->Start();
+  } else {
+    PSDCardRequestChild* child = new SDCardRequestChild();
+    ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child);
+  }
+
 }
 
 void Entry::GetParent(EntryCallback& successCallback,

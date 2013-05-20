@@ -9,6 +9,7 @@ namespace sdcard {
 class SDCardRequestChild :
     public PSDCardRequestChild
 {
+public:
     SDCardRequestChild();
     virtual ~SDCardRequestChild();
 };
