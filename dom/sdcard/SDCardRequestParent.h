@@ -1,3 +1,9 @@
+/* -*- Mode: C++; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- */
+/* vim:set ts=2 sw=2 sts=2 et cindent: */
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 #pragma once
 
 #include "mozilla/dom/sdcard/PSDCardRequestParent.h"
@@ -7,10 +13,17 @@ namespace dom {
 namespace sdcard {
 
 class SDCardRequestParent :
-    public PSDCardRequestParent
+  public PSDCardRequestParent
 {
-    SDCardRequestParent();
-    virtual ~SDCardRequestParent();
+public:
+  SDCardRequestParent();
+  virtual ~SDCardRequestParent();
+
+  NS_IMETHOD_(nsrefcnt) AddRef();
+  NS_IMETHOD_(nsrefcnt) Release();
+
+private:
+  nsAutoRefCnt mRefCnt;
 };
 
 } // namespace sdcard

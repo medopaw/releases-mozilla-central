@@ -43,15 +43,6 @@ CPPSRCS = \
   SDCardRequestChild.cpp \
   $(NULL)
 
-EXPORTS_mozilla/dom/sdcard = \
-  FileSystem.h \
-  Entry.h \
-  DirectoryEntry.h \
-  DirectoryReader.h \
-  FileEntry.h \
-  Metadata.h \
-  $(NULL)
-
 # LOCAL_INCLUDES = \
 # 		-I$(topsrcdir)/dom/base \
 # 		-I$(topsrcdir)/dom/ipc \

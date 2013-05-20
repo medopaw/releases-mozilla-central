@@ -14,3 +14,18 @@ MODULE = 'dom'
 XPIDL_FLAGS += [
      '-I$(topsrcdir)/dom/interfaces/base/'
 ]
+
+# EXPORTS += [
+# ]
+
+EXPORTS.mozilla.dom.sdcard += [
+    'FileSystem.h',
+    'Entry.h',
+    'DirectoryEntry.h',
+    'DirectoryReader.h',
+    'FileEntry.h',
+    'Metadata.h',
+    'SDCardRequestChild.h',
+    'SDCardRequestParent.h',
+]
+

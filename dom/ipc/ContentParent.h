@@ -258,6 +258,9 @@ private:
     virtual PDeviceStorageRequestParent* AllocPDeviceStorageRequest(const DeviceStorageParams&);
     virtual bool DeallocPDeviceStorageRequest(PDeviceStorageRequestParent*);
 
+    virtual PSDCardRequestParent* AllocPSDCardRequest();
+    virtual bool DeallocPSDCardRequest(PSDCardRequestParent* doomed);
+
     virtual PBlobParent* AllocPBlob(const BlobConstructorParams& aParams);
     virtual bool DeallocPBlob(PBlobParent*);
 

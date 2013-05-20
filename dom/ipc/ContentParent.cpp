@@ -34,6 +34,7 @@
 #include "mozilla/dom/bluetooth/PBluetoothParent.h"
 #include "mozilla/dom/sdcard/PSDCardParent.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestParent.h"
+#include "mozilla/dom/sdcard/SDCardRequestParent.h"
 #include "SmsParent.h"
 #include "mozilla/Hal.h"
 #include "mozilla/hal_sandbox/PHalParent.h"
@@ -1650,6 +1651,22 @@ bool
 ContentParent::DeallocPDeviceStorageRequest(PDeviceStorageRequestParent* doomed)
 {
   DeviceStorageRequestParent *parent = static_cast<DeviceStorageRequestParent*>(doomed);
+  NS_RELEASE(parent);
+  return true;
+}
+
+PSDCardRequestParent*
+ContentParent::AllocPSDCardRequest(/*const SDCardParams& aParams*/)
+{
+  nsRefPtr<SDCardRequestParent> result = new SDCardRequestParent(/*aParams*/);
+  // result->Dispatch();
+  return result.forget().get();
+}
+
+bool
+ContentParent::DeallocPSDCardRequest(PSDCardRequestParent* doomed)
+{
+  SDCardRequestParent *parent = static_cast<SDCardRequestParent*>(doomed);
   NS_RELEASE(parent);
   return true;
 }

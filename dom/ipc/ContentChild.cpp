@@ -92,6 +92,7 @@
 #include "mozilla/dom/indexedDB/PIndexedDBChild.h"
 #include "mozilla/dom/mobilemessage/SmsChild.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestChild.h"
+#include "mozilla/dom/sdcard/SDCardRequestChild.h"
 #include "mozilla/dom/bluetooth/PBluetoothChild.h"
 #include "mozilla/dom/sdcard/PSDCardChild.h"
 #include "mozilla/ipc/InputStreamUtils.h"
@@ -779,6 +780,19 @@ bool
 ContentChild::DeallocPDeviceStorageRequest(PDeviceStorageRequestChild* aDeviceStorage)
 {
     delete aDeviceStorage;
+    return true;
+}
+
+PSDCardRequestChild*
+ContentChild::AllocPSDCardRequest(/*const SDCardParams& aParams*/)
+{
+    return new SDCardRequestChild();
+}
+
+bool
+ContentChild::DeallocPSDCardRequest(PSDCardRequestChild* aSDCard)
+{
+    delete aSDCard;
     return true;
 }
 
