@@ -22,6 +22,8 @@ public:
   NS_IMETHOD_(nsrefcnt) AddRef();
   NS_IMETHOD_(nsrefcnt) Release();
 
+  void Dispatch();
+
 private:
   nsAutoRefCnt mRefCnt;
 };

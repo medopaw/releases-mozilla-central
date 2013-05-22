@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SDCardRequestParent.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
@@ -15,12 +16,20 @@ NS_IMPL_THREADSAFE_RELEASE(SDCardRequestParent)
 
 SDCardRequestParent::SDCardRequestParent()
 {
+  SDCARD_LOG("construct SDCardRequestParent");
   MOZ_COUNT_CTOR(SDCardRequestParent);
 }
 
 SDCardRequestParent::~SDCardRequestParent()
 {
+  SDCARD_LOG("destruct SDCardRequestParent");
   MOZ_COUNT_DTOR(SDCardRequestParent);
+}
+
+void
+SDCardRequestParent::Dispatch()
+{
+  SDCARD_LOG("in SDCardRequestParent.Dispatch()");
 }
 
 } // namespace sdcard

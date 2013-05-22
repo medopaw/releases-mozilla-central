@@ -1659,7 +1659,7 @@ PSDCardRequestParent*
 ContentParent::AllocPSDCardRequest(/*const SDCardParams& aParams*/)
 {
   nsRefPtr<SDCardRequestParent> result = new SDCardRequestParent(/*aParams*/);
-  // result->Dispatch();
+  result->Dispatch();
   return result.forget().get();
 }
 
