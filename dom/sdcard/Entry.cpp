@@ -171,9 +171,11 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
   }
 
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
+    SDCARD_LOG("in b2g process");
     nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this);
     runnable->Start();
   } else {
+    SDCARD_LOG("in app process");
     PSDCardRequestChild* child = new SDCardRequestChild();
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child);
   }

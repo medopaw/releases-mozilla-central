@@ -12,7 +12,7 @@
 #include <android/log.h>
 #define SDCARD_LOG(args...)  __android_log_print(ANDROID_LOG_INFO, "SDCard" , ## args)
 #else
-#define SDCARD_LOG(fmt, ...) printf("\n\n"); printf(fmt, ##__VA_ARGS__)
+#define SDCARD_LOG(fmt, ...) printf("\n"); printf(fmt, ##__VA_ARGS__); printf("\n");
 #endif
 #else
 #define SDCARD_LOG(fmt, ...)

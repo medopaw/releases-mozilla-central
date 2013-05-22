@@ -14,7 +14,6 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(DirectoryReader)
 NS_IMPL_CYCLE_COLLECTING_ADDREF(DirectoryReader)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(DirectoryReader)
