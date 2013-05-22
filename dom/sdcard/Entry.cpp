@@ -176,8 +176,8 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
     runnable->Start();
   } else {
     SDCARD_LOG("in app process");
-    PSDCardRequestChild* child = new SDCardRequestChild();
-    ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child);
+    // PSDCardRequestChild* child = new SDCardRequestChild();
+    // ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child);
   }
 
 }

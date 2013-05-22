@@ -7,6 +7,8 @@
 #pragma once
 
 #include "mozilla/dom/sdcard/PSDCardRequestParent.h"
+#include "mozilla/dom/ContentChild.h"
+#include "mozilla/dom/ContentParent.h"
 
 namespace mozilla {
 namespace dom {
@@ -16,13 +18,15 @@ class SDCardRequestParent :
   public PSDCardRequestParent
 {
 public:
-  SDCardRequestParent();
-  virtual ~SDCardRequestParent();
+  SDCardRequestParent(const SDCardParams& aParams);
 
   NS_IMETHOD_(nsrefcnt) AddRef();
   NS_IMETHOD_(nsrefcnt) Release();
 
   void Dispatch();
+
+protected:
+  virtual ~SDCardRequestParent();
 
 private:
   nsAutoRefCnt mRefCnt;

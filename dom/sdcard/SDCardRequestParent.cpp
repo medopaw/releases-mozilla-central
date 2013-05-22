@@ -14,7 +14,7 @@ namespace sdcard {
 NS_IMPL_THREADSAFE_ADDREF(SDCardRequestParent)
 NS_IMPL_THREADSAFE_RELEASE(SDCardRequestParent)
 
-SDCardRequestParent::SDCardRequestParent()
+SDCardRequestParent::SDCardRequestParent(const SDCardParams& aParams)
 {
   SDCARD_LOG("construct SDCardRequestParent");
   MOZ_COUNT_CTOR(SDCardRequestParent);

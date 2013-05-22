@@ -117,8 +117,8 @@ using namespace base;
 using namespace mozilla;
 using namespace mozilla::docshell;
 using namespace mozilla::dom::bluetooth;
-using namespace mozilla::dom::sdcard;
 using namespace mozilla::dom::devicestorage;
+using namespace mozilla::dom::sdcard;
 using namespace mozilla::dom::ipc;
 using namespace mozilla::dom::mobilemessage;
 using namespace mozilla::dom::indexedDB;
@@ -784,7 +784,7 @@ ContentChild::DeallocPDeviceStorageRequest(PDeviceStorageRequestChild* aDeviceSt
 }
 
 PSDCardRequestChild*
-ContentChild::AllocPSDCardRequest(/*const SDCardParams& aParams*/)
+ContentChild::AllocPSDCardRequest(const SDCardParams& aParams)
 {
     return new SDCardRequestChild();
 }

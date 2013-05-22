@@ -289,10 +289,10 @@ rpc protocol PContent
     manages PBlob;
     manages PBluetooth;
     manages PSDCard;
-    manages PSDCardRequest;
     manages PBrowser;
     manages PCrashReporter;
     manages PDeviceStorageRequest;
+    manages PSDCardRequest;
     manages PExternalHelperApp;
     manages PHal;
     manages PIndexedDB;
@@ -429,6 +429,8 @@ parent:
 
     PDeviceStorageRequest(DeviceStorageParams params);
 
+    PSDCardRequest(SDCardParams params);
+
     sync PCrashReporter(NativeThreadId tid, uint32_t processType);
 
     sync GetRandomValues(uint32_t length)
@@ -449,8 +451,6 @@ parent:
     PBluetooth();
 
     PSDCard();
-
-    PSDCardRequest();
 
     // Services remoting
 

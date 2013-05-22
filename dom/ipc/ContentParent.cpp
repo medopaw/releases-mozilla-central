@@ -1656,9 +1656,9 @@ ContentParent::DeallocPDeviceStorageRequest(PDeviceStorageRequestParent* doomed)
 }
 
 PSDCardRequestParent*
-ContentParent::AllocPSDCardRequest(/*const SDCardParams& aParams*/)
+ContentParent::AllocPSDCardRequest(const SDCardParams& aParams)
 {
-  nsRefPtr<SDCardRequestParent> result = new SDCardRequestParent(/*aParams*/);
+  nsRefPtr<SDCardRequestParent> result = new SDCardRequestParent(aParams);
   result->Dispatch();
   return result.forget().get();
 }
