@@ -126,47 +126,42 @@ union DeviceStorageParams
 
 struct SDCardCopyAndMoveParams
 {
-  nsString type;
-  nsString relPath;
-  nsString parentPath; // dir
+  nsString relpath;
+  nsString parentDir;
   nsString newName;
   bool isCopy;
 };
 
-struct SDCardGetEntryParams
+struct SDCardGetParams
 {
-  nsString type;
-  nsString relPath;
+  nsString relpath;
   bool create;
   bool exclusive;
   bool isFile;
 };
 
-struct SDCardGetMetadataParams
+struct SDCardMetadataParams
 {
-  nsString type;
-  nsString relPath;
+  nsString relpath;
 };
 
-struct SDCardReadEntriesParams
+struct SDCardGetAllParams
 {
-  nsString type;
-  nsString relPath; // dir
+  nsString relpath; // dir
 };
 
 struct SDCardRemoveParams
 {
-  nsString type;
-  nsString relPath;
+  nsString relpath;
   bool recursive;
 };
 
 union SDCardParams
 {
   SDCardCopyAndMoveParams;
-  SDCardGetEntryParams;
-  SDCardGetMetadataParams;
-  SDCardReadEntriesParams;
+  SDCardGetParams;
+  SDCardMetadataParams;
+  SDCardGetAllParams;
   SDCardRemoveParams;
 };
 

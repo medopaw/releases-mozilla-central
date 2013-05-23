@@ -30,6 +30,7 @@ protected:
 
 private:
   nsAutoRefCnt mRefCnt;
+  SDCardParams mParams;
 };
 
 } // namespace sdcard

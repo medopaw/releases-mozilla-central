@@ -15,6 +15,7 @@ NS_IMPL_THREADSAFE_ADDREF(SDCardRequestParent)
 NS_IMPL_THREADSAFE_RELEASE(SDCardRequestParent)
 
 SDCardRequestParent::SDCardRequestParent(const SDCardParams& aParams)
+  : mParams(aParams)
 {
   SDCARD_LOG("construct SDCardRequestParent");
   MOZ_COUNT_CTOR(SDCardRequestParent);
@@ -30,6 +31,39 @@ void
 SDCardRequestParent::Dispatch()
 {
   SDCARD_LOG("in SDCardRequestParent.Dispatch()");
+
+  switch(mParams.type()) {
+
+    case SDCardParams::TSDCardCopyAndMoveParams:
+    {
+    }
+
+    case SDCardParams::TSDCardGetParams:
+    {
+    }
+
+    case SDCardParams::TSDCardMetadataParams:
+    {
+    }
+
+    case SDCardParams::TSDCardGetAllParams:
+    {
+    }
+
+    case SDCardParams::TSDCardRemoveParams:
+    {
+      SDCardRemoveParams p = mParams;
+      SDCARD_LOG("Remove %s with recursive=%d", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.recursive());
+      break;
+    }
+
+    default:
+    {
+      NS_RUNTIMEABORT("not reached");
+      break;
+    }
+
+  }
 }
 
 } // namespace sdcard
