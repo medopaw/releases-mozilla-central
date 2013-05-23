@@ -36,18 +36,30 @@ SDCardRequestParent::Dispatch()
 
     case SDCardParams::TSDCardCopyAndMoveParams:
     {
+      SDCardCopyAndMoveParams p = mParams;
+      SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentDir()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
+      break;
     }
 
     case SDCardParams::TSDCardGetParams:
     {
+      SDCardGetParams p = mParams;
+      SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d", p.isFile() ? "file" : "directory", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive());
+      break;
     }
 
     case SDCardParams::TSDCardMetadataParams:
     {
+      SDCardMetadataParams p = mParams;
+      SDCARD_LOG("Get metadata of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
+      break;
     }
 
     case SDCardParams::TSDCardGetAllParams:
     {
+      SDCardGetAllParams p = mParams;
+      SDCARD_LOG("Get direct children of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
+      break;
     }
 
     case SDCardParams::TSDCardRemoveParams:
