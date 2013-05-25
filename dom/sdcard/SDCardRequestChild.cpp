@@ -17,8 +17,8 @@ SDCardRequestChild::SDCardRequestChild()
   MOZ_COUNT_CTOR(SDCardRequestChild);
 }
 
-SDCardRequestChild::SDCardRequestChild(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback) :
-    mCaller(aSuccessCallback, aErrorCallback)
+SDCardRequestChild::SDCardRequestChild(Caller* aCaller) :
+    mCaller(aCaller)
 {
   SDCARD_LOG("construct SDCardRequestChild");
   MOZ_COUNT_CTOR(SDCardRequestChild);
@@ -44,7 +44,7 @@ SDCardRequestChild::Recv__delete__(const SDCardResponseValue& aValue)
 
     case SDCardResponseValue::TVoidResponse: {
       SDCARD_LOG("VoidResponse received");
-      mCaller.CallVoidCallback();
+      mCaller->CallVoidCallback();
       break;
     }
 

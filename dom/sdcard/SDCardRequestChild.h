@@ -18,13 +18,14 @@ class SDCardRequestChild :
 {
 public:
   SDCardRequestChild();
-  SDCardRequestChild(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
+  // SDCardRequestChild(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
+  SDCardRequestChild(Caller* aCaller);
   virtual ~SDCardRequestChild();
 
   virtual bool Recv__delete__(const SDCardResponseValue& value);
 
 private:
-  Caller mCaller;
+  nsRefPtr<Caller> mCaller;
 };
 
 } // namespace sdcard

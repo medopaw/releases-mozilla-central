@@ -43,7 +43,7 @@ CPPSRCS = \
   SDCardRequestChild.cpp \
   SDCardEvent.cpp \
   RemoveEvent.cpp \
-  ParentRemoveEvent.cpp \
+  RemoveEventIPC.cpp \
   Caller.cpp \
   $(NULL)
 

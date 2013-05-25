@@ -19,9 +19,12 @@ namespace sdcard {
 class Caller
 {
 public:
-  Caller();
+  // Caller();
   Caller(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
   virtual ~Caller();
+
+  NS_IMETHOD_(nsrefcnt) AddRef();
+  NS_IMETHOD_(nsrefcnt) Release();
 
   void CallErrorCallback(const nsAString& error);
   void CallEntryCallback(const nsAString& path);
@@ -30,6 +33,7 @@ public:
   void CallVoidCallback();
 
 private:
+  nsAutoRefCnt mRefCnt;
   nsRefPtr<CallbackFunction> mSuccessCallback;
   nsRefPtr<ErrorCallback> mErrorCallback;
 };

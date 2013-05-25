@@ -14,11 +14,11 @@ namespace sdcard {
 
 class SDCardRequestParent;
 
-class ParentRemoveEvent : public RemoveEvent
+class RemoveEventIPC : public RemoveEvent
 {
 public:
-  ParentRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive = false);
-  ~ParentRemoveEvent();
+  RemoveEventIPC(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive = false);
+  ~RemoveEventIPC();
 
 private:
   virtual void OnSuccess() MOZ_OVERRIDE;

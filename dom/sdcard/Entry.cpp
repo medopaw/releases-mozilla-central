@@ -170,6 +170,7 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
     pErrorCallback = errorCallback.Value().get();
   }
 
+  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
     nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this);
@@ -179,7 +180,7 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
     nsString path;
     mFile->GetPath(path);
     SDCardRemoveParams params(path, false);
-    PSDCardRequestChild* child = new SDCardRequestChild(&successCallback, pErrorCallback);
+    PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }
 }

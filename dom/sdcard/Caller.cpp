@@ -12,10 +12,14 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-Caller::Caller()
+NS_IMPL_ADDREF(Caller)
+NS_IMPL_RELEASE(Caller)
+
+/* Caller::Caller()
 {
   SDCARD_LOG("in Caller's default constructor");
 }
+*/
 
 Caller::Caller(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback) :
     mSuccessCallback(aSuccessCallback),
