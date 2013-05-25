@@ -6,25 +6,23 @@
 
 #pragma once
 
-#include "mozilla/dom/sdcard/PSDCardRequestChild.h"
-#include "Caller.h"
+#include "SDCardEvent.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SDCardRequestChild :
-  public PSDCardRequestChild
+class RemoveEvent : public SDCardEvent
 {
 public:
-  SDCardRequestChild();
-  SDCardRequestChild(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
-  virtual ~SDCardRequestChild();
+  RemoveEvent(const nsAString& aRelpath, bool aRecursive = false);
+  ~RemoveEvent();
 
-  virtual bool Recv__delete__(const SDCardResponseValue& value);
+protected:
+  virtual void WorkerThreadRun() MOZ_OVERRIDE;
 
 private:
-  Caller mCaller;
+  bool mRecursive;
 };
 
 } // namespace sdcard

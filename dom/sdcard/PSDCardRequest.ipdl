@@ -15,16 +15,16 @@ struct ErrorResponse
   nsString error;
 };
 
-struct SuccessResponse
+struct VoidResponse
 {
 };
 
-struct EntryResponse
+struct PathResponse
 {
   nsString path;
 };
 
-struct EntriesResponse
+struct PathsResponse
 {
   nsString[] paths;
 };
@@ -38,9 +38,9 @@ struct MetadataResponse
 union SDCardResponseValue
 {
   ErrorResponse;
-  SuccessResponse;
-  EntryResponse;
-  EntriesResponse;
+  VoidResponse;
+  PathResponse;
+  PathsResponse;
   MetadataResponse;
 };
 

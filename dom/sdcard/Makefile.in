@@ -41,6 +41,10 @@ CPPSRCS = \
   SDCardChild.cpp \
   SDCardRequestParent.cpp \
   SDCardRequestChild.cpp \
+  SDCardEvent.cpp \
+  RemoveEvent.cpp \
+  ParentRemoveEvent.cpp \
+  Caller.cpp \
   $(NULL)
 
 # LOCAL_INCLUDES = \

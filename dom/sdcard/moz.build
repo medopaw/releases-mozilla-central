@@ -27,5 +27,5 @@ EXPORTS.mozilla.dom.sdcard += [
     'Metadata.h',
     'SDCardRequestChild.h',
     'SDCardRequestParent.h',
+    'Caller.h',
 ]
-

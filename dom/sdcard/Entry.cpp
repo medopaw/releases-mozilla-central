@@ -179,7 +179,7 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
     nsString path;
     mFile->GetPath(path);
     SDCardRemoveParams params(path, false);
-    PSDCardRequestChild* child = new SDCardRequestChild();
+    PSDCardRequestChild* child = new SDCardRequestChild(&successCallback, pErrorCallback);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }
 }

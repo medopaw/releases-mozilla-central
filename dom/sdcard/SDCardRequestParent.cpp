@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SDCardRequestParent.h"
+#include "ParentRemoveEvent.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -34,43 +35,47 @@ SDCardRequestParent::Dispatch()
 
   switch(mParams.type()) {
 
-    case SDCardParams::TSDCardCopyAndMoveParams:
-    {
+    case SDCardParams::TSDCardCopyAndMoveParams: {
       SDCardCopyAndMoveParams p = mParams;
       SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentDir()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
       break;
     }
 
-    case SDCardParams::TSDCardGetParams:
-    {
+    case SDCardParams::TSDCardGetParams: {
       SDCardGetParams p = mParams;
-      SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d", p.isFile() ? "file" : "directory", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive());
+      SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d", p.isFile() ? "file" : "directory", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive(), p.isFile());
       break;
     }
 
-    case SDCardParams::TSDCardMetadataParams:
-    {
+    case SDCardParams::TSDCardMetadataParams: {
       SDCardMetadataParams p = mParams;
       SDCARD_LOG("Get metadata of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
       break;
     }
 
-    case SDCardParams::TSDCardGetAllParams:
-    {
+    case SDCardParams::TSDCardParentParams: {
+      SDCardMetadataParams p = mParams;
+      SDCARD_LOG("Get parent of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
+      break;
+    }
+
+    case SDCardParams::TSDCardGetAllParams: {
       SDCardGetAllParams p = mParams;
       SDCARD_LOG("Get direct children of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
       break;
     }
 
-    case SDCardParams::TSDCardRemoveParams:
-    {
+    case SDCardParams::TSDCardRemoveParams: {
       SDCardRemoveParams p = mParams;
       SDCARD_LOG("Remove %s with recursive=%d", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.recursive());
+
+      nsCOMPtr<ParentRemoveEvent> r = new ParentRemoveEvent(this, p.relpath(), p.recursive());
+      r->Start();
+
       break;
     }
 
-    default:
-    {
+    default: {
       NS_RUNTIMEABORT("not reached");
       break;
     }
