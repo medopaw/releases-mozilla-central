@@ -33,14 +33,15 @@ Caller::~Caller()
   SDCARD_LOG("destruct Caller");
 }
 
-void Caller::CallErrorCallback(const nsAString& error)
+void Caller::CallErrorCallback(nsRefPtr<nsIDOMDOMError> error)
 {
-  SDCARD_LOG("Call ErrorCallback with error=%s", NS_ConvertUTF16toUTF8(error).get());
+  nsString name;
+  error->GetName(name);
+  SDCARD_LOG("Call ErrorCallback with error=%s", NS_ConvertUTF16toUTF8(name).get());
 
   if (mErrorCallback) {
-    nsRefPtr<nsIDOMDOMError> domError = DOMError::CreateWithName(error);
     ErrorResult rv;
-    mErrorCallback->Call(domError, rv);
+    mErrorCallback->Call(error, rv);
   }
 }
 

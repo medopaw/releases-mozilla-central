@@ -26,7 +26,7 @@ public:
   NS_IMETHOD_(nsrefcnt) AddRef();
   NS_IMETHOD_(nsrefcnt) Release();
 
-  void CallErrorCallback(const nsAString& error);
+  void CallErrorCallback(nsRefPtr<nsIDOMDOMError> error);
   void CallEntryCallback(const nsAString& path);
   void CallEntriesCallback(const InfallibleTArray<nsString>& paths);
   void CallMetadataCallback(int64_t modificationTime, uint64_t size);

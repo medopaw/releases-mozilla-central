@@ -23,7 +23,7 @@ public:
   static void HandleError(ErrorCallback* aErrorCallback, const nsAString& aErrorName);
   static void HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCode);
 
-private:
+public:
   static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsAString& aErrorName);
   static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsresult& aErrorCode);
 
