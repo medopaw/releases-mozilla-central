@@ -57,8 +57,10 @@ void Caller::CallVoidCallback()
 {
   SDCARD_LOG("Call VoidCallback");
 
-  ErrorResult rv;
-  static_cast<VoidCallback*>(mSuccessCallback.get())->Call(rv);
+  if (mSuccessCallback) {
+    ErrorResult rv;
+    static_cast<VoidCallback*>(mSuccessCallback.get())->Call(rv);
+  }
 }
 
 } // namespace sdcard
