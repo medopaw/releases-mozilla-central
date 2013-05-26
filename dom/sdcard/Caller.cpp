@@ -35,7 +35,13 @@ Caller::~Caller()
 
 void Caller::CallErrorCallback(const nsAString& error)
 {
+  SDCARD_LOG("Call ErrorCallback with error=%s", NS_ConvertUTF16toUTF8(error).get());
 
+  if (mErrorCallback) {
+    nsRefPtr<nsIDOMDOMError> domError = DOMError::CreateWithName(error);
+    ErrorResult rv;
+    mErrorCallback->Call(domError, rv);
+  }
 }
 
 void Caller::CallEntryCallback(const nsAString& path)
