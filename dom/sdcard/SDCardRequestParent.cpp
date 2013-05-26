@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SDCardRequestParent.h"
-#include "RemoveEventIPC.h"
+#include "IPCRemoveEvent.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -69,7 +69,7 @@ SDCardRequestParent::Dispatch()
       SDCardRemoveParams p = mParams;
       SDCARD_LOG("Remove %s with recursive=%d", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.recursive());
 
-      nsCOMPtr<RemoveEventIPC> r = new RemoveEventIPC(this, p.relpath(), p.recursive());
+      nsCOMPtr<IPCRemoveEvent> r = new IPCRemoveEvent(this, p.relpath(), p.recursive());
       r->Start();
 
       break;

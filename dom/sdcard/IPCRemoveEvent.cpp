@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "RemoveEventIPC.h"
+#include "IPCRemoveEvent.h"
 #include "SDCardRequestParent.h"
 #include "mozilla/unused.h"
 #include "Utils.h"
@@ -13,21 +13,21 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-RemoveEventIPC::RemoveEventIPC(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive) :
+IPCRemoveEvent::IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive) :
     RemoveEvent(aRelpath, aRecursive),
     mParent(aParent)
 {
-  SDCARD_LOG("construct RemoveEventIPC");
+  SDCARD_LOG("construct IPCRemoveEvent");
 }
 
-RemoveEventIPC::~RemoveEventIPC()
+IPCRemoveEvent::~IPCRemoveEvent()
 {
-  SDCARD_LOG("destruct RemoveEventIPC");
+  SDCARD_LOG("destruct IPCRemoveEvent");
 }
 
-void RemoveEventIPC::OnSuccess()
+void IPCRemoveEvent::OnSuccess()
 {
-  SDCARD_LOG("in RemoveEventIPC.MainThreadRun()!");
+  SDCARD_LOG("in IPCRemoveEvent.MainThreadRun()!");
 
   VoidResponse response;
   unused << mParent->Send__delete__(mParent, response);
