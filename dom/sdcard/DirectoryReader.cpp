@@ -9,6 +9,7 @@
 #include "nsContentUtils.h"
 #include "ReadEntriesRunnable.h"
 #include "DirectoryEntry.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {

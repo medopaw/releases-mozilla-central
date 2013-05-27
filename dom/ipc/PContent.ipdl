@@ -127,7 +127,7 @@ union DeviceStorageParams
 struct SDCardCopyAndMoveParams
 {
   nsString relpath;
-  nsString parentDir;
+  nsString parentPath;
   nsString newName;
   bool isCopy;
 };

@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SPRemoveEvent.h"
-#include "SDCardRequestParent.h"
-#include "mozilla/unused.h"
 #include "Utils.h"
 
 namespace mozilla {

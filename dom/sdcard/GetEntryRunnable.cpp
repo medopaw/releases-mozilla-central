@@ -10,6 +10,7 @@
 #include "FileUtils.h"
 #include "Path.h"
 #include "Error.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {

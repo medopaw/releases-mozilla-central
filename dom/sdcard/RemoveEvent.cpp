@@ -19,6 +19,7 @@ RemoveEvent::RemoveEvent(const nsAString& aRelpath, bool aRecursive) :
     mRecursive(aRecursive)
 {
   SDCARD_LOG("construct RemoveEvent");
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 }
 
 RemoveEvent::~RemoveEvent()

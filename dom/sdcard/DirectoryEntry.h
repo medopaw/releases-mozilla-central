@@ -12,7 +12,6 @@
 #include "nsWrapperCache.h"
 
 #include "Entry.h"
-#include "Utils.h"
 
 struct JSContext;
 

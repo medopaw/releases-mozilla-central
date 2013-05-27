@@ -5,10 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "FileSystem.h"
+#include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 #include "Path.h"
-#include "Metadata.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {

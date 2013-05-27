@@ -37,7 +37,7 @@ SDCardRequestParent::Dispatch()
 
     case SDCardParams::TSDCardCopyAndMoveParams: {
       SDCardCopyAndMoveParams p = mParams;
-      SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentDir()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
+      SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentPath()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
       break;
     }
 

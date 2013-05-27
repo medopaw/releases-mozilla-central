@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "CopyAndMoveToRunnable.h"
+#include "CopyAndMoveToEvent.h"
 #include "DirectoryEntry.h"
 #include "FileEntry.h"
 #include "FileUtils.h"
@@ -16,43 +16,37 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-CopyAndMoveToRunnable::CopyAndMoveToRunnable(
-    DirectoryEntry* aParent,
+CopyAndMoveToEvent::CopyAndMoveToEvent(
+    const nsAString& aRelpath,
+    const nsAString& aParentPath,
     const nsAString* aNewName,
-    EntryCallback* aSuccessCallback,
-    ErrorCallback* aErrorCallback,
-    Entry* aEntry,
     bool aIsCopy) :
-    CombinedRunnable(aErrorCallback, aEntry),
-    mSuccessCallback(aSuccessCallback),
+    SDCardEvent(aRelpath),
+    mParentPath(aParentPath),
     mIsCopy(aIsCopy)
 {
-  SDCARD_LOG("construct CopyAndMoveToRunnable");
+  SDCARD_LOG("construct CopyAndMoveToEvent");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
-  if (aNewName && !aNewName->IsEmpty()) {
-    mNewName = *aNewName;
-  } else { // if new name not specified, set it to the entry's current name
-    aEntry->GetName(mNewName);
+  if (!aNewName) {
+    mNewName = *aNewName; // otherwise msNewName is still empty
   }
-  mFile = aEntry->GetFileInternal();
-  mNewParentDir = aParent->GetFileInternal();
 }
 
-CopyAndMoveToRunnable::~CopyAndMoveToRunnable()
+CopyAndMoveToEvent::~CopyAndMoveToEvent()
 {
-  SDCARD_LOG("destruct CopyAndMoveToRunnable");
+  SDCARD_LOG("destruct CopyAndMoveToEvent");
 }
 
-void CopyAndMoveToRunnable::WorkerThreadRun()
+void CopyAndMoveToEvent::WorkerThreadRun()
 {
-  SDCARD_LOG("in CopyAndMoveToRunnable.WorkerThreadRun()!");
+  SDCARD_LOG("in CopyAndMoveToEvent.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   nsresult rv = NS_OK;
-  nsString path;
-  rv = mFile->GetPath(path);
-  if (Path::IsBase(path)) {
+  // nsString path;
+  // rv = mFile->GetPath(mRelpath);
+  if (Path::IsBase(mRelpath)) {
     // Cannot copy/move the root directory
     SDCARD_LOG("Can't copy/move the root directory!");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
@@ -81,9 +75,29 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-  // assign mResultFile to target file first
-  mNewParentDir->Clone(getter_AddRefs(mResultFile));
-  rv = mResultFile->Append(mNewName);
+  if (mNewName.IsEmpty()) {
+    // if new name not specified, set it to the entry's current name
+    rv = mFile->GetLeafName(mNewName);
+    if (NS_FAILED(rv)) {
+      SDCARD_LOG("Error occurs when getting new name from path.");
+      SetErrorCode(rv);
+      return;
+    }
+  }
+
+  if (!Path::IsValidName(mNewName)) {
+    SDCARD_LOG("Invalid name!");
+    SetErrorName(Error::DOM_ERROR_ENCODING);
+    return;
+  }
+
+  nsCOMPtr<nsIFile> parentDir;
+  rv = NS_NewLocalFile(mParentPath, false, getter_AddRefs(parentDir));
+
+  nsCOMPtr<nsIFile> resultFile;
+  // Assign resultFile to target file.
+  parentDir->Clone(getter_AddRefs(resultFile));
+  rv = resultFile->Append(mNewName);
   if (NS_FAILED(rv)) {
     SDCARD_LOG("Error occurs when append new name to mResultFile.");
     SetErrorCode(rv);
@@ -92,9 +106,9 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
 
   // Check if destination exists
   bool newFileExits = false;
-  rv = mResultFile->Exists(&newFileExits);
+  rv = resultFile->Exists(&newFileExits);
   if (NS_FAILED(rv)) {
-    SDCARD_LOG("Error occurs when checking if mResultFile exists.");
+    SDCARD_LOG("Error occurs when checking if resultFile exists.");
     SetErrorCode(rv);
     return;
   }
@@ -105,21 +119,21 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   // Whether the destination is a directory
   bool isNewDirectory = false;
   if (newFileExits) {
-    mResultFile->IsFile(&isNewFile);
-    mResultFile->IsDirectory(&isNewDirectory);
+    resultFile->IsFile(&isNewFile);
+    resultFile->IsDirectory(&isNewDirectory);
     if (!(isNewFile || isNewDirectory)) {
       // Cannot overwrite a special file
-      SDCARD_LOG("mResultFile is neither a file nor directory.");
+      SDCARD_LOG("resultFile is neither a file nor directory.");
       SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
   }
 
   nsString newPath;
-  mResultFile->GetPath(newPath);
+  resultFile->GetPath(newPath);
 
   // The destination is the same with the source
-  if (path == newPath) {
+  if (mRelpath == newPath) {
     // Cannot copy/move an entry into its parent if a name different from its
     // current one isn't provided
     SDCARD_LOG("Cannot copy/move an entry into its parent if a name different from its current one isn't provided.");
@@ -129,7 +143,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
 
   if (isNewDirectory) {
     bool dirEmpty;
-    rv = FileUtils::IsDirectoryEmpty(mResultFile, &dirEmpty);
+    rv = FileUtils::IsDirectoryEmpty(resultFile, &dirEmpty);
     if (NS_FAILED(rv)) {
       SDCARD_LOG("Error occurs when checking if directory is empty.");
       SetErrorCode(rv);
@@ -151,16 +165,16 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     return;
   }
 
-  if (Path::IsParentOf(path, newPath)) {
-    // Cannot copy/move a directory inside itself or to child at any depth
+  if (Path::IsParentOf(mRelpath, newPath)) {
+    // Cannot copy/move a directory inside itself or to child at any depth.
     SDCARD_LOG("Cannot copy/move a directory inside itself or to child at any depth.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
-  // delete the existing entry as nsIFile.coptTo()/moveTo() cannot overwrite
+  // Delete the existing entry as nsIFile.coptTo()/moveTo() cannot be overwritten.
   if (newFileExits) {
-    rv = mResultFile->Remove(false);
+    rv = resultFile->Remove(false);
     if (NS_FAILED(rv)) {
       SDCARD_LOG("Fail to remove existing target before copy/move.");
       SetErrorCode(rv);
@@ -168,14 +182,11 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     }
   }
 
-  // assigne mResultFile back to original file to copy/move
-  mFile->Clone(getter_AddRefs(mResultFile));
-
-  // actually copy/move the entry
+  // Actually copy/move the entry.
   if (mIsCopy) {
-    rv = mResultFile->CopyTo(mNewParentDir, mNewName);
+    rv = mFile->CopyTo(parentDir, mNewName);
   } else {
-    rv = mResultFile->MoveTo(mNewParentDir, mNewName);
+    rv = mFile->MoveTo(parentDir, mNewName);
   }
   if (NS_FAILED(rv) ) {
     // fail to copy/move
@@ -183,17 +194,8 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     SetErrorCode(rv);
     return;
   }
-}
 
-void CopyAndMoveToRunnable::OnSuccess()
-{
-  SDCARD_LOG("in CopyAndMoveToRunnable.OnSuccess()!");
-
-  if (mSuccessCallback) { // successCallback is optional
-    ErrorResult rv;
-    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
-    mSuccessCallback->Call(*resultEntry, rv);
-  }
+  resultFile->GetPath(mResultPath);
 }
 
 } // namespace sdcard
