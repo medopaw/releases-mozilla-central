@@ -45,7 +45,7 @@ void Caller::CallEntryCallback(const nsAString& path)
   // create an Entry from path
   if (mSuccessCallback) {
     ErrorResult rv;
-    static_cast<EntryCallback*>(mSuccessCallback.get())->Call(*(Entry::CreateFromPath(mFilesystem, path)), rv);
+    static_cast<EntryCallback*>(mSuccessCallback.get())->Call(*(Entry::CreateFromRelpath(mFilesystem, path)), rv);
   }
 }
 

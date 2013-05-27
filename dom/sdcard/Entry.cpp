@@ -19,6 +19,7 @@
 #include "FileEntry.h"
 #include "DirectoryEntry.h"
 
+#include "SPCopyAndMoveToEvent.h"
 #include "SPRemoveEvent.h"
 #include "mozilla/dom/ContentChild.h"
 #include "SDCardRequestChild.h"
@@ -49,7 +50,7 @@ Entry* Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
   return nullptr;
 }
 
-Entry* Entry::CreateFromPath(FileSystem* aFilesystem, const nsAString& aPath)
+Entry* Entry::CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aPath)
 {
   nsCOMPtr<nsIFile> file;
   nsresult rv = NS_NewLocalFile(aPath, false, getter_AddRefs(file));
@@ -154,23 +155,32 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback,
     bool isCopy)
 {
-  const nsAString* newNamePtr = nullptr;
+  nsString parentPath;
+  parent.GetFileInternal()->GetPath(parentPath);
+
+  const nsAString* pNewName = nullptr;
   if (newName.WasPassed()) {
-    newNamePtr = &newName.Value();
+    pNewName = &newName.Value();
   }
-  EntryCallback* successCallbackPtr = nullptr;
+  EntryCallback* pSuccessCallback = nullptr;
   if (successCallback.WasPassed()) {
-    successCallbackPtr = successCallback.Value().get();
+    pSuccessCallback = successCallback.Value().get();
   }
-  ErrorCallback* errorCallbackPtr = nullptr;
+  ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    errorCallbackPtr = errorCallback.Value().get();
+    pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<CopyAndMoveToRunnable> runnable = new CopyAndMoveToRunnable(&parent,
-      newNamePtr, successCallbackPtr,
-      errorCallbackPtr, this, isCopy);
-  runnable->Start();
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback, pErrorCallback);
+  nsString path;
+  mFile->GetPath(path);
+  if (XRE_GetProcessType() == GeckoProcessType_Default) {
+    SDCARD_LOG("in b2g process");
+    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(pCaller, path, parentPath, pNewName, false);
+    r->Start();
+  } else {
+    SDCARD_LOG("in app process");
+  }
 }
 
 void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
