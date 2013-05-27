@@ -16,7 +16,7 @@ namespace sdcard {
 class SPRemoveEvent : public RemoveEvent
 {
 public:
-  SPRemoveEvent(Caller* aCaller, const nsAString& aRelpath, bool aRecursive = false);
+  SPRemoveEvent(Caller* aCaller, const nsAString& aRelpath, bool aRecursive);
   ~SPRemoveEvent();
 
 private:

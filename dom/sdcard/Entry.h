@@ -32,6 +32,7 @@ public:
 public:
   // nsIFile to Entry
   static Entry* CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile);
+  static Entry* CreateFromPath(FileSystem* aFilesystem, const nsAString& aPath);
 
   virtual ~Entry();
 

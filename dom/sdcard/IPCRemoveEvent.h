@@ -17,7 +17,7 @@ class SDCardRequestParent;
 class IPCRemoveEvent : public RemoveEvent
 {
 public:
-  IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive = false);
+  IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive);
   ~IPCRemoveEvent();
 
 private:

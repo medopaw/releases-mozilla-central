@@ -19,6 +19,7 @@
 #include "FileEntry.h"
 #include "DirectoryEntry.h"
 
+#include "SPRemoveEvent.h"
 #include "mozilla/dom/ContentChild.h"
 #include "SDCardRequestChild.h"
 
@@ -46,6 +47,17 @@ Entry* Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
     return new DirectoryEntry(aFilesystem, aFile);
   }
   return nullptr;
+}
+
+Entry* Entry::CreateFromPath(FileSystem* aFilesystem, const nsAString& aPath)
+{
+  nsCOMPtr<nsIFile> file;
+  nsresult rv = NS_NewLocalFile(aPath, false, getter_AddRefs(file));
+  if (NS_FAILED(rv)) {
+    SDCARD_LOG("Fail to create nsIFile from path.");
+    return nullptr;
+  }
+  return CreateFromFile(aFilesystem, file);
 }
 
 Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory) : mFilesystem(aFilesystem), mIsFile(aIsFile), mIsDirectory(aIsDirectory)
@@ -170,15 +182,15 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback, pErrorCallback);
+  nsString path;
+  mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this);
-    runnable->Start();
+    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(pCaller, path, false);
+    r->Start();
   } else {
     SDCARD_LOG("in app process");
-    nsString path;
-    mFile->GetPath(path);
     SDCardRemoveParams params(path, false);
     PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);

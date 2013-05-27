@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Caller.h"
+#include "Entry.h"
 #include "mozilla/dom/DOMError.h"
 #include "Utils.h"
 
@@ -15,13 +16,8 @@ namespace sdcard {
 NS_IMPL_ADDREF(Caller)
 NS_IMPL_RELEASE(Caller)
 
-/* Caller::Caller()
-{
-  SDCARD_LOG("in Caller's default constructor");
-}
-*/
-
-Caller::Caller(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback) :
+Caller::Caller(FileSystem* aFileSystem, CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback) :
+    mFilesystem(aFileSystem),
     mSuccessCallback(aSuccessCallback),
     mErrorCallback(aErrorCallback)
 {
@@ -46,7 +42,11 @@ void Caller::CallErrorCallback(const nsAString& error)
 
 void Caller::CallEntryCallback(const nsAString& path)
 {
-
+  // create an Entry from path
+  if (mSuccessCallback) {
+    ErrorResult rv;
+    static_cast<EntryCallback*>(mSuccessCallback.get())->Call(*(Entry::CreateFromPath(mFilesystem, path)), rv);
+  }
 }
 
 void Caller::CallEntriesCallback(const InfallibleTArray<nsString>& paths)

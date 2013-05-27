@@ -7,6 +7,7 @@
 #pragma once
 
 #include "nsString.h"
+#include "FileSystem.h"
 #include "mozilla/dom/FileSystemBinding.h"
 
 namespace mozilla {
@@ -19,8 +20,7 @@ namespace sdcard {
 class Caller
 {
 public:
-  // Caller();
-  Caller(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
+  Caller(FileSystem* aFileSystem, CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
   virtual ~Caller();
 
   NS_IMETHOD_(nsrefcnt) AddRef();
@@ -34,6 +34,8 @@ public:
 
 private:
   nsAutoRefCnt mRefCnt;
+  nsRefPtr<FileSystem> mFilesystem;
+
   nsRefPtr<CallbackFunction> mSuccessCallback;
   nsRefPtr<ErrorCallback> mErrorCallback;
 };
