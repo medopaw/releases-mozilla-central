@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "CopyAndMoveToEvent.h"
-#include "DirectoryEntry.h"
-#include "FileEntry.h"
 #include "FileUtils.h"
 #include "Path.h"
 #include "Error.h"
@@ -19,18 +17,15 @@ namespace sdcard {
 CopyAndMoveToEvent::CopyAndMoveToEvent(
     const nsAString& aRelpath,
     const nsAString& aParentPath,
-    const nsAString* aNewName,
+    const nsAString& aNewName,
     bool aIsCopy) :
     SDCardEvent(aRelpath),
     mParentPath(aParentPath),
+    mNewName(aNewName),
     mIsCopy(aIsCopy)
 {
   SDCARD_LOG("construct CopyAndMoveToEvent");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
-
-  if (!aNewName) {
-    mNewName = *aNewName; // otherwise msNewName is still empty
-  }
 }
 
 CopyAndMoveToEvent::~CopyAndMoveToEvent()
@@ -43,9 +38,6 @@ void CopyAndMoveToEvent::WorkerThreadRun()
   SDCARD_LOG("in CopyAndMoveToEvent.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
-  nsresult rv = NS_OK;
-  // nsString path;
-  // rv = mFile->GetPath(mRelpath);
   if (Path::IsBase(mRelpath)) {
     // Cannot copy/move the root directory
     SDCARD_LOG("Can't copy/move the root directory!");
@@ -55,7 +47,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
 
   bool isFile = false;
   bool isDirectory = false;
-  rv = mFile->IsFile(&isFile);
+  nsresult rv = mFile->IsFile(&isFile);
   if (NS_FAILED(rv)) {
     SDCARD_LOG("Error occurs when getting isFile.");
     SetErrorCode(rv);
@@ -75,8 +67,9 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     return;
   }
 
-  if (mNewName.IsEmpty()) {
-    // if new name not specified, set it to the entry's current name
+  // If no new name specified, set it to the entry's current name.
+  if (mNewName.IsVoid() || mNewName.IsEmpty()) {
+    mNewName.SetIsVoid(false);
     rv = mFile->GetLeafName(mNewName);
     if (NS_FAILED(rv)) {
       SDCARD_LOG("Error occurs when getting new name from path.");

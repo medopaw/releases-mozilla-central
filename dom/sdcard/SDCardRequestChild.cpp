@@ -52,6 +52,7 @@ SDCardRequestChild::Recv__delete__(const SDCardResponseValue& aValue)
     case SDCardResponseValue::TPathResponse: {
       PathResponse r = aValue;
       SDCARD_LOG("PathResponse received with path=%s", NS_ConvertUTF16toUTF8(r.path()).get());
+      mCaller->CallEntryCallback(r.path());
       break;
     }
 

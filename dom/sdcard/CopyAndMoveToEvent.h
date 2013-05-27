@@ -18,7 +18,7 @@ public:
   CopyAndMoveToEvent(
       const nsAString& aRelpath,
       const nsAString& aParentPath,
-      const nsAString* aNewName, // nullptr means not passed
+      const nsAString& aNewName,
       bool aIsCopy);
 
   virtual ~CopyAndMoveToEvent();

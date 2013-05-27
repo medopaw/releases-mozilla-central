@@ -7,27 +7,28 @@
 #pragma once
 
 #include "CopyAndMoveToEvent.h"
-#include "Caller.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SPCopyAndMoveToEvent : public CopyAndMoveToEvent
+class SDCardRequestParent;
+
+class IPCCopyAndMoveToEvent : public CopyAndMoveToEvent
 {
 public:
-  SPCopyAndMoveToEvent(Caller* aCaller,
+  IPCCopyAndMoveToEvent(
+      SDCardRequestParent* aParent,
       const nsAString& aRelpath,
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy);
-  ~SPCopyAndMoveToEvent();
+  ~IPCCopyAndMoveToEvent();
 
 private:
   virtual void OnError() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
-
-  nsRefPtr<Caller> mCaller;
+  nsRefPtr<SDCardRequestParent> mParent;
 };
 
 } // namespace sdcard

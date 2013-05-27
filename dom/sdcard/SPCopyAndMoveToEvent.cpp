@@ -15,7 +15,7 @@ SPCopyAndMoveToEvent::SPCopyAndMoveToEvent(
     Caller* aCaller,
     const nsAString& aRelpath,
     const nsAString& aParentPath,
-    const nsAString* aNewName,
+    const nsAString& aNewName,
     bool aIsCopy) :
     CopyAndMoveToEvent(aRelpath, aParentPath, aNewName, aIsCopy),
     mCaller(aCaller)

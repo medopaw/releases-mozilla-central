@@ -43,6 +43,7 @@ CPPSRCS = \
   SDCardRequestChild.cpp \
   SDCardEvent.cpp \
   CopyAndMoveToEvent.cpp \
+  IPCCopyAndMoveToEvent.cpp \
   SPCopyAndMoveToEvent.cpp \
   RemoveEvent.cpp \
   IPCRemoveEvent.cpp \

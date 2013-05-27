@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SDCardRequestParent.h"
+#include "IPCCopyAndMoveToEvent.h"
 #include "IPCRemoveEvent.h"
 #include "Utils.h"
 
@@ -38,6 +39,10 @@ SDCardRequestParent::Dispatch()
     case SDCardParams::TSDCardCopyAndMoveParams: {
       SDCardCopyAndMoveParams p = mParams;
       SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentPath()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
+
+      nsCOMPtr<IPCCopyAndMoveToEvent> r = new IPCCopyAndMoveToEvent(this, p.relpath(), p.parentPath(), p.newName(), p.isCopy());
+      r->Start();
+
       break;
     }
 

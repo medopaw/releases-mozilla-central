@@ -158,10 +158,13 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
   nsString parentPath;
   parent.GetFileInternal()->GetPath(parentPath);
 
-  const nsAString* pNewName = nullptr;
+  nsString strNewName;
   if (newName.WasPassed()) {
-    pNewName = &newName.Value();
+    strNewName = newName.Value();
+  } else {
+    strNewName.SetIsVoid(true);
   }
+
   EntryCallback* pSuccessCallback = nullptr;
   if (successCallback.WasPassed()) {
     pSuccessCallback = successCallback.Value().get();
@@ -176,10 +179,13 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(pCaller, path, parentPath, pNewName, false);
+    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(pCaller, path, parentPath, strNewName, isCopy);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
+    SDCardCopyAndMoveParams params(path, parentPath, strNewName, isCopy);
+    PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
+    ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }
 }
 
