@@ -77,10 +77,11 @@ void SDCardEvent::MainThreadRun()
   SDCARD_LOG("in SDCardEvent.MainThreadRun()!");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
+  if (mErrorCode != NS_OK) {
+    Error::ErrorNameFromCode(mErrorName, mErrorCode);
+  }
   if (!mErrorName.IsEmpty()) {
-    // Error::HandleError(mErrorCallback, mErrorName);
-  } else if (mErrorCode != NS_OK) {
-    // Error::HandleError(mErrorCallback, mErrorCode);
+    OnError();
   } else {
     OnSuccess();
   }

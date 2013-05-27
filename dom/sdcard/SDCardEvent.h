@@ -30,6 +30,7 @@ public:
 
 protected:
   virtual void WorkerThreadRun() = 0;
+  virtual void OnError() = 0;
   virtual void OnSuccess() = 0;
 
   void SetErrorCode(const nsresult& aErrorCode);
@@ -39,11 +40,12 @@ protected:
   // not thread safe, only access it form worker thread
   nsCOMPtr<nsIFile> mFile;
 
+  nsString mErrorName;
+
 private:
   void MainThreadRun();
 
   nsresult mErrorCode;
-  nsString mErrorName;
 
   // It will only be used on main thread, so doesn't need a lock.
   nsCOMPtr<nsIThread> mWorkerThread;

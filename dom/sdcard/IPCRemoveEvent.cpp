@@ -25,9 +25,17 @@ IPCRemoveEvent::~IPCRemoveEvent()
   SDCARD_LOG("destruct IPCRemoveEvent");
 }
 
+void IPCRemoveEvent::OnError()
+{
+  SDCARD_LOG("in IPCRemoveEvent.OnError()!");
+
+  ErrorResponse response(mErrorName);
+  unused << mParent->Send__delete__(mParent, response);
+}
+
 void IPCRemoveEvent::OnSuccess()
 {
-  SDCARD_LOG("in IPCRemoveEvent.MainThreadRun()!");
+  SDCARD_LOG("in IPCRemoveEvent.OnSuccess()!");
 
   VoidResponse response;
   unused << mParent->Send__delete__(mParent, response);

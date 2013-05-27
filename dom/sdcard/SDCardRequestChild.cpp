@@ -39,6 +39,7 @@ SDCardRequestChild::Recv__delete__(const SDCardResponseValue& aValue)
     case SDCardResponseValue::TErrorResponse: {
       ErrorResponse r = aValue;
       SDCARD_LOG("ErrorResponse received with error=%s", NS_ConvertUTF16toUTF8(r.error()).get());
+      mCaller->CallErrorCallback(r.error());
       break;
     }
 

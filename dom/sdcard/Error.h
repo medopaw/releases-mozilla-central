@@ -24,6 +24,7 @@ public:
   static void HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCode);
 
 public:
+  static void ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode);
   static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsAString& aErrorName);
   static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsresult& aErrorCode);
 

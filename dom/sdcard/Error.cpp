@@ -45,44 +45,7 @@ void Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCod
 
   if (aErrorCallback) { // errorCallback is always optional
     nsString errorString;
-    switch (aErrorCode) {
-      case NS_ERROR_FILE_INVALID_PATH:
-        errorString.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
-        break;
-      case NS_ERROR_FILE_UNRECOGNIZED_PATH:
-        errorString.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
-        break;
-      case NS_ERROR_FILE_DESTINATION_NOT_DIR:
-        errorString.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
-        break;
-      case NS_ERROR_FILE_ACCESS_DENIED:
-        errorString.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
-        break;
-      case NS_ERROR_FILE_DIR_NOT_EMPTY:
-        errorString.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
-        break;
-      case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
-        errorString.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
-        break;
-      case NS_ERROR_NOT_AVAILABLE:
-        errorString.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
-        break;
-      case NS_ERROR_FILE_ALREADY_EXISTS:
-        errorString.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
-        break;
-      case NS_ERROR_DOM_SECURITY_ERR:
-        errorString.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
-      case NS_ERROR_OUT_OF_MEMORY:
-        errorString.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
-        break;
-      case NS_ERROR_FILE_NOT_DIRECTORY:
-        errorString.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
-        break;
-      case NS_ERROR_UNEXPECTED:
-        errorString.AssignLiteral("NS_ERROR_UNEXPECTED");
-      default:
-        break;
-    }
+    Error::ErrorNameFromCode(errorString, aErrorCode);
     if (errorString.IsEmpty()) {
       SDCARD_LOG("Create DOMError from nsresult %ul", aErrorCode);
     } else {
@@ -93,6 +56,54 @@ void Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCod
     ErrorResult rv;
     aErrorCallback->Call(error, rv);
   }
+}
+
+void Error::ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode)
+{
+  SDCARD_LOG("in Error::ErrorNameFromCode() with error code %ul", aErrorCode);
+
+  switch (aErrorCode) {
+    case NS_ERROR_FILE_INVALID_PATH:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
+      break;
+    case NS_ERROR_FILE_UNRECOGNIZED_PATH:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
+      break;
+    case NS_ERROR_FILE_DESTINATION_NOT_DIR:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
+      break;
+    case NS_ERROR_FILE_ACCESS_DENIED:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
+      break;
+    case NS_ERROR_FILE_DIR_NOT_EMPTY:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
+      break;
+    case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
+      break;
+    case NS_ERROR_NOT_AVAILABLE:
+      aErrorName.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
+      break;
+    case NS_ERROR_FILE_ALREADY_EXISTS:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
+      break;
+    case NS_ERROR_DOM_SECURITY_ERR:
+      aErrorName.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
+      break;
+    case NS_ERROR_OUT_OF_MEMORY:
+      aErrorName.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
+      break;
+    case NS_ERROR_FILE_NOT_DIRECTORY:
+      aErrorName.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
+      break;
+    case NS_ERROR_UNEXPECTED:
+      aErrorName.AssignLiteral("NS_ERROR_UNEXPECTED");
+      break;
+    default:
+      break;
+  }
+
+  SDCARD_LOG("ErrorName=%s", NS_ConvertUTF16toUTF8(aErrorName).get());
 }
 
 already_AddRefed<nsIDOMDOMError> Error::GetDOMError(const nsAString& aErrorName)

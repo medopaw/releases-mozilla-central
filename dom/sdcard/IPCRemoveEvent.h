@@ -21,6 +21,7 @@ public:
   ~IPCRemoveEvent();
 
 private:
+  virtual void OnError() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
   nsRefPtr<SDCardRequestParent> mParent;
 };
