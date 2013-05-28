@@ -17,6 +17,7 @@
 #include "Utils.h"
 
 #include "SPGetEntryEvent.h"
+#include "SPRemoveEvent.h"
 #include "mozilla/dom/ContentChild.h"
 #include "SDCardRequestChild.h"
 
@@ -77,8 +78,21 @@ void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Opti
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsRefPtr<RemoveRunnable> runnable = new RemoveRunnable(&successCallback, pErrorCallback, this, true);
-  runnable->Start();
+
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback, pErrorCallback);
+  nsString path;
+  mFile->GetPath(path);
+  if (XRE_GetProcessType() == GeckoProcessType_Default) {
+    SDCARD_LOG("in b2g process");
+    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(pCaller, path, true);
+    r->Start();
+  } else {
+    SDCARD_LOG("in app process");
+    SDCardRemoveParams params(path, true);
+    PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
+    ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
+  }
+
 }
 
 void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isFile)
