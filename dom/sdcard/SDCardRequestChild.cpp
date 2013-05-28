@@ -59,12 +59,14 @@ SDCardRequestChild::Recv__delete__(const SDCardResponseValue& aValue)
     case SDCardResponseValue::TPathsResponse: {
       PathsResponse r = aValue;
       SDCARD_LOG("PathsResponse received with %d paths", r.paths().Length());
+      mCaller->CallEntriesCallback(r.paths());
       break;
     }
 
     case SDCardResponseValue::TMetadataResponse: {
       MetadataResponse r = aValue;
       SDCARD_LOG("MetadataResponse received with modificationTime=%" PRIi64 ", size=%" PRIu64, r.modificationTime(), r.size());
+      mCaller->CallMetadataCallback(r.modificationTime(), r.size());
       break;
     }
 
