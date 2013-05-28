@@ -16,6 +16,10 @@
 #include "Path.h"
 #include "Utils.h"
 
+#include "SPGetEntryEvent.h"
+#include "mozilla/dom/ContentChild.h"
+#include "SDCardRequestChild.h"
+
 namespace mozilla {
 namespace dom {
 namespace sdcard {
@@ -81,7 +85,7 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
 {
   SDCARD_LOG("in DirectoryEntry.GetEntry()");
 
-  // if not passed, assign callback nullptr
+  // Assign callback nullptr if not passed
   EntryCallback* pSuccessCallback = nullptr;
   ErrorCallback* pErrorCallback = nullptr;
   if (successCallback.WasPassed()) {
@@ -91,16 +95,14 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
     pErrorCallback = errorCallback.Value().get();
   }
 
-  // check if path is valid
+  // Check if path is valid.
   if (!Path::IsValidPath(path)) {
     SDCARD_LOG("Invalid path!");
     Error::HandleError(pErrorCallback, Error::DOM_ERROR_ENCODING);
-    // nsRefPtr<ErrorRunnable> r = new ErrorRunnable(pErrorCallback, DOM_ERROR_ENCODING);
-    // r->Start();
     return;
   }
 
-  // ensure path is absolute
+  // Make sure path is absolute.
   nsString fullPath;
   GetFullPath(fullPath);
   nsString absolutePath;
@@ -108,8 +110,17 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
   nsString realPath;
   Path::DOMPathToRealPath(absolutePath, realPath);
 
-  nsRefPtr<GetEntryRunnable> runnable = new GetEntryRunnable(realPath, options.mCreate, options.mExclusive, pSuccessCallback, pErrorCallback, this, isFile);
-  runnable->Start();
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback, pErrorCallback);
+  if (XRE_GetProcessType() == GeckoProcessType_Default) {
+    SDCARD_LOG("in b2g process");
+    nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(pCaller, realPath, options.mCreate, options.mExclusive, isFile);
+    r->Start();
+  } else {
+    SDCARD_LOG("in app process");
+    SDCardGetParams params(realPath, options.mCreate, options.mExclusive, isFile);
+    PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
+    ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
+  }
 }
 
 } // namespace sdcard

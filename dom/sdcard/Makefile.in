@@ -45,6 +45,9 @@ CPPSRCS = \
   CopyAndMoveToEvent.cpp \
   IPCCopyAndMoveToEvent.cpp \
   SPCopyAndMoveToEvent.cpp \
+  GetEntryEvent.cpp \
+  IPCGetEntryEvent.cpp \
+  SPGetEntryEvent.cpp \
   RemoveEvent.cpp \
   IPCRemoveEvent.cpp \
   SPRemoveEvent.cpp \

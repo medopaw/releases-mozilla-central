@@ -6,6 +6,7 @@
 
 #include "SDCardRequestParent.h"
 #include "IPCCopyAndMoveToEvent.h"
+#include "IPCGetEntryEvent.h"
 #include "IPCRemoveEvent.h"
 #include "Utils.h"
 
@@ -49,6 +50,10 @@ SDCardRequestParent::Dispatch()
     case SDCardParams::TSDCardGetParams: {
       SDCardGetParams p = mParams;
       SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d", p.isFile() ? "file" : "directory", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive(), p.isFile());
+
+      nsCOMPtr<IPCGetEntryEvent> r = new IPCGetEntryEvent(this, p.relpath(), p.create(), p.exclusive(), p.isFile());
+      r->Start();
+
       break;
     }
 
