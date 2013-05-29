@@ -38,7 +38,7 @@ Metadata::~Metadata()
 }
 
 JSObject*
-Metadata::WrapObject(JSContext* aCx, JSObject* aScope)
+Metadata::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
 {
   return MetadataBinding::Wrap(aCx, aScope, this);
 }

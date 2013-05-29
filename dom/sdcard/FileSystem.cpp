@@ -49,7 +49,7 @@ FileSystem::~FileSystem()
 }
 
 JSObject*
-FileSystem::WrapObject(JSContext* aCx, JSObject* aScope)
+FileSystem::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
 {
   return FileSystemBinding::Wrap(aCx, aScope, this);
 }
@@ -67,7 +67,7 @@ already_AddRefed<DirectoryEntry> FileSystem::Root()
 {
     SDCARD_LOG("in FileSystem.Root()");
     nsRefPtr<DirectoryEntry> root(mRoot);
-    return root.forget().get();
+    return root.forget();
 }
 
 bool FileSystem::IsValid() const

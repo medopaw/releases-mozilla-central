@@ -35,7 +35,7 @@ public:
     return NULL;
   }
 
-  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
+  virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);
 
   JS::Value ModificationTime(JSContext* cx) const;
 

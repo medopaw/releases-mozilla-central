@@ -19,13 +19,13 @@ XPIDL_FLAGS += [
 # ]
 
 EXPORTS.mozilla.dom.sdcard += [
-    'FileSystem.h',
-    'Entry.h',
+    'Caller.h',
     'DirectoryEntry.h',
     'DirectoryReader.h',
+    'Entry.h',
     'FileEntry.h',
+    'FileSystem.h',
     'Metadata.h',
     'SDCardRequestChild.h',
     'SDCardRequestParent.h',
-    'Caller.h',
 ]

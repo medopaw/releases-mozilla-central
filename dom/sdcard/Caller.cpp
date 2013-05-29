@@ -7,6 +7,7 @@
 #include "Caller.h"
 #include "Entry.h"
 #include "mozilla/dom/DOMError.h"
+#include "Error.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -34,9 +35,9 @@ void Caller::CallErrorCallback(const nsAString& error)
   SDCARD_LOG("Call ErrorCallback with error=%s", NS_ConvertUTF16toUTF8(error).get());
 
   if (mErrorCallback) {
-    nsRefPtr<nsIDOMDOMError> domError = DOMError::CreateWithName(error);
+    nsRefPtr<DOMError> domError = Error::GetDOMError(error);
     ErrorResult rv;
-    mErrorCallback->Call(domError, rv);
+    mErrorCallback->Call(*domError, rv);
   }
 }
 

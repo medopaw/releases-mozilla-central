@@ -9,6 +9,8 @@
 #include "nsString.h"
 #include "mozilla/dom/FileSystemBinding.h"
 
+class DOMError;
+
 namespace mozilla {
 namespace dom {
 namespace sdcard {
@@ -25,8 +27,8 @@ public:
 
 public:
   static void ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode);
-  static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsAString& aErrorName);
-  static already_AddRefed<nsIDOMDOMError> GetDOMError(const nsresult& aErrorCode);
+  static nsRefPtr<DOMError> GetDOMError(const nsAString& aErrorName);
+  static nsRefPtr<DOMError> GetDOMError(const nsresult& aErrorCode);
 
 public:
   static const nsString DOM_ERROR_ENCODING;

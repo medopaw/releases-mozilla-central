@@ -32,9 +32,8 @@ void Error::HandleError(ErrorCallback* aErrorCallback, const nsAString& aErrorNa
 
   SDCARD_LOG("Create DOMError with %s", NS_ConvertUTF16toUTF8(aErrorName).get());
   if (aErrorCallback) { // errorCallback is always optional
-    nsCOMPtr<nsIDOMDOMError> error = GetDOMError(aErrorName);
     ErrorResult rv;
-    aErrorCallback->Call(error, rv);
+    aErrorCallback->Call(*GetDOMError(aErrorName), rv);
   }
 }
 
@@ -52,101 +51,104 @@ void Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCod
       SDCARD_LOG("Create DOMError from nsresult %s", NS_ConvertUTF16toUTF8(errorString).get());
     }
 
-    nsCOMPtr<nsIDOMDOMError> error = GetDOMError(aErrorCode);
     ErrorResult rv;
-    aErrorCallback->Call(error, rv);
+    aErrorCallback->Call(*GetDOMError(aErrorCode), rv);
   }
 }
 
 void Error::ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode)
 {
-  SDCARD_LOG("in Error::ErrorNameFromCode() with error code %ul", aErrorCode);
+  SDCARD_LOG("in Error::ErrorNameFromCode()");
 
   switch (aErrorCode) {
     case NS_ERROR_FILE_INVALID_PATH:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
-      break;
     case NS_ERROR_FILE_UNRECOGNIZED_PATH:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
+      aErrorName = DOM_ERROR_ENCODING;
       break;
     case NS_ERROR_FILE_DESTINATION_NOT_DIR:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
+      aErrorName = DOM_ERROR_INVALID_MODIFICATION;
       break;
     case NS_ERROR_FILE_ACCESS_DENIED:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
-      break;
     case NS_ERROR_FILE_DIR_NOT_EMPTY:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
+      aErrorName = DOM_ERROR_NO_MODIFICATION_ALLOWED;
       break;
     case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
-      break;
     case NS_ERROR_NOT_AVAILABLE:
-      aErrorName.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
+      aErrorName = DOM_ERROR_NOT_FOUND;
       break;
     case NS_ERROR_FILE_ALREADY_EXISTS:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
-      break;
-    case NS_ERROR_DOM_SECURITY_ERR:
-      aErrorName.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
-      break;
-    case NS_ERROR_OUT_OF_MEMORY:
-      aErrorName.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
+      aErrorName = DOM_ERROR_PATH_EXISTS;
       break;
     case NS_ERROR_FILE_NOT_DIRECTORY:
-      aErrorName.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
+      aErrorName = DOM_ERROR_TYPE_MISMATCH;
       break;
     case NS_ERROR_UNEXPECTED:
-      aErrorName.AssignLiteral("NS_ERROR_UNEXPECTED");
-      break;
     default:
+      aErrorName = DOM_ERROR_UNKNOWN;
       break;
   }
 
-  SDCARD_LOG("ErrorName=%s", NS_ConvertUTF16toUTF8(aErrorName).get());
+  nsString codeStr;
+  switch (aErrorCode) {
+    case NS_ERROR_FILE_INVALID_PATH:
+      codeStr.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
+      break;
+    case NS_ERROR_FILE_UNRECOGNIZED_PATH:
+      codeStr.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
+      break;
+    case NS_ERROR_FILE_DESTINATION_NOT_DIR:
+      codeStr.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
+      break;
+    case NS_ERROR_FILE_ACCESS_DENIED:
+      codeStr.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
+      break;
+    case NS_ERROR_FILE_DIR_NOT_EMPTY:
+      codeStr.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
+      break;
+    case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
+      codeStr.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
+      break;
+    case NS_ERROR_NOT_AVAILABLE:
+      codeStr.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
+      break;
+    case NS_ERROR_FILE_ALREADY_EXISTS:
+      codeStr.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
+      break;
+    case NS_ERROR_DOM_SECURITY_ERR:
+      codeStr.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
+      break;
+    case NS_ERROR_OUT_OF_MEMORY:
+      codeStr.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
+      break;
+    case NS_ERROR_FILE_NOT_DIRECTORY:
+      codeStr.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
+      break;
+    case NS_ERROR_UNEXPECTED:
+      codeStr.AssignLiteral("NS_ERROR_UNEXPECTED");
+      break;
+    default:
+      SDCARD_LOG("Get ErrorName %s from ErrorCode %ul", NS_ConvertUTF16toUTF8(aErrorName).get(), aErrorCode);
+      break;
+  }
+  SDCARD_LOG("Get ErrorName %s from ErrorCode %s", NS_ConvertUTF16toUTF8(aErrorName).get(), NS_ConvertUTF16toUTF8(codeStr).get());
 }
 
-already_AddRefed<nsIDOMDOMError> Error::GetDOMError(const nsAString& aErrorName)
+nsRefPtr<DOMError> Error::GetDOMError(const nsAString& aErrorName)
 {
-  SDCARD_LOG("in ErrorHandler::GetDOMError() with error name");
-  return DOMError::CreateWithName(aErrorName);
+  SDCARD_LOG("in ErrorHandler::GetDOMError() with error name %s", NS_ConvertUTF16toUTF8(aErrorName).get());
+  nsRefPtr<DOMError> domError = new DOMError(nullptr, aErrorName);
+  return domError;
 }
 
 
-already_AddRefed<nsIDOMDOMError> Error::GetDOMError(const nsresult& aErrorCode)
+nsRefPtr<DOMError> Error::GetDOMError(const nsresult& aErrorCode)
 {
   SDCARD_LOG("in ErrorHandler::GetDOMError() with error code");
   MOZ_ASSERT(aErrorCode != NS_OK, "NS_OK is not an error.");
-  already_AddRefed<nsIDOMDOMError> domError = DOMError::CreateForNSResult(aErrorCode);
-  if (!domError.get()) {
+  nsRefPtr<DOMError> domError = new DOMError(nullptr, aErrorCode);
+  if (!domError) {
     nsString name;
-    switch (aErrorCode) {
-      case NS_ERROR_FILE_INVALID_PATH:
-      case NS_ERROR_FILE_UNRECOGNIZED_PATH:
-        name = DOM_ERROR_ENCODING;
-        break;
-      case NS_ERROR_FILE_DESTINATION_NOT_DIR:
-        name = DOM_ERROR_INVALID_MODIFICATION;
-        break;
-      case NS_ERROR_FILE_ACCESS_DENIED:
-      case NS_ERROR_FILE_DIR_NOT_EMPTY:
-        name = DOM_ERROR_NO_MODIFICATION_ALLOWED;
-        break;
-      case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
-      case NS_ERROR_NOT_AVAILABLE:
-        name = DOM_ERROR_NOT_FOUND;
-        break;
-      case NS_ERROR_FILE_ALREADY_EXISTS:
-        name = DOM_ERROR_PATH_EXISTS;
-        break;
-      case NS_ERROR_FILE_NOT_DIRECTORY:
-        name = DOM_ERROR_TYPE_MISMATCH;
-        break;
-      case NS_ERROR_UNEXPECTED:
-      default:
-        name = DOM_ERROR_UNKNOWN;
-        break;
-    }
+    ErrorNameFromCode(name, aErrorCode);
     domError = GetDOMError(name);
   }
   return domError;

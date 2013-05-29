@@ -10,9 +10,6 @@
  * liability, trademark and document use rules apply.
  */
 
-interface DOMError;
-// interface FileWriter;
-
 interface FileSystem {
     readonly attribute DOMString      name;
     readonly attribute DirectoryEntry root;

@@ -36,7 +36,7 @@ FileEntry::~FileEntry()
 }
 
 JSObject*
-FileEntry::WrapObject(JSContext* aCx, JSObject* aScope)
+FileEntry::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
 {
   return FileEntryBinding::Wrap(aCx, aScope, this);
 }

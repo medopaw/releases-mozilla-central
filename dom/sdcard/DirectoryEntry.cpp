@@ -46,7 +46,7 @@ DirectoryEntry::~DirectoryEntry()
 }
 
 JSObject*
-DirectoryEntry::WrapObject(JSContext* aCx, JSObject* aScope)
+DirectoryEntry::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
 {
   return DirectoryEntryBinding::Wrap(aCx, aScope, this);
 }

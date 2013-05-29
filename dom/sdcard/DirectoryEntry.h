@@ -34,7 +34,7 @@ public:
 
   ~DirectoryEntry();
 
-  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
+  virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);
 
   already_AddRefed<DirectoryReader> CreateReader();
 

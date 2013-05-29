@@ -41,7 +41,7 @@ public:
     return mNavigator.get();
   }
 
-  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
+  virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope) MOZ_OVERRIDE;
 
   void GetName(nsString& retval) const;
 
