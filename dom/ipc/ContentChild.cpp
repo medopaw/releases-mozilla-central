@@ -94,7 +94,6 @@
 #include "mozilla/dom/devicestorage/DeviceStorageRequestChild.h"
 #include "mozilla/dom/sdcard/SDCardRequestChild.h"
 #include "mozilla/dom/bluetooth/PBluetoothChild.h"
-#include "mozilla/dom/sdcard/PSDCardChild.h"
 #include "mozilla/ipc/InputStreamUtils.h"
 
 #ifdef MOZ_WEBSPEECH
@@ -879,29 +878,6 @@ ContentChild::DeallocPBluetooth(PBluetoothChild* aActor)
 #endif
 }
 
-PSDCardChild*
-ContentChild::AllocPSDCard()
-{
-#ifdef MOZ_SDCARD
-    MOZ_NOT_REACHED("No one should be allocating PSDCardChild actors");
-    return nullptr;
-#else
-    MOZ_NOT_REACHED("No support for sdcard on this platform!");
-    return nullptr;
-#endif
-}
-
-bool
-ContentChild::DeallocPSDCard(PSDCardChild* aActor)
-{
-#ifdef MOZ_SDCARD
-    delete aActor;
-    return true;
-#else
-    MOZ_NOT_REACHED("No support for sdcard on this platform!");
-    return false;
-#endif
-}
 PSpeechSynthesisChild*
 ContentChild::AllocPSpeechSynthesis()
 {

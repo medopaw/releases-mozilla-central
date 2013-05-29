@@ -32,7 +32,6 @@
 #include "mozilla/dom/power/PowerManagerService.h"
 #include "mozilla/dom/DOMStorageIPC.h"
 #include "mozilla/dom/bluetooth/PBluetoothParent.h"
-#include "mozilla/dom/sdcard/PSDCardParent.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestParent.h"
 #include "mozilla/dom/sdcard/SDCardRequestParent.h"
 #include "SmsParent.h"
@@ -119,10 +118,6 @@ using namespace mozilla::system;
 #ifdef MOZ_B2G_BT
 #include "BluetoothParent.h"
 #include "BluetoothService.h"
-#endif
-
-#ifdef MOZ_SDCARD
-#include "SDCardParent.h"
 #endif
 
 #include "Crypto.h"
@@ -2042,30 +2037,6 @@ ContentParent::RecvPBluetoothConstructor(PBluetoothParent* aActor)
     MOZ_CRASH("No support for bluetooth on this platform!");
 #endif
 }
-
-PSDCardParent*
-ContentParent::AllocPSDCard()
-{
-#ifdef MOZ_SDCARD
-    return new mozilla::dom::sdcard::SDCardParent();
-#else
-    MOZ_NOT_REACHED("No support for sdcard on this platform!");
-    return nullptr;
-#endif
-}
-
-bool
-ContentParent::DeallocPSDCard(PSDCardParent* aActor)
-{
-#ifdef MOZ_SDCARD
-    delete aActor;
-    return true;
-#else
-    MOZ_NOT_REACHED("No support for sdcard on this platform!");
-    return false;
-#endif
-}
-
 
 PSpeechSynthesisParent*
 ContentParent::AllocPSpeechSynthesis()
