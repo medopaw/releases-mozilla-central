@@ -43,16 +43,9 @@ void Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCod
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
   if (aErrorCallback) { // errorCallback is always optional
-    nsString errorString;
-    Error::ErrorNameFromCode(errorString, aErrorCode);
-    if (errorString.IsEmpty()) {
-      SDCARD_LOG("Create DOMError from nsresult %ul", aErrorCode);
-    } else {
-      SDCARD_LOG("Create DOMError from nsresult %s", NS_ConvertUTF16toUTF8(errorString).get());
-    }
-
-    ErrorResult rv;
-    aErrorCallback->Call(*GetDOMError(aErrorCode), rv);
+    nsString errorName;
+    Error::ErrorNameFromCode(errorName, aErrorCode);
+    Error::HandleError(aErrorCallback, errorName);
   }
 }
 
@@ -136,6 +129,7 @@ void Error::ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode)
 nsRefPtr<DOMError> Error::GetDOMError(const nsAString& aErrorName)
 {
   SDCARD_LOG("in ErrorHandler::GetDOMError() with error name %s", NS_ConvertUTF16toUTF8(aErrorName).get());
+
   nsRefPtr<DOMError> domError = new DOMError(nullptr, aErrorName);
   return domError;
 }
@@ -145,11 +139,12 @@ nsRefPtr<DOMError> Error::GetDOMError(const nsresult& aErrorCode)
 {
   SDCARD_LOG("in ErrorHandler::GetDOMError() with error code");
   MOZ_ASSERT(aErrorCode != NS_OK, "NS_OK is not an error.");
+
   nsRefPtr<DOMError> domError = new DOMError(nullptr, aErrorCode);
   if (!domError) {
-    nsString name;
-    ErrorNameFromCode(name, aErrorCode);
-    domError = GetDOMError(name);
+    nsString errorName;
+    Error::ErrorNameFromCode(errorName, aErrorCode);
+    domError = Error::GetDOMError(errorName);
   }
   return domError;
 }
