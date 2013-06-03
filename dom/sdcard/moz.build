@@ -15,6 +15,38 @@ XPIDL_FLAGS += [
      '-I$(topsrcdir)/dom/interfaces/base/'
 ]
 
+CPP_SOURCES += [
+    'Caller.cpp',
+    'CombinedRunnable.cpp',
+    'CopyAndMoveToEvent.cpp',
+    'CopyAndMoveToRunnable.cpp',
+    'DirectoryEntry.cpp',
+    'DirectoryReader.cpp',
+    'Entry.cpp',
+    'Error.cpp',
+    'FileEntry.cpp',
+    'FileSystem.cpp', 
+    'FileUtils.cpp',
+    'GetEntryEvent.cpp',
+    'GetEntryRunnable.cpp',
+    'GetMetadataRunnable.cpp',
+    'GetParentRunnable.cpp',
+    'IPCCopyAndMoveToEvent.cpp',
+    'IPCGetEntryEvent.cpp',
+    'IPCRemoveEvent.cpp',
+    'Metadata.cpp',
+    'Path.cpp',
+    'ReadEntriesRunnable.cpp',
+    'RemoveEvent.cpp',
+    'RemoveRunnable.cpp',
+    'SDCardEvent.cpp',
+    'SDCardRequestChild.cpp',
+    'SDCardRequestParent.cpp',
+    'SPCopyAndMoveToEvent.cpp',
+    'SPGetEntryEvent.cpp',
+    'SPRemoveEvent.cpp',
+]
+
 # EXPORTS += [
 # ]
 

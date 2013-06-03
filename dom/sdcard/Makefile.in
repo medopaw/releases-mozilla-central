@@ -18,38 +18,6 @@ include $(topsrcdir)/dom/dom-config.mk
 
 EXPORTS_NAMESPACES = mozilla/dom/sdcard
 
-CPPSRCS = \
-  FileSystem.cpp \
-  Entry.cpp \
-  DirectoryEntry.cpp \
-  DirectoryReader.cpp \
-  FileEntry.cpp \
-  Metadata.cpp \
-  CombinedRunnable.cpp \
-  GetMetadataRunnable.cpp \
-  CopyAndMoveToRunnable.cpp \
-  RemoveRunnable.cpp \
-  GetParentRunnable.cpp \
-  GetEntryRunnable.cpp \
-  ReadEntriesRunnable.cpp \
-  FileUtils.cpp \
-  Path.cpp \
-  Error.cpp \
-  SDCardRequestParent.cpp \
-  SDCardRequestChild.cpp \
-  SDCardEvent.cpp \
-  CopyAndMoveToEvent.cpp \
-  IPCCopyAndMoveToEvent.cpp \
-  SPCopyAndMoveToEvent.cpp \
-  GetEntryEvent.cpp \
-  IPCGetEntryEvent.cpp \
-  SPGetEntryEvent.cpp \
-  RemoveEvent.cpp \
-  IPCRemoveEvent.cpp \
-  SPRemoveEvent.cpp \
-  Caller.cpp \
-  $(NULL)
-
 # LOCAL_INCLUDES = \
 # 		-I$(topsrcdir)/dom/base \
 # 		-I$(topsrcdir)/dom/ipc \
