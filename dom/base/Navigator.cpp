@@ -1567,27 +1567,23 @@ Navigator::GetMozTime(nsISupports** aTime)
 NS_IMETHODIMP
 Navigator::GetMozSDCard(nsISupports** aSDCard)
 {
-  printf("\n\n\nin GetMozSDCard!!!!\n\n\n\n");
+  *aSDCard = nullptr;
 
-/*  if (!CheckPermission("sdcard")) {
-    return NS_ERROR_DOM_SECURITY_ERR;
-  }
-*/
   if (!mSDCard) {
-    *aSDCard = nullptr;
-
-    /* nsString fsName, rootPath;
-    fsName.AssignLiteral("SD Card");
-    rootPath.AssignLiteral("/sdcard");*/
-
-    mSDCard = new sdcard::FileSystem(this, NS_LITERAL_STRING("SD Card"), NS_LITERAL_STRING("/sdcard"));
+    // Only need to check permission on creation of mSDCard
+    if (CheckPermission("sdcard-filesystem")) {
+      mSDCard = new sdcard::FileSystem(this, NS_LITERAL_STRING("SD Card"), NS_LITERAL_STRING("/sdcard"));
+    }
+    NS_ENSURE_TRUE(mSDCard, NS_OK);
   }
 
-  if (mSDCard->IsValid()) {
-    NS_ADDREF(*aSDCard = mSDCard);
-  } else {
-    *aSDCard = nullptr;
+  if (mSDCard) {
+    if (!mSDCard->IsValid()) {
+      mSDCard = nullptr;
+    }
   }
+
+  NS_ADDREF(*aSDCard = mSDCard);
 
   return NS_OK;
 }
