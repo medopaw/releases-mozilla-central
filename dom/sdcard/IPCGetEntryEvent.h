@@ -23,7 +23,7 @@ public:
       bool aCreate,
       bool aExclusive,
       bool aIsFile);
-  ~IPCGetEntryEvent();
+  virtual ~IPCGetEntryEvent();
 
 private:
   virtual void OnError() MOZ_OVERRIDE;

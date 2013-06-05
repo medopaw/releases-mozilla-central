@@ -23,7 +23,7 @@ public:
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy);
-  ~IPCCopyAndMoveToEvent();
+  virtual ~IPCCopyAndMoveToEvent();
 
 private:
   virtual void OnError() MOZ_OVERRIDE;

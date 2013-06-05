@@ -18,7 +18,7 @@ class IPCRemoveEvent : public RemoveEvent
 {
 public:
   IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive);
-  ~IPCRemoveEvent();
+  virtual ~IPCRemoveEvent();
 
 private:
   virtual void OnError() MOZ_OVERRIDE;
