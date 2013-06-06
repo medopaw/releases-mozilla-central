@@ -23,6 +23,7 @@ IPCEvent::IPCEvent(
   SDCARD_LOG("construct IPCEvent");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
+  mCanceled = !(mParent->SetRunnable(true, this));
 }
 
 IPCEvent::~IPCEvent()
@@ -37,6 +38,15 @@ IPCEvent::OnError()
 
   ErrorResponse response(mWorker->mErrorName);
   unused << mParent->Send__delete__(mParent, response);
+}
+
+void
+IPCEvent::HandleResult()
+{
+  SDCARD_LOG("in IPCEvent.HandleResult");
+
+  mParent->SetRunnable(false);
+  SDCardEvent::HandleResult();
 }
 
 } // namespace sdcard

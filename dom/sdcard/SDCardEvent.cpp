@@ -13,9 +13,9 @@ namespace dom {
 namespace sdcard {
 
 SDCardEvent::SDCardEvent(Worker* aWorker) :
+    mCanceled(false),
     mWorker(aWorker),
-    mWorkerThread(nullptr),
-    mCanceled(false)
+    mWorkerThread(nullptr)
 {
   SDCARD_LOG("construct SDCardEvent");
 }
@@ -49,12 +49,14 @@ NS_IMETHODIMP SDCardEvent::Run()
     SDCARD_LOG("SDCardEvent.Run() on worker thread.");
     if (mWorker->Init()) {
       // Run worker thread tasks: file operations
-      mWorker->Work();
+      if (!mCanceled) {
+        mWorker->Work();
+      } else {
+        SDCARD_LOG("Cancel mWorker.Work()");
+      }
     }
     // dispatch itself to main thread
-    if (!mCanceled) {
-      NS_DispatchToMainThread(this);
-    }
+    NS_DispatchToMainThread(this);
   } else {
     SDCARD_LOG("SDCardEvent.Run() on main thread.");
     // shutdown mWorkerThread
@@ -74,12 +76,14 @@ void SDCardEvent::HandleResult()
   SDCARD_LOG("in SDCardEvent.HandleResult()");
   if (!mCanceled) {
     mWorker->mErrorName.IsEmpty() ? OnSuccess() : OnError();
+  } else {
+    SDCARD_LOG("Cancel HandleResult()");
   }
 }
 
 void SDCardEvent::Cancel()
 {
-  SDCARD_LOG("in SDCardEvent.Cancel() with mCanceld=%d", mCanceled);
+  SDCARD_LOG("in SDCardEvent.Cancel() with mCanceled=%d", mCanceled);
   mCanceled = true;
 }
 

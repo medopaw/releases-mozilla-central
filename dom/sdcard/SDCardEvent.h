@@ -30,15 +30,16 @@ public:
   // Overrides nsIRunnable.
   NS_IMETHOD Run() MOZ_OVERRIDE;
 
+  void Cancel();
+
 protected:
+  bool mCanceled;
+
   nsRefPtr<Worker> mWorker;
   virtual void OnError() = 0;
   virtual void OnSuccess() = 0;
 
-  void HandleResult();
-
-  void Cancel();
-  bool mCanceled;
+  virtual void HandleResult();
 
 private:
   // It will only be used on main thread, so doesn't need a lock.

@@ -8,6 +8,7 @@
 #include "IPCCopyAndMoveToEvent.h"
 #include "IPCGetEntryEvent.h"
 #include "IPCRemoveEvent.h"
+#include "SDCardEvent.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -17,8 +18,11 @@ namespace sdcard {
 NS_IMPL_THREADSAFE_ADDREF(SDCardRequestParent)
 NS_IMPL_THREADSAFE_RELEASE(SDCardRequestParent)
 
-SDCardRequestParent::SDCardRequestParent(const SDCardParams& aParams)
-  : mParams(aParams)
+SDCardRequestParent::SDCardRequestParent(const SDCardParams& aParams) :
+    mParams(aParams),
+    mMutex("SDCardRequestParent::mMutex"),
+    mActorDestoryed(false),
+    mRunnable(nullptr)
 {
   SDCARD_LOG("construct SDCardRequestParent");
   MOZ_COUNT_CTOR(SDCardRequestParent);
@@ -90,6 +94,35 @@ SDCardRequestParent::Dispatch()
       break;
     }
 
+  }
+}
+
+void
+SDCardRequestParent::ActorDestroy(ActorDestroyReason)
+{
+  SDCARD_LOG("in SDCardRequestParent.ActorDestroy()");
+
+  MutexAutoLock lock(mMutex);
+  mActorDestoryed = true;
+  if (mRunnable) {
+    mRunnable->Cancel();
+  }
+}
+
+bool
+SDCardRequestParent::SetRunnable(bool aAdd, SDCardEvent* aRunnable) {
+  SDCARD_LOG("in SDCardRequestParent.SetRunnable() with aAdd=%d", aAdd);
+
+  MutexAutoLock lock(mMutex);
+  if (aAdd) {
+    if (mActorDestoryed) {
+      return false;
+    }
+    mRunnable = aRunnable;
+    return true;
+  } else {
+    mRunnable = nullptr;
+    return true;
   }
 }
 

@@ -14,6 +14,8 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
+class SDCardEvent;
+
 class SDCardRequestParent :
   public PSDCardRequestParent
 {
@@ -24,6 +26,9 @@ public:
   NS_IMETHOD_(nsrefcnt) Release();
 
   void Dispatch();
+  void ActorDestroy(ActorDestroyReason) MOZ_OVERRIDE;
+
+  bool SetRunnable(bool aAdd, SDCardEvent* aRunnable = nullptr);
 
 protected:
   virtual ~SDCardRequestParent();
@@ -31,6 +36,10 @@ protected:
 private:
   nsAutoRefCnt mRefCnt;
   SDCardParams mParams;
+
+  Mutex mMutex;
+  bool mActorDestoryed;
+  nsRefPtr<SDCardEvent> mRunnable;
 };
 
 } // namespace sdcard

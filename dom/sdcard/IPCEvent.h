@@ -25,6 +25,9 @@ public:
 protected:
   virtual void OnError() MOZ_OVERRIDE;
   nsRefPtr<SDCardRequestParent> mParent;
+
+private:
+  void HandleResult() MOZ_OVERRIDE;
 };
 
 } // namespace sdcard
