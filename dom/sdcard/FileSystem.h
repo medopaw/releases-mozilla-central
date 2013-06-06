@@ -14,7 +14,6 @@
 #include "nsCOMPtr.h"
 #include "nsAutoPtr.h"
 #include "nsString.h"
-#include "nsIDOMNavigator.h"
 #include "DirectoryEntry.h"
 
 struct JSContext;
@@ -31,14 +30,14 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileSystem)
 
 public:
-  explicit FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath);
+  explicit FileSystem(nsPIDOMWindow* aWindow, const nsAString& aName, const nsAString& aPath);
 
   ~FileSystem();
 
   // TODO: return something sensible here, and change the return type
-  nsIDOMNavigator* GetParentObject() const
+  nsPIDOMWindow* GetParentObject() const
   {
-    return mNavigator.get();
+    return mWindow.get();
   }
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope) MOZ_OVERRIDE;
@@ -51,7 +50,7 @@ public:
   bool IsValid() const;
 
 private:
-  nsCOMPtr<nsIDOMNavigator> mNavigator;
+  nsCOMPtr<nsPIDOMWindow> mWindow;
   nsString mName;
   nsRefPtr<DirectoryEntry> mRoot;
 };

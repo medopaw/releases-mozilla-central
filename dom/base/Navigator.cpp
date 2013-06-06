@@ -1572,7 +1572,8 @@ Navigator::GetMozSDCard(nsISupports** aSDCard)
   if (!mSDCard) {
     // Only need to check permission on creation of mSDCard
     if (CheckPermission("sdcard-filesystem")) {
-      mSDCard = new sdcard::FileSystem(this, NS_LITERAL_STRING("SD Card"), NS_LITERAL_STRING("/sdcard"));
+      nsCOMPtr<nsPIDOMWindow> window = do_QueryReferent(mWindow);
+      mSDCard = new sdcard::FileSystem(window, NS_LITERAL_STRING("SD Card"), NS_LITERAL_STRING("/sdcard"));
     }
     NS_ENSURE_TRUE(mSDCard, NS_OK);
   }

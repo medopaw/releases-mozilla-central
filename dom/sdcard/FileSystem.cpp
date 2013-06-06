@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "FileSystem.h"
+#include "nsPIDOMWindow.h"
 #include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
@@ -26,7 +27,12 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
 NS_INTERFACE_MAP_END
 
 
-FileSystem::FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath) : mNavigator(aNavigator), mName(aName)
+FileSystem::FileSystem(
+    nsPIDOMWindow* aWindow,
+    const nsAString& aName,
+    const nsAString& aPath) :
+    mWindow(aWindow),
+    mName(aName)
 {
   SDCARD_LOG("construct FileSystem");
   MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
