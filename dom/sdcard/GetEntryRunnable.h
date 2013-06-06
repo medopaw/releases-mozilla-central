@@ -24,7 +24,7 @@ public:
       Entry* aEntry,
       bool aIsFile);
 
-  virtual ~GetEntryRunnable();
+  ~GetEntryRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;

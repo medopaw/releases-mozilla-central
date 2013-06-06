@@ -21,7 +21,7 @@ public:
       bool aExclusive,
       bool aIsFile,
       SDCardRequestParent* aParent);
-  virtual ~IPCGetEntryEvent();
+  ~IPCGetEntryEvent();
 
 private:
   virtual void OnSuccess() MOZ_OVERRIDE;

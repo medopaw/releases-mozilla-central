@@ -33,7 +33,7 @@ public:
 public:
   explicit FileSystem(nsIDOMNavigator* aNavigator, const nsAString& aName, const nsAString& aPath);
 
-  virtual ~FileSystem();
+  ~FileSystem();
 
   // TODO: return something sensible here, and change the return type
   nsIDOMNavigator* GetParentObject() const

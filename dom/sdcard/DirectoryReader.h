@@ -30,7 +30,7 @@ public:
 public:
   DirectoryReader(DirectoryEntry* entry);
 
-  virtual ~DirectoryReader();
+  ~DirectoryReader();
 
   // TODO: return something sensible here, and change the return type
   DirectoryReader* GetParentObject() const

@@ -19,7 +19,7 @@ public:
       MetadataCallback* aSuccessCallback,
       ErrorCallback* aErrorCallback,
       Entry* aEntry);
-  virtual ~GetMetadataRunnable();
+  ~GetMetadataRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;

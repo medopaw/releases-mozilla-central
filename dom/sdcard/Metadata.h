@@ -27,7 +27,7 @@ public:
 public:
   Metadata();
 
-  virtual ~Metadata();
+  ~Metadata();
 
   // TODO: return something sensible here, and change the return type
   Metadata* GetParentObject() const

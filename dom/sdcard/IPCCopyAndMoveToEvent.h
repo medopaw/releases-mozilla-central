@@ -21,7 +21,7 @@ public:
       const nsAString& aNewName,
       bool aIsCopy,
       SDCardRequestParent* aParent);
-  virtual ~IPCCopyAndMoveToEvent();
+  ~IPCCopyAndMoveToEvent();
 
 private:
   virtual void OnSuccess() MOZ_OVERRIDE;

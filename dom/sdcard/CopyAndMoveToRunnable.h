@@ -23,7 +23,7 @@ public:
       Entry* aEntry,
       bool aIsCopy);
 
-  virtual ~CopyAndMoveToRunnable();
+  ~CopyAndMoveToRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;

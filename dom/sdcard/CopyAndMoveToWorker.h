@@ -23,7 +23,7 @@ public:
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy);
-  virtual ~CopyAndMoveToWorker();
+  ~CopyAndMoveToWorker();
 
   nsString mResultPath;
 

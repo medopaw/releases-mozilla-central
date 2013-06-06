@@ -19,7 +19,7 @@ public:
       const nsAString& aRelpath,
       bool aRecursive,
       SDCardRequestParent* aParent);
-  virtual ~IPCRemoveEvent();
+  ~IPCRemoveEvent();
 
 private:
   virtual void OnSuccess() MOZ_OVERRIDE;

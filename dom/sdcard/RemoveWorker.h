@@ -21,7 +21,7 @@ public:
   RemoveWorker(
       const nsAString& aRelpath,
       bool aRecursive);
-  virtual ~RemoveWorker();
+  ~RemoveWorker();
 
 private:
   virtual void Work() MOZ_OVERRIDE;

@@ -19,7 +19,7 @@ public:
       ErrorCallback* aErrorCallback,
       Entry* aEntry);
 
-  virtual ~ReadEntriesRunnable();
+  ~ReadEntriesRunnable();
 
 protected:
   virtual void WorkerThreadRun() MOZ_OVERRIDE;

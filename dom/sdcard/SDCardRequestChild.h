@@ -19,7 +19,7 @@ class SDCardRequestChild :
 public:
   SDCardRequestChild();
   SDCardRequestChild(Caller* aCaller);
-  virtual ~SDCardRequestChild();
+  ~SDCardRequestChild();
 
   virtual bool Recv__delete__(const SDCardResponseValue& value);
 

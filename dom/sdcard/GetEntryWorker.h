@@ -20,7 +20,7 @@ public:
       bool aCreate,
       bool aExclusive,
       bool aIsFile);
-  virtual ~GetEntryWorker();
+  ~GetEntryWorker();
 
   nsString mResultPath;
 

@@ -31,7 +31,7 @@ public:
   bool SetRunnable(bool aAdd, SDCardEvent* aRunnable = nullptr);
 
 protected:
-  virtual ~SDCardRequestParent();
+  ~SDCardRequestParent();
 
 private:
   nsAutoRefCnt mRefCnt;
