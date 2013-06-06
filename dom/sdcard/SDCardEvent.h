@@ -12,10 +12,12 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
+class Worker;
+
 class SDCardEvent : public nsRunnable
 {
 public:
-  SDCardEvent(const nsAString& aRelpath);
+  SDCardEvent(Worker* aWorker);
   virtual ~SDCardEvent();
 
   /*
@@ -25,28 +27,20 @@ public:
    */
   void Start();
 
-  // overrides nsIRunnable
+  // Overrides nsIRunnable.
   NS_IMETHOD Run() MOZ_OVERRIDE;
 
 protected:
-  virtual void WorkerThreadRun() = 0;
+  nsRefPtr<Worker> mWorker;
   virtual void OnError() = 0;
   virtual void OnSuccess() = 0;
 
-  void SetErrorCode(const nsresult& aErrorCode);
-  void SetErrorName(const nsAString& aErrorName);
+  void HandleResult();
 
-  nsString mRelpath;
-  // not thread safe, only access it form worker thread
-  nsCOMPtr<nsIFile> mFile;
-
-  nsString mErrorName;
+  void Cancel();
+  bool mCanceled;
 
 private:
-  void MainThreadRun();
-
-  nsresult mErrorCode;
-
   // It will only be used on main thread, so doesn't need a lock.
   nsCOMPtr<nsIThread> mWorkerThread;
 };

@@ -6,23 +6,26 @@
 
 #pragma once
 
-#include "SPEvent.h"
+#include "Worker.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SPRemoveEvent : public SPEvent
+/*
+ * This class is to perform actual file operations.
+ */
+class RemoveWorker : public Worker
 {
 public:
-  SPRemoveEvent(
+  RemoveWorker(
       const nsAString& aRelpath,
-      bool aRecursive,
-      Caller* aCaller);
-  ~SPRemoveEvent();
+      bool aRecursive);
+  virtual ~RemoveWorker();
 
 private:
-  virtual void OnSuccess() MOZ_OVERRIDE;
+  virtual void Work() MOZ_OVERRIDE;
+  bool mRecursive;
 };
 
 } // namespace sdcard

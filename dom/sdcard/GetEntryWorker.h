@@ -6,23 +6,30 @@
 
 #pragma once
 
-#include "SPEvent.h"
+#include "Worker.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SPRemoveEvent : public SPEvent
+class GetEntryWorker : public Worker
 {
 public:
-  SPRemoveEvent(
+  GetEntryWorker(
       const nsAString& aRelpath,
-      bool aRecursive,
-      Caller* aCaller);
-  ~SPRemoveEvent();
+      bool aCreate,
+      bool aExclusive,
+      bool aIsFile);
+  virtual ~GetEntryWorker();
+
+  nsString mResultPath;
 
 private:
-  virtual void OnSuccess() MOZ_OVERRIDE;
+  virtual void Work() MOZ_OVERRIDE;
+
+  bool mCreate;
+  bool mExclusive;
+  bool mIsFile;
 };
 
 } // namespace sdcard

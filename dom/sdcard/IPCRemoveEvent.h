@@ -6,24 +6,23 @@
 
 #pragma once
 
-#include "RemoveEvent.h"
+#include "IPCEvent.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SDCardRequestParent;
-
-class IPCRemoveEvent : public RemoveEvent
+class IPCRemoveEvent : public IPCEvent
 {
 public:
-  IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive);
+  IPCRemoveEvent(
+      const nsAString& aRelpath,
+      bool aRecursive,
+      SDCardRequestParent* aParent);
   virtual ~IPCRemoveEvent();
 
 private:
-  virtual void OnError() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
-  nsRefPtr<SDCardRequestParent> mParent;
 };
 
 } // namespace sdcard

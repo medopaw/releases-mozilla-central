@@ -6,29 +6,25 @@
 
 #pragma once
 
-#include "CopyAndMoveToEvent.h"
+#include "IPCEvent.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SDCardRequestParent;
-
-class IPCCopyAndMoveToEvent : public CopyAndMoveToEvent
+class IPCCopyAndMoveToEvent : public IPCEvent
 {
 public:
   IPCCopyAndMoveToEvent(
-      SDCardRequestParent* aParent,
       const nsAString& aRelpath,
       const nsAString& aParentPath,
       const nsAString& aNewName,
-      bool aIsCopy);
+      bool aIsCopy,
+      SDCardRequestParent* aParent);
   virtual ~IPCCopyAndMoveToEvent();
 
 private:
-  virtual void OnError() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
-  nsRefPtr<SDCardRequestParent> mParent;
 };
 
 } // namespace sdcard

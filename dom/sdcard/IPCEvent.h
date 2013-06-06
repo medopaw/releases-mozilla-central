@@ -12,17 +12,19 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class RemoveEvent : public SDCardEvent
+class SDCardRequestParent;
+
+class IPCEvent : public SDCardEvent
 {
 public:
-  RemoveEvent(const nsAString& aRelpath, bool aRecursive = false);
-  ~RemoveEvent();
+  IPCEvent(
+      Worker* aWorker,
+      SDCardRequestParent* aParent);
+  virtual ~IPCEvent();
 
 protected:
-  virtual void WorkerThreadRun() MOZ_OVERRIDE;
-
-private:
-  bool mRecursive;
+  virtual void OnError() MOZ_OVERRIDE;
+  nsRefPtr<SDCardRequestParent> mParent;
 };
 
 } // namespace sdcard

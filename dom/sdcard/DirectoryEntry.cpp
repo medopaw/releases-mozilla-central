@@ -84,7 +84,7 @@ void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Opti
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(pCaller, path, true);
+    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(path, true, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
@@ -127,7 +127,7 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
   nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback, pErrorCallback);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(pCaller, realPath, options.mCreate, options.mExclusive, isFile);
+    nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(realPath, options.mCreate, options.mExclusive, isFile, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");

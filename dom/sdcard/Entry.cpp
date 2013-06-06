@@ -179,7 +179,7 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(pCaller, path, parentPath, strNewName, isCopy);
+    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(path, parentPath, strNewName, isCopy, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
@@ -203,7 +203,7 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(pCaller, path, false);
+    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(path, false, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");

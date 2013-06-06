@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "IPCGetEntryEvent.h"
-#include "GetEntryWorker.h"
+#include "IPCEvent.h"
+#include "Worker.h"
 #include "SDCardRequestParent.h"
 #include "mozilla/unused.h"
 #include "Utils.h"
@@ -14,27 +14,28 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-IPCGetEntryEvent::IPCGetEntryEvent(
-    const nsAString& aRelpath,
-    bool aCreate,
-    bool aExclusive,
-    bool aIsFile,
+IPCEvent::IPCEvent(
+    Worker* aWorker,
     SDCardRequestParent* aParent) :
-    IPCEvent(new GetEntryWorker(aRelpath, aCreate, aExclusive, aIsFile), aParent)
+    SDCardEvent(aWorker),
+    mParent(aParent)
 {
-  SDCARD_LOG("construct IPCGetEntryEvent");
+  SDCARD_LOG("construct IPCEvent");
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
 }
 
-IPCGetEntryEvent::~IPCGetEntryEvent()
+IPCEvent::~IPCEvent()
 {
-  SDCARD_LOG("destruct IPCGetEntryEvent");
+  SDCARD_LOG("destruct IPCEvent");
 }
 
-void IPCGetEntryEvent::OnSuccess()
+void
+IPCEvent::OnError()
 {
-  SDCARD_LOG("in IPCGetEntryEvent.OnSuccess()!");
+  SDCARD_LOG("in IPCEvent.OnError()!");
 
-  PathResponse response(static_cast<GetEntryWorker*>(mWorker.get())->mResultPath);
+  ErrorResponse response(mWorker->mErrorName);
   unused << mParent->Send__delete__(mParent, response);
 }
 

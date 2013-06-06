@@ -6,29 +6,25 @@
 
 #pragma once
 
-#include "GetEntryEvent.h"
+#include "IPCEvent.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SDCardRequestParent;
-
-class IPCGetEntryEvent : public GetEntryEvent
+class IPCGetEntryEvent : public IPCEvent
 {
 public:
   IPCGetEntryEvent(
-      SDCardRequestParent* aParent,
       const nsAString& aRelpath,
       bool aCreate,
       bool aExclusive,
-      bool aIsFile);
+      bool aIsFile,
+      SDCardRequestParent* aParent);
   virtual ~IPCGetEntryEvent();
 
 private:
-  virtual void OnError() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
-  nsRefPtr<SDCardRequestParent> mParent;
 };
 
 } // namespace sdcard

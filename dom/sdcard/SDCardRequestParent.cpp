@@ -41,7 +41,7 @@ SDCardRequestParent::Dispatch()
       SDCardCopyAndMoveParams p = mParams;
       SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentPath()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
 
-      nsCOMPtr<IPCCopyAndMoveToEvent> r = new IPCCopyAndMoveToEvent(this, p.relpath(), p.parentPath(), p.newName(), p.isCopy());
+      nsCOMPtr<IPCCopyAndMoveToEvent> r = new IPCCopyAndMoveToEvent(p.relpath(), p.parentPath(), p.newName(), p.isCopy(), this);
       r->Start();
 
       break;
@@ -51,7 +51,7 @@ SDCardRequestParent::Dispatch()
       SDCardGetParams p = mParams;
       SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d", p.isFile() ? "file" : "directory", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive(), p.isFile());
 
-      nsCOMPtr<IPCGetEntryEvent> r = new IPCGetEntryEvent(this, p.relpath(), p.create(), p.exclusive(), p.isFile());
+      nsCOMPtr<IPCGetEntryEvent> r = new IPCGetEntryEvent(p.relpath(), p.create(), p.exclusive(), p.isFile(), this);
       r->Start();
 
       break;
@@ -79,7 +79,7 @@ SDCardRequestParent::Dispatch()
       SDCardRemoveParams p = mParams;
       SDCARD_LOG("Remove %s with recursive=%d", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.recursive());
 
-      nsCOMPtr<IPCRemoveEvent> r = new IPCRemoveEvent(this, p.relpath(), p.recursive());
+      nsCOMPtr<IPCRemoveEvent> r = new IPCRemoveEvent(p.relpath(), p.recursive(), this);
       r->Start();
 
       break;

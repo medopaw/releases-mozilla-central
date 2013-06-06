@@ -12,25 +12,19 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class GetEntryEvent : public SDCardEvent
+class Caller;
+
+class SPEvent : public SDCardEvent
 {
 public:
-  GetEntryEvent(
-      const nsAString& aRelpath,
-      bool aCreate,
-      bool aExclusive,
-      bool aIsFile);
-
-  virtual ~GetEntryEvent();
+  SPEvent(
+      Worker* aWorker,
+      Caller* aCaller);
+  virtual ~SPEvent();
 
 protected:
-  virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  nsString mResultPath;
-
-private:
-  bool mCreate;
-  bool mExclusive;
-  bool mIsFile;
+  virtual void OnError() MOZ_OVERRIDE;
+  nsRefPtr<Caller> mCaller;
 };
 
 } // namespace sdcard

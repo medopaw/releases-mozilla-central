@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "RemoveEvent.h"
+#include "RemoveWorker.h"
 #include "nsIFile.h"
 #include "Path.h"
 #include "Error.h"
@@ -14,32 +14,32 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-RemoveEvent::RemoveEvent(const nsAString& aRelpath, bool aRecursive) :
-    SDCardEvent(aRelpath),
+RemoveWorker::RemoveWorker(const nsAString& aRelpath, bool aRecursive) :
+    Worker(aRelpath),
     mRecursive(aRecursive)
 {
-  SDCARD_LOG("construct RemoveEvent");
-  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+  SDCARD_LOG("construct RemoveWorker");
 }
 
-RemoveEvent::~RemoveEvent()
+RemoveWorker::~RemoveWorker()
 {
-  SDCARD_LOG("destruct RemoveEvent");
+  SDCARD_LOG("destruct RemoveWorker");
 }
 
-void RemoveEvent::WorkerThreadRun()
+void
+RemoveWorker::Work()
 {
-  SDCARD_LOG("in RemoveEvent.WorkerThreadRun()!");
+  SDCARD_LOG("in RemoveWorker.Work()");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   nsresult rv = NS_OK;
   if (Path::IsBase(mRelpath)) {
     // cannot remove root directory
-    SetErrorName(Error::DOM_ERROR_NO_MODIFICATION_ALLOWED);
+    SetError(Error::DOM_ERROR_NO_MODIFICATION_ALLOWED);
   } else {
     rv = mFile->Remove(mRecursive);
     if (NS_FAILED(rv)) {
-      SetErrorCode(rv);
+      SetError(rv);
     }
   }
 }

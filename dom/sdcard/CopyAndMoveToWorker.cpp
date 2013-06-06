@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "CopyAndMoveToEvent.h"
+#include "CopyAndMoveToWorker.h"
 #include "FileUtils.h"
 #include "Path.h"
 #include "Error.h"
@@ -14,34 +14,34 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-CopyAndMoveToEvent::CopyAndMoveToEvent(
+CopyAndMoveToWorker::CopyAndMoveToWorker(
     const nsAString& aRelpath,
     const nsAString& aParentPath,
     const nsAString& aNewName,
     bool aIsCopy) :
-    SDCardEvent(aRelpath),
+    Worker(aRelpath),
     mParentPath(aParentPath),
     mNewName(aNewName),
     mIsCopy(aIsCopy)
 {
-  SDCARD_LOG("construct CopyAndMoveToEvent");
-  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+  SDCARD_LOG("construct CopyAndMoveToWorker");
 }
 
-CopyAndMoveToEvent::~CopyAndMoveToEvent()
+CopyAndMoveToWorker::~CopyAndMoveToWorker()
 {
-  SDCARD_LOG("destruct CopyAndMoveToEvent");
+  SDCARD_LOG("destruct CopyAndMoveToWorker");
 }
 
-void CopyAndMoveToEvent::WorkerThreadRun()
+void
+CopyAndMoveToWorker::Work()
 {
-  SDCARD_LOG("in CopyAndMoveToEvent.WorkerThreadRun()!");
+  SDCARD_LOG("in CopyAndMoveToWorker.Work()");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   if (Path::IsBase(mRelpath)) {
     // Cannot copy/move the root directory
     SDCARD_LOG("Can't copy/move the root directory!");
-    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+    SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -50,20 +50,20 @@ void CopyAndMoveToEvent::WorkerThreadRun()
   nsresult rv = mFile->IsFile(&isFile);
   if (NS_FAILED(rv)) {
     SDCARD_LOG("Error occurs when getting isFile.");
-    SetErrorCode(rv);
+    SetError(rv);
     return;
   }
   rv = mFile->IsDirectory(&isDirectory);
   if (NS_FAILED(rv)) {
     SDCARD_LOG("Error occurs when getting isDirectory.");
-    SetErrorCode(rv);
+    SetError(rv);
     return;
   }
 
   if (!(isFile || isDirectory)) {
     // Cannot copy/move a special file
     SDCARD_LOG("mFile is neither a file nor directory.");
-    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+    SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -73,14 +73,14 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     rv = mFile->GetLeafName(mNewName);
     if (NS_FAILED(rv)) {
       SDCARD_LOG("Error occurs when getting new name from path.");
-      SetErrorCode(rv);
+      SetError(rv);
       return;
     }
   }
 
   if (!Path::IsValidName(mNewName)) {
     SDCARD_LOG("Invalid name!");
-    SetErrorName(Error::DOM_ERROR_ENCODING);
+    SetError(Error::DOM_ERROR_ENCODING);
     return;
   }
 
@@ -93,7 +93,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
   rv = resultFile->Append(mNewName);
   if (NS_FAILED(rv)) {
     SDCARD_LOG("Error occurs when append new name to mResultFile.");
-    SetErrorCode(rv);
+    SetError(rv);
     return;
   }
 
@@ -102,7 +102,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
   rv = resultFile->Exists(&newFileExits);
   if (NS_FAILED(rv)) {
     SDCARD_LOG("Error occurs when checking if resultFile exists.");
-    SetErrorCode(rv);
+    SetError(rv);
     return;
   }
 
@@ -117,7 +117,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     if (!(isNewFile || isNewDirectory)) {
       // Cannot overwrite a special file
       SDCARD_LOG("resultFile is neither a file nor directory.");
-      SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+      SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
   }
@@ -130,7 +130,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     // Cannot copy/move an entry into its parent if a name different from its
     // current one isn't provided
     SDCARD_LOG("Cannot copy/move an entry into its parent if a name different from its current one isn't provided.");
-    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+    SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -139,13 +139,13 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     rv = FileUtils::IsDirectoryEmpty(resultFile, &dirEmpty);
     if (NS_FAILED(rv)) {
       SDCARD_LOG("Error occurs when checking if directory is empty.");
-      SetErrorCode(rv);
+      SetError(rv);
       return;
     }
     if (!dirEmpty) {
       // Cannot copy/move to a path occupied by a directory which is not empty.
       SDCARD_LOG("Cannot copy/move to a path occupied by a directory which is not empty.");
-      SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+      SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
   }
@@ -154,14 +154,14 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     // Cannot copy/move a file to a path occupied by a directory, or
     // copy/move a directory to a path occupied by a file
     SDCARD_LOG("Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file.");
-    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+    SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
   if (Path::IsParentOf(mRelpath, newPath)) {
     // Cannot copy/move a directory inside itself or to child at any depth.
     SDCARD_LOG("Cannot copy/move a directory inside itself or to child at any depth.");
-    SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
+    SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
@@ -170,7 +170,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
     rv = resultFile->Remove(false);
     if (NS_FAILED(rv)) {
       SDCARD_LOG("Fail to remove existing target before copy/move.");
-      SetErrorCode(rv);
+      SetError(rv);
       return;
     }
   }
@@ -184,7 +184,7 @@ void CopyAndMoveToEvent::WorkerThreadRun()
   if (NS_FAILED(rv) ) {
     // fail to copy/move
     SDCARD_LOG("Fail to copy/move.");
-    SetErrorCode(rv);
+    SetError(rv);
     return;
   }
 

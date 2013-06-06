@@ -6,29 +6,25 @@
 
 #pragma once
 
-#include "GetEntryEvent.h"
-#include "Caller.h"
+#include "SPEvent.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class SPGetEntryEvent : public GetEntryEvent
+class SPGetEntryEvent : public SPEvent
 {
 public:
   SPGetEntryEvent(
-      Caller* aCaller,
       const nsAString& aRelpath,
       bool aCreate,
       bool aExclusive,
-      bool aIsFile);
+      bool aIsFile,
+      Caller* aCaller);
   ~SPGetEntryEvent();
 
 private:
-  virtual void OnError() MOZ_OVERRIDE;
   virtual void OnSuccess() MOZ_OVERRIDE;
-
-  nsRefPtr<Caller> mCaller;
 };
 
 } // namespace sdcard

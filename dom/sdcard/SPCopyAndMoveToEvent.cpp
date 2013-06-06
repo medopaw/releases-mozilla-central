@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SPCopyAndMoveToEvent.h"
+#include "CopyAndMoveToWorker.h"
+#include "Caller.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -12,13 +14,12 @@ namespace dom {
 namespace sdcard {
 
 SPCopyAndMoveToEvent::SPCopyAndMoveToEvent(
-    Caller* aCaller,
     const nsAString& aRelpath,
     const nsAString& aParentPath,
     const nsAString& aNewName,
-    bool aIsCopy) :
-    CopyAndMoveToEvent(aRelpath, aParentPath, aNewName, aIsCopy),
-    mCaller(aCaller)
+    bool aIsCopy,
+    Caller* aCaller) :
+    SPEvent(new CopyAndMoveToWorker(aRelpath, aParentPath, aNewName, aIsCopy), aCaller)
 {
   SDCARD_LOG("construct SPCopyAndMoveToEvent");
 }
@@ -28,18 +29,11 @@ SPCopyAndMoveToEvent::~SPCopyAndMoveToEvent()
   SDCARD_LOG("destruct SPCopyAndMoveToEvent");
 }
 
-void SPCopyAndMoveToEvent::OnError()
-{
-  SDCARD_LOG("in SPCopyAndMoveToEvent.OnError()!");
-
-  mCaller->CallErrorCallback(mErrorName);
-}
-
 void SPCopyAndMoveToEvent::OnSuccess()
 {
   SDCARD_LOG("in SPCopyAndMoveToEvent.OnSuccess()!");
 
-  mCaller->CallEntryCallback(mResultPath);
+  mCaller->CallEntryCallback(static_cast<CopyAndMoveToWorker*>(mWorker.get())->mResultPath);
 }
 
 } // namespace sdcard

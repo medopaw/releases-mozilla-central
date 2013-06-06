@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "IPCRemoveEvent.h"
+#include "RemoveWorker.h"
 #include "SDCardRequestParent.h"
 #include "mozilla/unused.h"
 #include "Utils.h"
@@ -13,9 +14,11 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-IPCRemoveEvent::IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aRelpath, bool aRecursive) :
-    RemoveEvent(aRelpath, aRecursive),
-    mParent(aParent)
+IPCRemoveEvent::IPCRemoveEvent(
+    const nsAString& aRelpath,
+    bool aRecursive,
+    SDCardRequestParent* aParent) :
+    IPCEvent(new RemoveWorker(aRelpath, aRecursive), aParent)
 {
   SDCARD_LOG("construct IPCRemoveEvent");
 }
@@ -23,14 +26,6 @@ IPCRemoveEvent::IPCRemoveEvent(SDCardRequestParent* aParent, const nsAString& aR
 IPCRemoveEvent::~IPCRemoveEvent()
 {
   SDCARD_LOG("destruct IPCRemoveEvent");
-}
-
-void IPCRemoveEvent::OnError()
-{
-  SDCARD_LOG("in IPCRemoveEvent.OnError()!");
-
-  ErrorResponse response(mErrorName);
-  unused << mParent->Send__delete__(mParent, response);
 }
 
 void IPCRemoveEvent::OnSuccess()

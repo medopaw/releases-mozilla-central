@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "SPRemoveEvent.h"
-#include "RemoveWorker.h"
+#include "SPEvent.h"
+#include "Worker.h"
 #include "Caller.h"
 #include "Utils.h"
 
@@ -13,22 +13,28 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-SPRemoveEvent::SPRemoveEvent(const nsAString& aRelpath, bool aRecursive, Caller* aCaller) :
-    SPEvent(new RemoveWorker(aRelpath, aRecursive), aCaller)
+SPEvent::SPEvent(
+    Worker* aWorker,
+    Caller* aCaller) :
+    SDCardEvent(aWorker),
+    mCaller(aCaller)
 {
-  SDCARD_LOG("construct SPRemoveEvent");
+  SDCARD_LOG("construct SPEvent");
+  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+
 }
 
-SPRemoveEvent::~SPRemoveEvent()
+SPEvent::~SPEvent()
 {
-  SDCARD_LOG("destruct SPRemoveEvent");
+  SDCARD_LOG("destruct SPEvent");
 }
 
-void SPRemoveEvent::OnSuccess()
+void
+SPEvent::OnError()
 {
-  SDCARD_LOG("in SPRemoveEvent.OnSuccess()!");
+  SDCARD_LOG("in SPEvent.OnError()!");
 
-  mCaller->CallVoidCallback();
+  mCaller->CallErrorCallback(mWorker->mErrorName);
 }
 
 } // namespace sdcard

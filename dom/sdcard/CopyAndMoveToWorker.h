@@ -6,28 +6,30 @@
 
 #pragma once
 
-#include "SDCardEvent.h"
+#include "Worker.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class CopyAndMoveToEvent : public SDCardEvent
+/*
+ * This class is to perform actual file operations.
+ */
+class CopyAndMoveToWorker : public Worker
 {
 public:
-  CopyAndMoveToEvent(
+  CopyAndMoveToWorker(
       const nsAString& aRelpath,
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy);
+  virtual ~CopyAndMoveToWorker();
 
-  virtual ~CopyAndMoveToEvent();
-
-protected:
-  virtual void WorkerThreadRun() MOZ_OVERRIDE;
   nsString mResultPath;
 
 private:
+  virtual void Work() MOZ_OVERRIDE;
+
   nsString mParentPath;
   nsString mNewName;
   bool mIsCopy;

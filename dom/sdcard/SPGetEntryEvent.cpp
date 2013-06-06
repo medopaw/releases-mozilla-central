@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "SPGetEntryEvent.h"
+#include "GetEntryWorker.h"
+#include "Caller.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -12,13 +14,12 @@ namespace dom {
 namespace sdcard {
 
 SPGetEntryEvent::SPGetEntryEvent(
-    Caller* aCaller,
     const nsAString& aRelpath,
     bool aCreate,
     bool aExclusive,
-    bool aIsFile) :
-    GetEntryEvent(aRelpath, aCreate, aExclusive, aIsFile),
-    mCaller(aCaller)
+    bool aIsFile,
+    Caller* aCaller) :
+    SPEvent(new GetEntryWorker(aRelpath, aCreate, aExclusive, aIsFile), aCaller)
 {
   SDCARD_LOG("construct SPGetEntryEvent");
 }
@@ -28,18 +29,11 @@ SPGetEntryEvent::~SPGetEntryEvent()
   SDCARD_LOG("destruct SPGetEntryEvent");
 }
 
-void SPGetEntryEvent::OnError()
-{
-  SDCARD_LOG("in SPGetEntryEvent.OnError()!");
-
-  mCaller->CallErrorCallback(mErrorName);
-}
-
 void SPGetEntryEvent::OnSuccess()
 {
   SDCARD_LOG("in SPGetEntryEvent.OnSuccess()!");
 
-  mCaller->CallEntryCallback(mResultPath);
+  mCaller->CallEntryCallback(static_cast<GetEntryWorker*>(mWorker.get())->mResultPath);
 }
 
 } // namespace sdcard
