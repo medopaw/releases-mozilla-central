@@ -33,7 +33,9 @@
 #include "mozilla/dom/DOMStorageIPC.h"
 #include "mozilla/dom/bluetooth/PBluetoothParent.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestParent.h"
+#ifdef MOZ_SDCARD
 #include "mozilla/dom/sdcard/SDCardRequestParent.h"
+#endif
 #include "SmsParent.h"
 #include "mozilla/Hal.h"
 #include "mozilla/hal_sandbox/PHalParent.h"
@@ -1653,17 +1655,27 @@ ContentParent::DeallocPDeviceStorageRequest(PDeviceStorageRequestParent* doomed)
 PSDCardRequestParent*
 ContentParent::AllocPSDCardRequest(const SDCardParams& aParams)
 {
+#ifdef MOZ_SDCARD
   nsRefPtr<SDCardRequestParent> result = new SDCardRequestParent(aParams);
   result->Dispatch();
   return result.forget().get();
+#else
+    MOZ_NOT_REACHED("No support for sdcard filesystem on this platform!");
+    return nullptr;
+#endif
 }
 
 bool
 ContentParent::DeallocPSDCardRequest(PSDCardRequestParent* doomed)
 {
+#ifdef MOZ_SDCARD
   SDCardRequestParent *parent = static_cast<SDCardRequestParent*>(doomed);
   NS_RELEASE(parent);
   return true;
+#else
+    MOZ_NOT_REACHED("No support for sdcard filesystem on this platform!");
+    return false;
+#endif
 }
 
 PBlobParent*

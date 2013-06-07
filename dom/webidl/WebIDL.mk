@@ -84,8 +84,8 @@ webidl_files = \
   FileReader.webidl \
   FileReaderSync.webidl \
   FileRequest.webidl \
-  FocusEvent.webidl \
   FileSystem.webidl \
+  FocusEvent.webidl \
   FormData.webidl \
   Function.webidl \
   Future.webidl \
@@ -369,6 +369,12 @@ webidl_files = \
 ifdef MOZ_AUDIO_CHANNEL_MANAGER
 webidl_files += \
   AudioChannelManager.webidl \
+  $(NULL)
+endif
+
+ifdef MOZ_SDCARD
+webidl_files += \
+  FileSystem.webidl \
   $(NULL)
 endif
 

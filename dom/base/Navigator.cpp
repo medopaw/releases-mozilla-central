@@ -53,7 +53,9 @@
 #include "nsNetUtil.h"
 #include "nsIHttpChannel.h"
 #include "TimeManager.h"
+#ifdef MOZ_SDCARD
 #include "FileSystem.h"
+#endif
 
 #ifdef MOZ_MEDIA_NAVIGATOR
 #include "MediaManager.h"

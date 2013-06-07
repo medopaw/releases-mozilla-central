@@ -92,7 +92,9 @@
 #include "mozilla/dom/indexedDB/PIndexedDBChild.h"
 #include "mozilla/dom/mobilemessage/SmsChild.h"
 #include "mozilla/dom/devicestorage/DeviceStorageRequestChild.h"
+#ifdef MOZ_SDCARD
 #include "mozilla/dom/sdcard/SDCardRequestChild.h"
+#endif
 #include "mozilla/dom/bluetooth/PBluetoothChild.h"
 #include "mozilla/ipc/InputStreamUtils.h"
 
@@ -785,14 +787,28 @@ ContentChild::DeallocPDeviceStorageRequest(PDeviceStorageRequestChild* aDeviceSt
 PSDCardRequestChild*
 ContentChild::AllocPSDCardRequest(const SDCardParams& aParams)
 {
-    return new SDCardRequestChild();
+  // return new SDCardRequestChild();
+#ifdef MOZ_SDCARD
+    MOZ_NOT_REACHED("No one should be allocating PSDCardChild actors");
+    return nullptr;
+#else
+    MOZ_NOT_REACHED("No support for sdcard filesystem on this platform!");
+    return nullptr;
+#endif
 }
 
 bool
 ContentChild::DeallocPSDCardRequest(PSDCardRequestChild* aSDCard)
 {
+    // delete aSDCard;
+    // return true;
+#ifdef MOZ_SDCARD
     delete aSDCard;
     return true;
+#else
+    MOZ_NOT_REACHED("No support for sdcard filesystem on this platform!");
+    return false;
+#endif
 }
 
 PNeckoChild* 
