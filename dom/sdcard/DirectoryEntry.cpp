@@ -25,7 +25,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(DirectoryEntry)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_2(DirectoryEntry, mFilesystem, mFile)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(DirectoryEntry)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(DirectoryEntry)

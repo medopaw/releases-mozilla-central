@@ -8,6 +8,7 @@
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
 
+#include "FileSystem.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -15,7 +16,7 @@ namespace dom {
 namespace sdcard {
 
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileEntry)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_2(FileEntry, mFilesystem, mFile)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(FileEntry)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(FileEntry)
