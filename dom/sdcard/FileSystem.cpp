@@ -16,8 +16,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-// NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(FileSystem)
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_1(FileSystem, mRoot);
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_1(FileSystem, mRoot) ;
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(FileSystem)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(FileSystem)
@@ -26,11 +25,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-
-FileSystem::FileSystem(
-    nsPIDOMWindow* aWindow,
-    const nsAString& aName,
-    const nsAString& aPath) :
+FileSystem::FileSystem(nsPIDOMWindow* aWindow,
+    const nsAString& aName, const nsAString& aPath) :
     mName(aName)
 {
   SDCARD_LOG("construct FileSystem");
@@ -40,7 +36,7 @@ FileSystem::FileSystem(
 
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Fail to create root nsIFile.");
     mRoot = nullptr;
   } else {
@@ -68,7 +64,8 @@ FileSystem::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
   return FileSystemBinding::Wrap(aCx, aScope, this);
 }
 
-void FileSystem::GetName(nsString& retval) const
+void
+FileSystem::GetName(nsString& retval) const
 {
   SDCARD_LOG("in FileSystem.GetName()");
   SDCARD_LOG("mName=%s", NS_ConvertUTF16toUTF8(mName).get());
@@ -76,17 +73,18 @@ void FileSystem::GetName(nsString& retval) const
   SDCARD_LOG("retval=%s", NS_ConvertUTF16toUTF8(retval).get());
 }
 
-
-already_AddRefed<DirectoryEntry> FileSystem::Root()
+already_AddRefed<DirectoryEntry>
+FileSystem::Root()
 {
-    SDCARD_LOG("in FileSystem.Root()");
-    nsRefPtr<DirectoryEntry> root(mRoot);
-    return root.forget();
+  SDCARD_LOG("in FileSystem.Root()");
+  nsRefPtr<DirectoryEntry> root(mRoot);
+  return root.forget();
 }
 
-bool FileSystem::IsValid() const
+bool
+FileSystem::IsValid() const
 {
-    return mRoot && mRoot->Exists();
+  return mRoot && mRoot->Exists();
 }
 
 } // namespace sdcard

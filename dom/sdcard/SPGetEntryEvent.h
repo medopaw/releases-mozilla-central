@@ -15,8 +15,7 @@ namespace sdcard {
 class SPGetEntryEvent : public SPEvent
 {
 public:
-  SPGetEntryEvent(
-      const nsAString& aRelpath,
+  SPGetEntryEvent(const nsAString& aRelpath,
       bool aCreate,
       bool aExclusive,
       bool aIsFile,

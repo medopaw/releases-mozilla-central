@@ -14,8 +14,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-IPCRemoveEvent::IPCRemoveEvent(
-    const nsAString& aRelpath,
+IPCRemoveEvent::IPCRemoveEvent(const nsAString& aRelpath,
     bool aRecursive,
     SDCardRequestParent* aParent) :
     IPCEvent(new RemoveWorker(aRelpath, aRecursive), aParent)

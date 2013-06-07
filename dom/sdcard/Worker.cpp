@@ -33,7 +33,7 @@ Worker::Init()
   SDCARD_LOG("in Worker.Init()");
   // Resolve mFile from mRelPath.
   nsresult rv = NS_NewLocalFile(mRelpath, false, getter_AddRefs(mFile));
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when create mFile from mRelpath.");
     SetError(rv);
     return false;

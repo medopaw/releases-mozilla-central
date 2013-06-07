@@ -15,10 +15,8 @@ namespace sdcard {
 class GetMetadataRunnable : public CombinedRunnable
 {
 public:
-  GetMetadataRunnable(
-      MetadataCallback* aSuccessCallback,
-      ErrorCallback* aErrorCallback,
-      Entry* aEntry);
+  GetMetadataRunnable(MetadataCallback* aSuccessCallback,
+      ErrorCallback* aErrorCallback, Entry* aEntry);
   ~GetMetadataRunnable();
 
 protected:
@@ -26,7 +24,7 @@ protected:
   virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
-  // not thread safe
+  // Not thread safe
   nsRefPtr<MetadataCallback> mSuccessCallback;
 
   nsCOMPtr<nsIFile> mFile;

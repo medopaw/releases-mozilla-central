@@ -15,8 +15,7 @@ namespace sdcard {
 class GetEntryWorker : public Worker
 {
 public:
-  GetEntryWorker(
-      const nsAString& aRelpath,
+  GetEntryWorker(const nsAString& aRelpath,
       bool aCreate,
       bool aExclusive,
       bool aIsFile);

@@ -14,13 +14,14 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-IPCGetEntryEvent::IPCGetEntryEvent(
-    const nsAString& aRelpath,
+IPCGetEntryEvent::IPCGetEntryEvent(const nsAString& aRelpath,
     bool aCreate,
     bool aExclusive,
     bool aIsFile,
     SDCardRequestParent* aParent) :
-    IPCEvent(new GetEntryWorker(aRelpath, aCreate, aExclusive, aIsFile), aParent)
+    IPCEvent(
+        new GetEntryWorker(aRelpath, aCreate, aExclusive, aIsFile),
+        aParent)
 {
   SDCARD_LOG("construct IPCGetEntryEvent");
 }
@@ -30,11 +31,13 @@ IPCGetEntryEvent::~IPCGetEntryEvent()
   SDCARD_LOG("destruct IPCGetEntryEvent");
 }
 
-void IPCGetEntryEvent::OnSuccess()
+void
+IPCGetEntryEvent::OnSuccess()
 {
   SDCARD_LOG("in IPCGetEntryEvent.OnSuccess()!");
 
-  PathResponse response(static_cast<GetEntryWorker*>(mWorker.get())->mResultPath);
+  PathResponse response(
+      static_cast<GetEntryWorker*>(mWorker.get())->mResultPath);
   unused << mParent->Send__delete__(mParent, response);
 }
 

@@ -14,7 +14,7 @@ namespace dom {
 namespace sdcard {
 
 /*
- * This class is to perform actual file operations
+ * This class is to perform actual file operations.
  */
 class Worker
 {
@@ -34,7 +34,7 @@ public:
 
 protected:
   nsString mRelpath;
-  // not thread safe, only access it form worker thread
+  // Not thread safe. Only access it form worker thread.
   nsCOMPtr<nsIFile> mFile;
 
 private:

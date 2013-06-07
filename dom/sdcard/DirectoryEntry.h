@@ -22,14 +22,12 @@ namespace sdcard {
 class DirectoryEntry;
 
 class DirectoryEntry MOZ_FINAL : public Entry
-                                 /* public nsWrapperCache Change wrapperCache in the binding configuration if you don't want this ,*/
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DirectoryEntry)
 
 public:
-  // explicit DirectoryEntry(FileSystem* aFilesystem, const nsAString& aFullPath);
   explicit DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile);
 
   ~DirectoryEntry();
@@ -38,14 +36,21 @@ public:
 
   already_AddRefed<DirectoryReader> CreateReader();
 
-  void GetFile(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+  void GetFile(const nsAString& path, const FileSystemFlags& options,
+      const Optional< OwningNonNull<EntryCallback> >& successCallback,
+      const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+  void GetDirectory(const nsAString& path, const FileSystemFlags& options,
+      const Optional< OwningNonNull<EntryCallback> >& successCallback,
+      const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+  void RemoveRecursively(VoidCallback& successCallback,
+      const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
 private:
-  void GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isDirectory);
+  void GetEntry(const nsAString& path, const FileSystemFlags& options,
+      const Optional< OwningNonNull<EntryCallback> >& successCallback,
+      const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isDirectory);
 };
 
 } // namespace sdcard

@@ -17,7 +17,9 @@ namespace sdcard {
 NS_IMPL_ADDREF(Caller)
 NS_IMPL_RELEASE(Caller)
 
-Caller::Caller(FileSystem* aFileSystem, CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback) :
+Caller::Caller(FileSystem* aFileSystem,
+    CallbackFunction* aSuccessCallback,
+    ErrorCallback* aErrorCallback) :
     mFilesystem(aFileSystem),
     mSuccessCallback(aSuccessCallback),
     mErrorCallback(aErrorCallback)
@@ -30,9 +32,11 @@ Caller::~Caller()
   SDCARD_LOG("destruct Caller");
 }
 
-void Caller::CallErrorCallback(const nsAString& error)
+void
+Caller::CallErrorCallback(const nsAString& error)
 {
-  SDCARD_LOG("Call ErrorCallback with error=%s", NS_ConvertUTF16toUTF8(error).get());
+  SDCARD_LOG("Call ErrorCallback with error=%s",
+      NS_ConvertUTF16toUTF8(error).get());
 
   if (mErrorCallback) {
     nsRefPtr<DOMError> domError = Error::GetDOMError(error);
@@ -41,26 +45,31 @@ void Caller::CallErrorCallback(const nsAString& error)
   }
 }
 
-void Caller::CallEntryCallback(const nsAString& path)
+void
+Caller::CallEntryCallback(const nsAString& path)
 {
-  // create an Entry from path
+  // Create an Entry from path.
   if (mSuccessCallback) {
     ErrorResult rv;
-    static_cast<EntryCallback*>(mSuccessCallback.get())->Call(*(Entry::CreateFromRelpath(mFilesystem, path)), rv);
+    static_cast<EntryCallback*>(mSuccessCallback.get())->Call(
+        *(Entry::CreateFromRelpath(mFilesystem, path)), rv);
   }
 }
 
-void Caller::CallEntriesCallback(const InfallibleTArray<nsString>& paths)
+void
+Caller::CallEntriesCallback(const InfallibleTArray<nsString>& paths)
 {
 
 }
 
-void Caller::CallMetadataCallback(int64_t modificationTime, uint64_t size)
+void
+Caller::CallMetadataCallback(int64_t modificationTime, uint64_t size)
 {
 
 }
 
-void Caller::CallVoidCallback()
+void
+Caller::CallVoidCallback()
 {
   SDCARD_LOG("Call VoidCallback");
 

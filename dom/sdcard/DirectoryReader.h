@@ -21,8 +21,7 @@ namespace sdcard {
 
 class DirectoryEntry;
 
-class DirectoryReader MOZ_FINAL : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this */,
-                                  public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this */
+class DirectoryReader MOZ_FINAL : public nsISupports, public nsWrapperCache
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
@@ -30,16 +29,15 @@ public:
 
 public:
   DirectoryReader(DirectoryEntry* entry);
-
   ~DirectoryReader();
 
-  // TODO: return something sensible here, and change the return type
   nsPIDOMWindow* GetParentObject() const;
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);
 
   void ReadEntries(EntriesCallback& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
+
 private:
   nsRefPtr<DirectoryEntry> mEntry;
 };

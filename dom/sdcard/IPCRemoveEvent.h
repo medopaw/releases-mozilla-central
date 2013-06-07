@@ -15,8 +15,7 @@ namespace sdcard {
 class IPCRemoveEvent : public IPCEvent
 {
 public:
-  IPCRemoveEvent(
-      const nsAString& aRelpath,
+  IPCRemoveEvent(const nsAString& aRelpath,
       bool aRecursive,
       SDCardRequestParent* aParent);
   ~IPCRemoveEvent();

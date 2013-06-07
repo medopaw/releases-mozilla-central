@@ -15,8 +15,7 @@ namespace sdcard {
 class SPCopyAndMoveToEvent : public SPEvent
 {
 public:
-  SPCopyAndMoveToEvent(
-      const nsAString& aRelpath,
+  SPCopyAndMoveToEvent( const nsAString& aRelpath,
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy,

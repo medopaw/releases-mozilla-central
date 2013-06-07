@@ -20,7 +20,6 @@ namespace dom {
 namespace sdcard {
 
 class FileEntry MOZ_FINAL : public Entry
-                            /* public nsWrapperCache Change wrapperCache in the binding configuration if you don't want this ,*/
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
@@ -28,15 +27,10 @@ public:
 
 public:
   explicit FileEntry(FileSystem* aFilesystem, nsIFile* aFile);
-
   ~FileEntry();
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);
-/*
-  bool IsFile() const MOZ_OVERRIDE;
 
-  bool IsDirectory() const MOZ_OVERRIDE;
-*/
 /*
   void CreateWriter(FileWriterCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 

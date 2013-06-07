@@ -24,8 +24,7 @@ namespace sdcard {
 
 class FileSystem;
 
-class Entry : public nsISupports, /* Change nativeOwnership in the binding configuration if you don't want this */
-              public nsWrapperCache
+class Entry : public nsISupports, public nsWrapperCache
 {
 public:
   NS_DECL_ISUPPORTS
@@ -37,31 +36,25 @@ public:
 
   virtual ~Entry();
 
-  // TODO: return something sensible here, and change the return type
   nsPIDOMWindow* GetParentObject() const;
 
-//  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
-
   bool IsFile() const;
-
   bool IsDirectory() const;
 
-  void GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
+  void GetMetadata(MetadataCallback& successCallback,
+      const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
   void GetName(nsString& retval) const;
-
   void GetFullPath(nsString& retval) const;
 
   already_AddRefed<FileSystem> Filesystem() const;
 
-  void MoveTo(
-      DirectoryEntry& parent,
+  void MoveTo(DirectoryEntry& parent,
       const Optional<nsAString >& newName,
       const Optional<OwningNonNull<EntryCallback> >& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void CopyTo(
-      DirectoryEntry& parent,
+  void CopyTo(DirectoryEntry& parent,
       const Optional<nsAString >& newName,
       const Optional<OwningNonNull<EntryCallback> >& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
@@ -86,14 +79,16 @@ public:
   {
     return mFilesystem.get();
   }
+
   nsIFile* GetFileInternal() const
   {
     return mFile;
   }
 
 protected:
-  // protected constructor prevent direct call
-  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory);
+  // Protected constructor to prevent direct call.
+  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile,
+      bool aIsFile, bool aIsDirectory);
 
   nsRefPtr<FileSystem> mFilesystem;
   nsCOMPtr<nsIFile> mFile;

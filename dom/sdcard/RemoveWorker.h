@@ -18,9 +18,7 @@ namespace sdcard {
 class RemoveWorker : public Worker
 {
 public:
-  RemoveWorker(
-      const nsAString& aRelpath,
-      bool aRecursive);
+  RemoveWorker(const nsAString& aRelpath, bool aRecursive);
   ~RemoveWorker();
 
 private:

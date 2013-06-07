@@ -14,8 +14,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-RemoveRunnable::RemoveRunnable(
-    VoidCallback* aSuccessCallback,
+RemoveRunnable::RemoveRunnable(VoidCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry,
     bool aRecursive) :
@@ -32,7 +31,8 @@ RemoveRunnable::~RemoveRunnable()
   SDCARD_LOG("destruct RemoveRunnable");
 }
 
-void RemoveRunnable::WorkerThreadRun()
+void
+RemoveRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in RemoveRunnable.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
@@ -41,18 +41,19 @@ void RemoveRunnable::WorkerThreadRun()
   nsString path;
   mFile->GetPath(path);
   if (Path::IsBase(path)) {
-    // cannot remove root directory
+    // Cannot remove root directory
     SetErrorName(Error::DOM_ERROR_NO_MODIFICATION_ALLOWED);
     return;
   } else {
     rv = mFile->Remove(mRecursive);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SetErrorCode(rv);
     }
   }
 }
 
-void RemoveRunnable::OnSuccess()
+void
+RemoveRunnable::OnSuccess()
 {
   SDCARD_LOG("in RemoveRunnable.MainThreadRun()!");
   MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");

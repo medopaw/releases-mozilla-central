@@ -15,8 +15,7 @@ namespace sdcard {
 class GetEntryRunnable : public CombinedRunnable
 {
 public:
-  GetEntryRunnable(
-      const nsAString& aPath,
+  GetEntryRunnable(const nsAString& aPath,
       bool aCreate,
       bool aExclusive,
       EntryCallback* aSuccessCallback,
@@ -38,7 +37,6 @@ private:
   bool mIsFile;
 
   nsCOMPtr<nsIFile> mResultFile;
-
 };
 
 } // namespace sdcard

@@ -16,9 +16,7 @@ class ReadEntriesRunnable : public CombinedRunnable
 {
 public:
   ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
-      ErrorCallback* aErrorCallback,
-      Entry* aEntry);
-
+      ErrorCallback* aErrorCallback, Entry* aEntry);
   ~ReadEntriesRunnable();
 
 protected:
@@ -29,7 +27,7 @@ private:
   nsCOMPtr<nsIFile> mFile;
   nsTArray<nsCOMPtr<nsIFile> > mChildren;
 
-  // not thread safe
+  // Not thread safe
   nsRefPtr<EntriesCallback> mSuccessCallback;
 };
 

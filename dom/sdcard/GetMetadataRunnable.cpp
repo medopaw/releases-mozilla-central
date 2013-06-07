@@ -29,7 +29,8 @@ GetMetadataRunnable::~GetMetadataRunnable()
   SDCARD_LOG("destruct GetMetadataRunnable");
 }
 
-void GetMetadataRunnable::WorkerThreadRun()
+void
+GetMetadataRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetMetadataRunnable.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
@@ -43,19 +44,20 @@ void GetMetadataRunnable::WorkerThreadRun()
     int64_t size = 0;
     rv = mFile->GetFileSize(&size);
     mFileSize = static_cast<uint64_t>(size);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SetErrorCode(rv);
       return;
     }
   }
   rv = mFile->GetLastModifiedTime(&mTime);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SetErrorCode(rv);
     return;
   }
 }
 
-void GetMetadataRunnable::OnSuccess()
+void
+GetMetadataRunnable::OnSuccess()
 {
   SDCARD_LOG("in GetMetadataRunnable.MainThreadRun()!");
   MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");

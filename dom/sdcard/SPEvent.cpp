@@ -13,8 +13,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-SPEvent::SPEvent(
-    Worker* aWorker,
+SPEvent::SPEvent(Worker* aWorker,
     Caller* aCaller) :
     SDCardEvent(aWorker),
     mCaller(aCaller)
@@ -33,7 +32,6 @@ void
 SPEvent::OnError()
 {
   SDCARD_LOG("in SPEvent.OnError()!");
-
   mCaller->CallErrorCallback(mWorker->mErrorName);
 }
 

@@ -19,7 +19,8 @@ namespace sdcard {
 class Path {
 public:
   static const char separatorChar;
-  static const nsString separator; // Separator must be a single char. This is just for convenience.
+  // Separator must be a single char. This is just for convenience.
+  static const nsString separator;
 
   static const nsString nul;
   static const nsString backslash;
@@ -27,8 +28,10 @@ public:
   static const nsString selfReference;
   static const nsString parentReference;
 
-  static const nsString root; // FileSystem.root.fullPath, normally "/"
-  static const nsString base; // the real path of FileSystem.root, normally "/sdcard"
+  // FileSystem.root.fullPath, normally "/"
+  static const nsString root;
+  // The real path of FileSystem.root, normally "/sdcard"
+  static const nsString base;
 
   static bool IsRoot(const nsAString& aPath);
   static bool IsBase(const nsAString& aPath);

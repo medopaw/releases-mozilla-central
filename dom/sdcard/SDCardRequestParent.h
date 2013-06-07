@@ -16,8 +16,7 @@ namespace sdcard {
 
 class SDCardEvent;
 
-class SDCardRequestParent :
-  public PSDCardRequestParent
+class SDCardRequestParent : public PSDCardRequestParent
 {
 public:
   SDCardRequestParent(const SDCardParams& aParams);

@@ -34,11 +34,11 @@ RemoveWorker::Work()
 
   nsresult rv = NS_OK;
   if (Path::IsBase(mRelpath)) {
-    // cannot remove root directory
+    // Cannot remove root directory
     SetError(Error::DOM_ERROR_NO_MODIFICATION_ALLOWED);
   } else {
     rv = mFile->Remove(mRecursive);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SetError(rv);
     }
   }

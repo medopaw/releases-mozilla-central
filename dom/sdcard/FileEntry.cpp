@@ -15,7 +15,6 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_2(FileEntry, mFilesystem, mFile)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(FileEntry)
@@ -25,7 +24,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-FileEntry::FileEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, true, false)
+FileEntry::FileEntry(FileSystem* aFilesystem, nsIFile* aFile) :
+    Entry(aFilesystem, aFile, true, false)
 {
   SDCARD_LOG("construct FileEntry");
   SetIsDOMBinding();
@@ -41,19 +41,7 @@ FileEntry::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
 {
   return FileEntryBinding::Wrap(aCx, aScope, this);
 }
-/*
-bool FileEntry::IsFile() const
-{
-  SDCARD_LOG("in FileEntry.IsFile()!!!");
-  return true;
-}
 
-bool FileEntry::IsDirectory() const
-{
-  SDCARD_LOG("in FileEntry.IsDirectory()!!!");
-  return false;
-}
-*/
 } // namespace sdcard
 } // namespace dom
 } // namespace mozilla

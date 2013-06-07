@@ -13,8 +13,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-SPGetEntryEvent::SPGetEntryEvent(
-    const nsAString& aRelpath,
+SPGetEntryEvent::SPGetEntryEvent(const nsAString& aRelpath,
     bool aCreate,
     bool aExclusive,
     bool aIsFile,
@@ -29,11 +28,12 @@ SPGetEntryEvent::~SPGetEntryEvent()
   SDCARD_LOG("destruct SPGetEntryEvent");
 }
 
-void SPGetEntryEvent::OnSuccess()
+void
+SPGetEntryEvent::OnSuccess()
 {
   SDCARD_LOG("in SPGetEntryEvent.OnSuccess()!");
-
-  mCaller->CallEntryCallback(static_cast<GetEntryWorker*>(mWorker.get())->mResultPath);
+  mCaller->CallEntryCallback(
+      static_cast<GetEntryWorker*>(mWorker.get())->mResultPath);
 }
 
 } // namespace sdcard

@@ -13,13 +13,14 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-SPCopyAndMoveToEvent::SPCopyAndMoveToEvent(
-    const nsAString& aRelpath,
+SPCopyAndMoveToEvent::SPCopyAndMoveToEvent(const nsAString& aRelpath,
     const nsAString& aParentPath,
     const nsAString& aNewName,
     bool aIsCopy,
     Caller* aCaller) :
-    SPEvent(new CopyAndMoveToWorker(aRelpath, aParentPath, aNewName, aIsCopy), aCaller)
+    SPEvent(
+      new CopyAndMoveToWorker(aRelpath, aParentPath, aNewName, aIsCopy),
+      aCaller)
 {
   SDCARD_LOG("construct SPCopyAndMoveToEvent");
 }
@@ -29,11 +30,13 @@ SPCopyAndMoveToEvent::~SPCopyAndMoveToEvent()
   SDCARD_LOG("destruct SPCopyAndMoveToEvent");
 }
 
-void SPCopyAndMoveToEvent::OnSuccess()
+void
+SPCopyAndMoveToEvent::OnSuccess()
 {
   SDCARD_LOG("in SPCopyAndMoveToEvent.OnSuccess()!");
 
-  mCaller->CallEntryCallback(static_cast<CopyAndMoveToWorker*>(mWorker.get())->mResultPath);
+  mCaller->CallEntryCallback(
+      static_cast<CopyAndMoveToWorker*>(mWorker.get())->mResultPath);
 }
 
 } // namespace sdcard

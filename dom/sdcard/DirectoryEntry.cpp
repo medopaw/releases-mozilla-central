@@ -34,7 +34,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile) : Entry(aFilesystem, aFile, false, true)
+DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile) :
+    Entry(aFilesystem, aFile, false, true)
 {
   SDCARD_LOG("construct DirectoryEntry");
   SetIsDOMBinding();
@@ -51,26 +52,36 @@ DirectoryEntry::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
   return DirectoryEntryBinding::Wrap(aCx, aScope, this);
 }
 
-already_AddRefed<DirectoryReader> DirectoryEntry::CreateReader()
+already_AddRefed<DirectoryReader>
+DirectoryEntry::CreateReader()
 {
   SDCARD_LOG("in DirectoryEntry.CreateReader()");
   nsRefPtr<DirectoryReader> reader = new DirectoryReader(this);
   return reader.forget();
 }
 
-void DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void
+DirectoryEntry::GetFile(const nsAString& path, const FileSystemFlags& options,
+    const Optional<OwningNonNull<EntryCallback> >& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in DirectoryEntry.GetFile()");
   GetEntry(path, options, successCallback, errorCallback, true);
 }
 
-void DirectoryEntry::GetDirectory(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void
+DirectoryEntry::GetDirectory(const nsAString& path,
+    const FileSystemFlags& options,
+    const Optional<OwningNonNull<EntryCallback> >& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in DirectoryEntry.GetDirectory()");
   GetEntry(path, options, successCallback, errorCallback, false);
 }
 
-void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void
+DirectoryEntry::RemoveRecursively(VoidCallback& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in DirectoryEntry.RemoveRecursively()");
 
@@ -79,7 +90,8 @@ void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Opti
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback, pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback,
+      pErrorCallback);
   nsString path;
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
@@ -95,7 +107,10 @@ void DirectoryEntry::RemoveRecursively(VoidCallback& successCallback, const Opti
 
 }
 
-void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options, const Optional< OwningNonNull<EntryCallback> >& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback, bool isFile)
+void
+DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options,
+    const Optional<OwningNonNull<EntryCallback> >& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback, bool isFile)
 {
   SDCARD_LOG("in DirectoryEntry.GetEntry()");
 
@@ -124,14 +139,17 @@ void DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& opti
   nsString realPath;
   Path::DOMPathToRealPath(absolutePath, realPath);
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback, pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback,
+      pErrorCallback);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(realPath, options.mCreate, options.mExclusive, isFile, pCaller);
+    nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(realPath, options.mCreate,
+        options.mExclusive, isFile, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
-    SDCardGetParams params(realPath, options.mCreate, options.mExclusive, isFile);
+    SDCardGetParams params(realPath, options.mCreate, options.mExclusive,
+        isFile);
     PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }

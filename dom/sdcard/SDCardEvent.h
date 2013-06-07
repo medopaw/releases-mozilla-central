@@ -42,7 +42,7 @@ protected:
   virtual void HandleResult();
 
 private:
-  // It will only be used on main thread, so doesn't need a lock.
+  // Only used on main thread. Don't need a lock.
   nsCOMPtr<nsIThread> mWorkerThread;
 };
 

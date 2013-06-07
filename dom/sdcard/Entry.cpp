@@ -33,9 +33,11 @@ NS_INTERFACE_MAP_BEGIN(Entry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-Entry* Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
+Entry*
+Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
 {
-  MOZ_ASSERT(aFile, "Entry::CreateFromFile creation failed. aFile can't be null.");
+  MOZ_ASSERT(aFile,
+      "Entry::CreateFromFile creation failed. aFile can't be null.");
 
   bool isFile;
   aFile->IsFile(&isFile);
@@ -49,25 +51,31 @@ Entry* Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
   return nullptr;
 }
 
-Entry* Entry::CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aPath)
+Entry*
+Entry::CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aPath)
 {
   nsCOMPtr<nsIFile> file;
   nsresult rv = NS_NewLocalFile(aPath, false, getter_AddRefs(file));
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Fail to create nsIFile from path.");
     return nullptr;
   }
   return CreateFromFile(aFilesystem, file);
 }
 
-Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDirectory) : mFilesystem(aFilesystem), mIsFile(aIsFile), mIsDirectory(aIsDirectory)
+Entry::Entry(FileSystem* aFilesystem,
+    nsIFile* aFile,
+    bool aIsFile,
+    bool aIsDirectory) :
+    mFilesystem(aFilesystem),
+    mIsFile(aIsFile),
+    mIsDirectory(aIsDirectory)
 {
   SDCARD_LOG("construct Entry");
 
-  // copy nsIFile object and hold it
+  // Copy nsIFile object and hold it.
   nsCOMPtr<nsIFile> file;
   aFile->Clone(getter_AddRefs(mFile));
-  // NS_NewLocalFile(mFullPath, false, getter_AddRefs(mEntry));
 }
 
 Entry::~Entry()
@@ -81,25 +89,21 @@ Entry::GetParentObject() const
   return Window::GetWindow();
 }
 
-/*
-JSObject*
-Entry::WrapObject(JSContext* aCx, JSObject* aScope)
-{
-  return EntryBinding::Wrap(aCx, aScope, this);
-}
-*/
-
-bool Entry::IsFile() const
+bool
+Entry::IsFile() const
 {
   return mIsFile;
 }
 
-bool Entry::IsDirectory() const
+bool
+Entry::IsDirectory() const
 {
   return mIsDirectory;
 }
 
-void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void
+Entry::GetMetadata(MetadataCallback& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in Entry.GetMetadata()");
 
@@ -107,12 +111,14 @@ void Entry::GetMetadata(MetadataCallback& successCallback, const Optional< Ownin
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsRefPtr<GetMetadataRunnable> runnable = new GetMetadataRunnable(&successCallback, pErrorCallback, this);
+  nsRefPtr<GetMetadataRunnable> runnable = new GetMetadataRunnable(
+      &successCallback, pErrorCallback, this);
   runnable->Start();
 }
 
-void Entry::GetName(nsString& retval) const
-{
+void
+Entry::GetName(nsString& retval) const
+    {
   SDCARD_LOG("in Entry.GetName()");
 
   nsString name;
@@ -121,8 +127,9 @@ void Entry::GetName(nsString& retval) const
   retval = name;
 }
 
-void Entry::GetFullPath(nsString& retval) const
-{
+void
+Entry::GetFullPath(nsString& retval) const
+    {
   SDCARD_LOG("in Entry.GetFullPath()!!!!");
 
   nsString path, fullPath;
@@ -133,29 +140,33 @@ void Entry::GetFullPath(nsString& retval) const
   retval = fullPath;
 }
 
-already_AddRefed<FileSystem> Entry::Filesystem() const
+already_AddRefed<FileSystem>
+Entry::Filesystem() const
 {
   SDCARD_LOG("in Entry.Filesystem()");
   nsRefPtr<FileSystem> fileSystem(mFilesystem);
   return fileSystem.forget();
 }
 
-void Entry::MoveTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+void
+Entry::MoveTo(DirectoryEntry& parent, const Optional<nsAString>& newName,
     const Optional<OwningNonNull<EntryCallback> >& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   CopyAndMoveTo(parent, newName, successCallback, errorCallback, false);
 }
 
-void Entry::CopyTo(DirectoryEntry& parent, const Optional<nsAString >& newName,
+void
+Entry::CopyTo(DirectoryEntry& parent, const Optional<nsAString>& newName,
     const Optional<OwningNonNull<EntryCallback> >& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   CopyAndMoveTo(parent, newName, successCallback, errorCallback, true);
 }
 
-void Entry::CopyAndMoveTo(DirectoryEntry& parent,
-    const Optional<nsAString >& newName,
+void
+Entry::CopyAndMoveTo(DirectoryEntry& parent,
+    const Optional<nsAString>& newName,
     const Optional<OwningNonNull<EntryCallback> >& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback,
     bool isCopy)
@@ -179,12 +190,14 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback, pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback,
+      pErrorCallback);
   nsString path;
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(path, parentPath, strNewName, isCopy, pCaller);
+    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(path,
+        parentPath, strNewName, isCopy, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
@@ -194,7 +207,9 @@ void Entry::CopyAndMoveTo(DirectoryEntry& parent,
   }
 }
 
-void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<ErrorCallback> >& errorCallback)
+void
+Entry::Remove(VoidCallback& successCallback,
+    const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   SDCARD_LOG("in Entry.Remove()");
 
@@ -203,7 +218,8 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback, pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback,
+      pErrorCallback);
   nsString path;
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
@@ -218,7 +234,8 @@ void Entry::Remove(VoidCallback& successCallback, const Optional< OwningNonNull<
   }
 }
 
-void Entry::GetParent(EntryCallback& successCallback,
+void
+Entry::GetParent(EntryCallback& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   ErrorCallback* errorCallbackPtr = nullptr;
@@ -230,14 +247,16 @@ void Entry::GetParent(EntryCallback& successCallback,
   runnable->Start();
 }
 
-bool Entry::Exists() const
+bool
+Entry::Exists() const
 {
   bool exists = false;
   mFile->Exists(&exists);
   return exists;
 }
 
-bool Entry::IsRoot() const
+bool
+Entry::IsRoot() const
 {
   nsString path;
   GetFullPath(path);

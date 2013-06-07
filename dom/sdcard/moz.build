@@ -51,9 +51,6 @@ CPP_SOURCES += [
     'Worker.cpp',
 ]
 
-# EXPORTS += [
-# ]
-
 EXPORTS.mozilla.dom.sdcard += [
     'Caller.h',
     'DirectoryEntry.h',

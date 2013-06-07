@@ -39,57 +39,75 @@ SDCardRequestParent::Dispatch()
 {
   SDCARD_LOG("in SDCardRequestParent.Dispatch()");
 
-  switch(mParams.type()) {
+  switch (mParams.type()) {
 
-    case SDCardParams::TSDCardCopyAndMoveParams: {
+  case SDCardParams::TSDCardCopyAndMoveParams:
+    {
       SDCardCopyAndMoveParams p = mParams;
-      SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move", NS_ConvertUTF16toUTF8(p.relpath()).get(), NS_ConvertUTF16toUTF8(p.parentPath()).get(), NS_ConvertUTF16toUTF8(p.newName()).get());
+      SDCARD_LOG("%s %s to %s with newName=%s", p.isCopy() ? "Copy" : "Move",
+          NS_ConvertUTF16toUTF8(p.relpath()).get(),
+          NS_ConvertUTF16toUTF8(p.parentPath()).get(),
+          NS_ConvertUTF16toUTF8(p.newName()).get());
 
-      nsCOMPtr<IPCCopyAndMoveToEvent> r = new IPCCopyAndMoveToEvent(p.relpath(), p.parentPath(), p.newName(), p.isCopy(), this);
+      nsCOMPtr<IPCCopyAndMoveToEvent> r = new IPCCopyAndMoveToEvent(p.relpath(),
+          p.parentPath(), p.newName(), p.isCopy(), this);
       r->Start();
 
       break;
     }
 
-    case SDCardParams::TSDCardGetParams: {
+  case SDCardParams::TSDCardGetParams:
+    {
       SDCardGetParams p = mParams;
-      SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d", p.isFile() ? "file" : "directory", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive(), p.isFile());
+      SDCARD_LOG("Get %s %s with create=%d, exclusive=%d, isFile=%d",
+          p.isFile() ? "file" : "directory",
+          NS_ConvertUTF16toUTF8(p.relpath()).get(), p.create(), p.exclusive(),
+          p.isFile());
 
-      nsCOMPtr<IPCGetEntryEvent> r = new IPCGetEntryEvent(p.relpath(), p.create(), p.exclusive(), p.isFile(), this);
+      nsCOMPtr<IPCGetEntryEvent> r = new IPCGetEntryEvent(p.relpath(),
+          p.create(), p.exclusive(), p.isFile(), this);
       r->Start();
 
       break;
     }
 
-    case SDCardParams::TSDCardMetadataParams: {
+  case SDCardParams::TSDCardMetadataParams:
+    {
       SDCardMetadataParams p = mParams;
       SDCARD_LOG("Get metadata of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
       break;
     }
 
-    case SDCardParams::TSDCardParentParams: {
+  case SDCardParams::TSDCardParentParams:
+    {
       SDCardMetadataParams p = mParams;
       SDCARD_LOG("Get parent of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
       break;
     }
 
-    case SDCardParams::TSDCardGetAllParams: {
+  case SDCardParams::TSDCardGetAllParams:
+    {
       SDCardGetAllParams p = mParams;
-      SDCARD_LOG("Get direct children of %s", NS_ConvertUTF16toUTF8(p.relpath()).get());
+      SDCARD_LOG("Get direct children of %s",
+          NS_ConvertUTF16toUTF8(p.relpath()).get());
       break;
     }
 
-    case SDCardParams::TSDCardRemoveParams: {
+  case SDCardParams::TSDCardRemoveParams:
+    {
       SDCardRemoveParams p = mParams;
-      SDCARD_LOG("Remove %s with recursive=%d", NS_ConvertUTF16toUTF8(p.relpath()).get(), p.recursive());
+      SDCARD_LOG("Remove %s with recursive=%d",
+          NS_ConvertUTF16toUTF8(p.relpath()).get(), p.recursive());
 
-      nsCOMPtr<IPCRemoveEvent> r = new IPCRemoveEvent(p.relpath(), p.recursive(), this);
+      nsCOMPtr<IPCRemoveEvent> r = new IPCRemoveEvent(p.relpath(),
+          p.recursive(), this);
       r->Start();
 
       break;
     }
 
-    default: {
+  default:
+    {
       NS_RUNTIMEABORT("not reached");
       break;
     }
@@ -110,7 +128,8 @@ SDCardRequestParent::ActorDestroy(ActorDestroyReason)
 }
 
 bool
-SDCardRequestParent::SetRunnable(bool aAdd, SDCardEvent* aRunnable) {
+SDCardRequestParent::SetRunnable(bool aAdd, SDCardEvent* aRunnable)
+{
   SDCARD_LOG("in SDCardRequestParent.SetRunnable() with aAdd=%d", aAdd);
 
   MutexAutoLock lock(mMutex);

@@ -15,8 +15,7 @@ namespace sdcard {
 class IPCGetEntryEvent : public IPCEvent
 {
 public:
-  IPCGetEntryEvent(
-      const nsAString& aRelpath,
+  IPCGetEntryEvent(const nsAString& aRelpath,
       bool aCreate,
       bool aExclusive,
       bool aIsFile,

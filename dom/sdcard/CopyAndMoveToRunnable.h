@@ -15,8 +15,7 @@ namespace sdcard {
 class CopyAndMoveToRunnable : public CombinedRunnable
 {
 public:
-  CopyAndMoveToRunnable(
-      DirectoryEntry* aParent,
+  CopyAndMoveToRunnable(DirectoryEntry* aParent,
       const nsAString* aNewName,
       EntryCallback* aSuccessCallback,
       ErrorCallback* aErrorCallback,
@@ -35,7 +34,7 @@ private:
   nsCOMPtr<nsIFile> mResultFile;
   nsString mNewName;
 
-  // not thread safe
+  // Not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
 
   bool mIsCopy;

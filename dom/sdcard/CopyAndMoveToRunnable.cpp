@@ -16,8 +16,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-CopyAndMoveToRunnable::CopyAndMoveToRunnable(
-    DirectoryEntry* aParent,
+CopyAndMoveToRunnable::CopyAndMoveToRunnable(DirectoryEntry* aParent,
     const nsAString* aNewName,
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
@@ -32,7 +31,8 @@ CopyAndMoveToRunnable::CopyAndMoveToRunnable(
 
   if (aNewName && !aNewName->IsEmpty()) {
     mNewName = *aNewName;
-  } else { // if new name not specified, set it to the entry's current name
+  } else {
+    // If new name not specified, set it to the entry's current name.
     aEntry->GetName(mNewName);
   }
   mFile = aEntry->GetFileInternal();
@@ -44,7 +44,8 @@ CopyAndMoveToRunnable::~CopyAndMoveToRunnable()
   SDCARD_LOG("destruct CopyAndMoveToRunnable");
 }
 
-void CopyAndMoveToRunnable::WorkerThreadRun()
+void
+CopyAndMoveToRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in CopyAndMoveToRunnable.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
@@ -62,13 +63,13 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   bool isFile = false;
   bool isDirectory = false;
   rv = mFile->IsFile(&isFile);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when getting isFile.");
     SetErrorCode(rv);
     return;
   }
   rv = mFile->IsDirectory(&isDirectory);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when getting isDirectory.");
     SetErrorCode(rv);
     return;
@@ -84,7 +85,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   // assign mResultFile to target file first
   mNewParentDir->Clone(getter_AddRefs(mResultFile));
   rv = mResultFile->Append(mNewName);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when append new name to mResultFile.");
     SetErrorCode(rv);
     return;
@@ -93,12 +94,11 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   // Check if destination exists
   bool newFileExits = false;
   rv = mResultFile->Exists(&newFileExits);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when checking if mResultFile exists.");
     SetErrorCode(rv);
     return;
   }
-
 
   // Whether the destination is a file
   bool isNewFile = false;
@@ -108,7 +108,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
     mResultFile->IsFile(&isNewFile);
     mResultFile->IsDirectory(&isNewDirectory);
     if (!(isNewFile || isNewDirectory)) {
-      // Cannot overwrite a special file
+      // Cannot overwrite a special file.
       SDCARD_LOG("mResultFile is neither a file nor directory.");
       SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
@@ -122,7 +122,8 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   if (path == newPath) {
     // Cannot copy/move an entry into its parent if a name different from its
     // current one isn't provided
-    SDCARD_LOG("Cannot copy/move an entry into its parent if a name different from its current one isn't provided.");
+    SDCARD_LOG(
+        "Cannot copy/move an entry into its parent if a name different from its current one isn't provided.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
@@ -130,14 +131,15 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   if (isNewDirectory) {
     bool dirEmpty;
     rv = FileUtils::IsDirectoryEmpty(mResultFile, &dirEmpty);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SDCARD_LOG("Error occurs when checking if directory is empty.");
       SetErrorCode(rv);
       return;
     }
     if (!dirEmpty) {
       // Cannot copy/move to a path occupied by a directory which is not empty.
-      SDCARD_LOG("Cannot copy/move to a path occupied by a directory which is not empty.");
+      SDCARD_LOG(
+          "Cannot copy/move to a path occupied by a directory which is not empty.");
       SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
@@ -146,22 +148,24 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   if ((isFile && isNewDirectory) || (isDirectory && isNewFile)) {
     // Cannot copy/move a file to a path occupied by a directory, or
     // copy/move a directory to a path occupied by a file
-    SDCARD_LOG("Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file.");
+    SDCARD_LOG(
+        "Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
   if (Path::IsParentOf(path, newPath)) {
     // Cannot copy/move a directory inside itself or to child at any depth
-    SDCARD_LOG("Cannot copy/move a directory inside itself or to child at any depth.");
+    SDCARD_LOG(
+        "Cannot copy/move a directory inside itself or to child at any depth.");
     SetErrorName(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
-  // delete the existing entry as nsIFile.coptTo()/moveTo() cannot overwrite
+  // Delete the existing entry as nsIFile.coptTo()/moveTo() cannot overwrite
   if (newFileExits) {
     rv = mResultFile->Remove(false);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SDCARD_LOG("Fail to remove existing target before copy/move.");
       SetErrorCode(rv);
       return;
@@ -171,7 +175,7 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   // assigne mResultFile back to original file to copy/move
   mFile->Clone(getter_AddRefs(mResultFile));
 
-  // actually copy/move the entry
+  // Actually copy/move the entry.
   if (mIsCopy) {
     rv = mResultFile->CopyTo(mNewParentDir, mNewName);
   } else {
@@ -185,13 +189,15 @@ void CopyAndMoveToRunnable::WorkerThreadRun()
   }
 }
 
-void CopyAndMoveToRunnable::OnSuccess()
+void
+CopyAndMoveToRunnable::OnSuccess()
 {
   SDCARD_LOG("in CopyAndMoveToRunnable.OnSuccess()!");
 
   if (mSuccessCallback) { // successCallback is optional
     ErrorResult rv;
-    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(
+        GetEntry()->GetFilesystem(), mResultFile.get());
     mSuccessCallback->Call(*resultEntry, rv);
   }
 }

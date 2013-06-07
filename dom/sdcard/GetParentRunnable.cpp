@@ -14,8 +14,7 @@ namespace dom {
 namespace sdcard {
 
 GetParentRunnable::GetParentRunnable(EntryCallback* aSuccessCallback,
-    ErrorCallback* aErrorCallback,
-    Entry* aEntry) :
+    ErrorCallback* aErrorCallback, Entry* aEntry) :
     CombinedRunnable(aErrorCallback, aEntry),
     mSuccessCallback(aSuccessCallback)
 {
@@ -28,7 +27,8 @@ GetParentRunnable::~GetParentRunnable()
   SDCARD_LOG("destruct GetParentRunnable!");
 }
 
-void GetParentRunnable::WorkerThreadRun()
+void
+GetParentRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetParentRunnable.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
@@ -47,13 +47,15 @@ void GetParentRunnable::WorkerThreadRun()
   }
 }
 
-void GetParentRunnable::OnSuccess()
+void
+GetParentRunnable::OnSuccess()
 {
   SDCARD_LOG("in GetParentRunnable.OnSuccess()!");
   MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
 
   ErrorResult rv;
-  nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mParentFile.get());
+  nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(
+      GetEntry()->GetFilesystem(), mParentFile.get());
   mSuccessCallback->Call(*resultEntry, rv);
 }
 

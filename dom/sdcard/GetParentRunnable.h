@@ -16,8 +16,7 @@ class GetParentRunnable : public CombinedRunnable
 {
 public:
   GetParentRunnable(EntryCallback* aSuccessCallback,
-      ErrorCallback* aErrorCallback,
-      Entry* aEntry);
+      ErrorCallback* aErrorCallback, Entry* aEntry);
 
   ~GetParentRunnable();
 
@@ -29,7 +28,7 @@ private:
   nsCOMPtr<nsIFile> mFile;
   nsCOMPtr<nsIFile> mParentFile;
 
-  // not thread safe
+  // Not thread safe
   nsRefPtr<EntryCallback> mSuccessCallback;
 };
 

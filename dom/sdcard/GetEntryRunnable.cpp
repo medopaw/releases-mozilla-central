@@ -16,21 +16,19 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-GetEntryRunnable::GetEntryRunnable(
-    const nsAString& aPath,
+GetEntryRunnable::GetEntryRunnable(const nsAString& aPath,
     bool aCreate,
     bool aExclusive,
     EntryCallback* aSuccessCallback,
     ErrorCallback* aErrorCallback,
     Entry* aEntry,
     bool aIsFile) :
-      CombinedRunnable(aErrorCallback, aEntry),
-      mPath(aPath),
-      mCreate(aCreate),
-      mExclusive(aExclusive),
-      mSuccessCallback(aSuccessCallback),
-      mIsFile(aIsFile)
-
+    CombinedRunnable(aErrorCallback, aEntry),
+    mPath(aPath),
+    mCreate(aCreate),
+    mExclusive(aExclusive),
+    mSuccessCallback(aSuccessCallback),
+    mIsFile(aIsFile)
 {
   SDCARD_LOG("construct GetEntryRunnable");
 }
@@ -40,14 +38,15 @@ GetEntryRunnable::~GetEntryRunnable()
   SDCARD_LOG("destruct GetEntryRunnable");
 }
 
-void GetEntryRunnable::WorkerThreadRun()
+void
+GetEntryRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in GetEntryRunnable.WorkerThreadRun()!");
   SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mPath).get());
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   nsresult rv = NS_NewLocalFile(mPath, false, getter_AddRefs(mResultFile));
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when create mResultFile.");
     SetErrorCode(rv);
     return;
@@ -55,41 +54,44 @@ void GetEntryRunnable::WorkerThreadRun()
 
   bool exists;
   rv = mResultFile->Exists(&exists);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when checking if mResultFile exists.");
     SetErrorCode(rv);
     return;
   }
   if (!mCreate && !exists) {
-    SDCARD_LOG("If create is not true and the path doesn't exist, getFile/getDirectory must fail.");
+    SDCARD_LOG(
+        "If create is not true and the path doesn't exist, getFile/getDirectory must fail.");
     SetErrorName(Error::DOM_ERROR_NOT_FOUND);
     return;
   } else if (mCreate && mExclusive && exists) {
-    SDCARD_LOG("If create and exclusive are both true, and the path already exists, getFile/getDirectory must fail.");
+    SDCARD_LOG(
+        "If create and exclusive are both true, and the path already exists, getFile/getDirectory must fail.");
     SetErrorName(Error::DOM_ERROR_PATH_EXISTS);
     return;
   } else if (!mCreate && exists) {
-      bool isFile = false;
-      bool isDirectory = false;
-      rv = mResultFile->IsFile(&isFile);
-      if (NS_FAILED(rv)) {
-        SDCARD_LOG("Error occurs when getting isFile.");
-        SetErrorCode(rv);
-        return;
-      }
-      rv = mResultFile->IsDirectory(&isDirectory);
-      if (NS_FAILED(rv)) {
-        SDCARD_LOG("Error occurs when getting isDirectory.");
-        SetErrorCode(rv);
-        return;
-      }
-      if (!(isFile || isDirectory)
-          || (mIsFile && isDirectory)
-          || (!mIsFile && isFile)) {
-        SDCARD_LOG("If create is not true and the path exists, but is a directory/file, getFile/getDirectory must fail.");
-        SetErrorName(Error::DOM_ERROR_TYPE_MISMATCH);
-        return;
-      }
+    bool isFile = false;
+    bool isDirectory = false;
+    rv = mResultFile->IsFile(&isFile);
+    if (NS_FAILED(rv) ) {
+      SDCARD_LOG("Error occurs when getting isFile.");
+      SetErrorCode(rv);
+      return;
+    }
+    rv = mResultFile->IsDirectory(&isDirectory);
+    if (NS_FAILED(rv) ) {
+      SDCARD_LOG("Error occurs when getting isDirectory.");
+      SetErrorCode(rv);
+      return;
+    }
+    if (!(isFile || isDirectory)
+        || (mIsFile && isDirectory)
+        || (!mIsFile && isFile)) {
+      SDCARD_LOG(
+          "If create is not true and the path exists, but is a directory/file, getFile/getDirectory must fail.");
+      SetErrorName(Error::DOM_ERROR_TYPE_MISMATCH);
+      return;
+    }
   }
 
   if (mCreate && !exists) {
@@ -99,7 +101,7 @@ void GetEntryRunnable::WorkerThreadRun()
     uint32_t permission = mIsFile ? 0600 : 0700;
     // Note that any path segments that do not already exist will be created automatically, which I think is implied by w3c draft.
     rv = mResultFile->Create(FileUtils::GetType(mIsFile), permission);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SDCARD_LOG("Error occurs during creation.");
       SetErrorCode(rv);
       return;
@@ -107,13 +109,16 @@ void GetEntryRunnable::WorkerThreadRun()
   }
 }
 
-void GetEntryRunnable::OnSuccess()
+void
+GetEntryRunnable::OnSuccess()
 {
   SDCARD_LOG("in GetEntryRunnable.OnSuccess()!");
 
-  if (mSuccessCallback) { // successCallback is optional
+  // SuccessCallback is optional.
+  if (mSuccessCallback) {
     ErrorResult rv;
-    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mResultFile.get());
+    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(
+        GetEntry()->GetFilesystem(), mResultFile.get());
     mSuccessCallback->Call(*resultEntry, rv);
   }
 }

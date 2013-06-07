@@ -15,8 +15,7 @@ namespace sdcard {
 class IPCCopyAndMoveToEvent : public IPCEvent
 {
 public:
-  IPCCopyAndMoveToEvent(
-      const nsAString& aRelpath,
+  IPCCopyAndMoveToEvent(const nsAString& aRelpath,
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy,

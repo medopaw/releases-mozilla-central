@@ -25,14 +25,15 @@ SDCardEvent::~SDCardEvent()
   SDCARD_LOG("destruct SDCardEvent");
 }
 
-void SDCardEvent::Start()
+void
+SDCardEvent::Start()
 {
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
   // run worker thread
   if (!mWorkerThread) {
     nsresult rv = NS_NewThread(getter_AddRefs(mWorkerThread));
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       mWorkerThread = nullptr;
       // call error callback
       mWorker->SetError(rv);
@@ -43,7 +44,8 @@ void SDCardEvent::Start()
   mWorkerThread->Dispatch(this, NS_DISPATCH_NORMAL);
 }
 
-NS_IMETHODIMP SDCardEvent::Run()
+NS_IMETHODIMP
+SDCardEvent::Run()
 {
   if (!NS_IsMainThread()) {
     SDCARD_LOG("SDCardEvent.Run() on worker thread.");
@@ -71,7 +73,8 @@ NS_IMETHODIMP SDCardEvent::Run()
   return NS_OK;
 }
 
-void SDCardEvent::HandleResult()
+void
+SDCardEvent::HandleResult()
 {
   SDCARD_LOG("in SDCardEvent.HandleResult()");
   if (!mCanceled) {
@@ -81,7 +84,8 @@ void SDCardEvent::HandleResult()
   }
 }
 
-void SDCardEvent::Cancel()
+void
+SDCardEvent::Cancel()
 {
   SDCARD_LOG("in SDCardEvent.Cancel() with mCanceled=%d", mCanceled);
   mCanceled = true;

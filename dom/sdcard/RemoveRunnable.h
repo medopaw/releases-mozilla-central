@@ -15,7 +15,9 @@ namespace sdcard {
 class RemoveRunnable : public CombinedRunnable
 {
 public:
-  RemoveRunnable(VoidCallback* aSuccessCallback, ErrorCallback* aErrorCallback, Entry* aEntry, bool aRecursive = false);
+  RemoveRunnable(VoidCallback* aSuccessCallback,
+      ErrorCallback* aErrorCallback,
+      Entry* aEntry, bool aRecursive = false);
   ~RemoveRunnable();
 
 protected:
@@ -23,7 +25,7 @@ protected:
   virtual void OnSuccess() MOZ_OVERRIDE;
 
 private:
-  // not thread safe
+  // Not thread safe
   nsRefPtr<VoidCallback> mSuccessCallback;
 
   nsCOMPtr<nsIFile> mFile;

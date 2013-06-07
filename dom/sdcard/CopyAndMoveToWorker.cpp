@@ -14,8 +14,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-CopyAndMoveToWorker::CopyAndMoveToWorker(
-    const nsAString& aRelpath,
+CopyAndMoveToWorker::CopyAndMoveToWorker(const nsAString& aRelpath,
     const nsAString& aParentPath,
     const nsAString& aNewName,
     bool aIsCopy) :
@@ -39,7 +38,7 @@ CopyAndMoveToWorker::Work()
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   if (Path::IsBase(mRelpath)) {
-    // Cannot copy/move the root directory
+    // Cannot copy/move the root directory.
     SDCARD_LOG("Can't copy/move the root directory!");
     SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
@@ -48,20 +47,20 @@ CopyAndMoveToWorker::Work()
   bool isFile = false;
   bool isDirectory = false;
   nsresult rv = mFile->IsFile(&isFile);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when getting isFile.");
     SetError(rv);
     return;
   }
   rv = mFile->IsDirectory(&isDirectory);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when getting isDirectory.");
     SetError(rv);
     return;
   }
 
   if (!(isFile || isDirectory)) {
-    // Cannot copy/move a special file
+    // Cannot copy/move a special file.
     SDCARD_LOG("mFile is neither a file nor directory.");
     SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
@@ -71,7 +70,7 @@ CopyAndMoveToWorker::Work()
   if (mNewName.IsVoid() || mNewName.IsEmpty()) {
     mNewName.SetIsVoid(false);
     rv = mFile->GetLeafName(mNewName);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SDCARD_LOG("Error occurs when getting new name from path.");
       SetError(rv);
       return;
@@ -91,7 +90,7 @@ CopyAndMoveToWorker::Work()
   // Assign resultFile to target file.
   parentDir->Clone(getter_AddRefs(resultFile));
   rv = resultFile->Append(mNewName);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when append new name to mResultFile.");
     SetError(rv);
     return;
@@ -100,12 +99,11 @@ CopyAndMoveToWorker::Work()
   // Check if destination exists
   bool newFileExits = false;
   rv = resultFile->Exists(&newFileExits);
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SDCARD_LOG("Error occurs when checking if resultFile exists.");
     SetError(rv);
     return;
   }
-
 
   // Whether the destination is a file
   bool isNewFile = false;
@@ -129,7 +127,8 @@ CopyAndMoveToWorker::Work()
   if (mRelpath == newPath) {
     // Cannot copy/move an entry into its parent if a name different from its
     // current one isn't provided
-    SDCARD_LOG("Cannot copy/move an entry into its parent if a name different from its current one isn't provided.");
+    SDCARD_LOG(
+        "Cannot copy/move an entry into its parent if a name different from its current one isn't provided.");
     SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
@@ -137,14 +136,15 @@ CopyAndMoveToWorker::Work()
   if (isNewDirectory) {
     bool dirEmpty;
     rv = FileUtils::IsDirectoryEmpty(resultFile, &dirEmpty);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SDCARD_LOG("Error occurs when checking if directory is empty.");
       SetError(rv);
       return;
     }
     if (!dirEmpty) {
       // Cannot copy/move to a path occupied by a directory which is not empty.
-      SDCARD_LOG("Cannot copy/move to a path occupied by a directory which is not empty.");
+      SDCARD_LOG(
+          "Cannot copy/move to a path occupied by a directory which is not empty.");
       SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
       return;
     }
@@ -153,14 +153,16 @@ CopyAndMoveToWorker::Work()
   if ((isFile && isNewDirectory) || (isDirectory && isNewFile)) {
     // Cannot copy/move a file to a path occupied by a directory, or
     // copy/move a directory to a path occupied by a file
-    SDCARD_LOG("Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file.");
+    SDCARD_LOG(
+        "Cannot copy/move a file to a path occupied by a directory, or copy/move a directory to a path occupied by a file.");
     SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
 
   if (Path::IsParentOf(mRelpath, newPath)) {
     // Cannot copy/move a directory inside itself or to child at any depth.
-    SDCARD_LOG("Cannot copy/move a directory inside itself or to child at any depth.");
+    SDCARD_LOG(
+        "Cannot copy/move a directory inside itself or to child at any depth.");
     SetError(Error::DOM_ERROR_INVALID_MODIFICATION);
     return;
   }
@@ -168,7 +170,7 @@ CopyAndMoveToWorker::Work()
   // Delete the existing entry as nsIFile.coptTo()/moveTo() cannot be overwritten.
   if (newFileExits) {
     rv = resultFile->Remove(false);
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SDCARD_LOG("Fail to remove existing target before copy/move.");
       SetError(rv);
       return;

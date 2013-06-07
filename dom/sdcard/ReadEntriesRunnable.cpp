@@ -28,7 +28,8 @@ ReadEntriesRunnable::~ReadEntriesRunnable()
   SDCARD_LOG("destruct ReadEntriesRunnable!");
 }
 
-void ReadEntriesRunnable::WorkerThreadRun()
+void
+ReadEntriesRunnable::WorkerThreadRun()
 {
   SDCARD_LOG("in ReadEntriesRunnable.WorkerThreadRun()!");
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
@@ -36,7 +37,7 @@ void ReadEntriesRunnable::WorkerThreadRun()
   nsresult rv = NS_OK;
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   rv = mFile->GetDirectoryEntries(getter_AddRefs(childEnumerator));
-  if (NS_FAILED(rv)) {
+  if (NS_FAILED(rv) ) {
     SetErrorCode(rv);
     return;
   }
@@ -46,13 +47,12 @@ void ReadEntriesRunnable::WorkerThreadRun()
       && hasElements) {
     nsCOMPtr<nsISupports> child;
     rv = childEnumerator->GetNext(getter_AddRefs(child));
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       SetErrorCode(rv);
       return;
     }
 
     nsCOMPtr<nsIFile> childFile = do_QueryInterface(child);
-
     nsRefPtr<Entry> entry;
 
     bool isDir;
@@ -66,7 +66,8 @@ void ReadEntriesRunnable::WorkerThreadRun()
   }
 }
 
-void ReadEntriesRunnable::OnSuccess()
+void
+ReadEntriesRunnable::OnSuccess()
 {
   SDCARD_LOG("in ReadEntriesRunnable.OnSuccess()!");
   MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
@@ -74,13 +75,13 @@ void ReadEntriesRunnable::OnSuccess()
   Sequence<OwningNonNull<Entry> > entries;
   int n = mChildren.Length();
   for (int i = 0; i < n; i++) {
-    nsRefPtr<Entry> entry = Entry::CreateFromFile(GetEntry()->GetFilesystem(), mChildren[i].get());
+    nsRefPtr<Entry> entry = Entry::CreateFromFile(GetEntry()->GetFilesystem(),
+        mChildren[i].get());
     *entries.AppendElement() = entry.forget();
   }
   ErrorResult rv;
   mSuccessCallback->Call(entries, rv);
 }
-
 
 } // namespace sdcard
 } // namespace dom

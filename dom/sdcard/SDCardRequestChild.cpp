@@ -36,41 +36,51 @@ SDCardRequestChild::Recv__delete__(const SDCardResponseValue& aValue)
   SDCARD_LOG("in SDCardRequestChild.Recv__delete__()");
 
   switch (aValue.type()) {
-    case SDCardResponseValue::TErrorResponse: {
+  case SDCardResponseValue::TErrorResponse:
+    {
       ErrorResponse r = aValue;
-      SDCARD_LOG("ErrorResponse received with error=%s", NS_ConvertUTF16toUTF8(r.error()).get());
+      SDCARD_LOG("ErrorResponse received with error=%s",
+          NS_ConvertUTF16toUTF8(r.error()).get());
       mCaller->CallErrorCallback(r.error());
       break;
     }
 
-    case SDCardResponseValue::TVoidResponse: {
+  case SDCardResponseValue::TVoidResponse:
+    {
       SDCARD_LOG("VoidResponse received");
       mCaller->CallVoidCallback();
       break;
     }
 
-    case SDCardResponseValue::TPathResponse: {
+  case SDCardResponseValue::TPathResponse:
+    {
       PathResponse r = aValue;
-      SDCARD_LOG("PathResponse received with path=%s", NS_ConvertUTF16toUTF8(r.path()).get());
+      SDCARD_LOG("PathResponse received with path=%s",
+          NS_ConvertUTF16toUTF8(r.path()).get());
       mCaller->CallEntryCallback(r.path());
       break;
     }
 
-    case SDCardResponseValue::TPathsResponse: {
+  case SDCardResponseValue::TPathsResponse:
+    {
       PathsResponse r = aValue;
       SDCARD_LOG("PathsResponse received with %d paths", r.paths().Length());
       mCaller->CallEntriesCallback(r.paths());
       break;
     }
 
-    case SDCardResponseValue::TMetadataResponse: {
+  case SDCardResponseValue::TMetadataResponse:
+    {
       MetadataResponse r = aValue;
-      SDCARD_LOG("MetadataResponse received with modificationTime=%" PRIi64 ", size=%" PRIu64, r.modificationTime(), r.size());
+      SDCARD_LOG(
+          "MetadataResponse received with modificationTime=%" PRIi64 ", size=%" PRIu64,
+          r.modificationTime(), r.size());
       mCaller->CallMetadataCallback(r.modificationTime(), r.size());
       break;
     }
 
-    default: {
+  default:
+    {
       NS_RUNTIMEABORT("not reached");
       break;
     }

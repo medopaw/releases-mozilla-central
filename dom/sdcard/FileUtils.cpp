@@ -6,21 +6,27 @@
 
 #include "FileUtils.h"
 #include "nsISimpleEnumerator.h"
+#include "Utils.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-unsigned long FileUtils::GetType(bool isFile)
+unsigned long
+FileUtils::GetType(bool isFile)
 {
+  SDCARD_LOG("in FileUtils.GetType() with isFile=%d", isFile);
   return isFile ? nsIFile::NORMAL_FILE_TYPE : nsIFile::DIRECTORY_TYPE;
 }
 
-nsresult FileUtils::IsDirectoryEmpty(nsIFile* dir, bool* retval)
+nsresult
+FileUtils::IsDirectoryEmpty(nsIFile* dir, bool* retval)
 {
+  SDCARD_LOG("in FileUtils.IsDirectoryEmpty()");
+
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   nsresult rv = dir->GetDirectoryEntries(getter_AddRefs(childEnumerator));
-  if (NS_SUCCEEDED(rv)) {
+  if (NS_SUCCEEDED(rv) ) {
     bool hasElements;
     rv = childEnumerator->HasMoreElements(&hasElements);
     *retval = !hasElements;

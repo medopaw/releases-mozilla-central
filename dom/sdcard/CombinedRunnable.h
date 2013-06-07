@@ -28,7 +28,7 @@ public:
    */
   void Start();
 
-  // overrides nsIRunnable
+  // Overrides nsIRunnable
   NS_IMETHOD Run() MOZ_OVERRIDE;
 
 protected:

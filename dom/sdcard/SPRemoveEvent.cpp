@@ -13,8 +13,12 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-SPRemoveEvent::SPRemoveEvent(const nsAString& aRelpath, bool aRecursive, Caller* aCaller) :
-    SPEvent(new RemoveWorker(aRelpath, aRecursive), aCaller)
+SPRemoveEvent::SPRemoveEvent(const nsAString& aRelpath,
+    bool aRecursive,
+    Caller* aCaller) :
+    SPEvent(
+        new RemoveWorker(aRelpath, aRecursive),
+        aCaller)
 {
   SDCARD_LOG("construct SPRemoveEvent");
 }
@@ -24,10 +28,10 @@ SPRemoveEvent::~SPRemoveEvent()
   SDCARD_LOG("destruct SPRemoveEvent");
 }
 
-void SPRemoveEvent::OnSuccess()
+void
+SPRemoveEvent::OnSuccess()
 {
   SDCARD_LOG("in SPRemoveEvent.OnSuccess()!");
-
   mCaller->CallVoidCallback();
 }
 

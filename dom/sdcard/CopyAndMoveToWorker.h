@@ -18,8 +18,7 @@ namespace sdcard {
 class CopyAndMoveToWorker : public Worker
 {
 public:
-  CopyAndMoveToWorker(
-      const nsAString& aRelpath,
+  CopyAndMoveToWorker(const nsAString& aRelpath,
       const nsAString& aParentPath,
       const nsAString& aNewName,
       bool aIsCopy);

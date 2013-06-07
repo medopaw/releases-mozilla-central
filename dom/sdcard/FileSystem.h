@@ -22,8 +22,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class FileSystem MOZ_FINAL : public nsISupports /* Change nativeOwnership in the binding configuration if you don't want this */,
-                             public nsWrapperCache /* Change wrapperCache in the binding configuration if you don't want this */
+class FileSystem MOZ_FINAL : public nsISupports, public nsWrapperCache
 {
 public:
   NS_DECL_CYCLE_COLLECTING_ISUPPORTS
@@ -31,10 +30,8 @@ public:
 
 public:
   explicit FileSystem(nsPIDOMWindow* aWindow, const nsAString& aName, const nsAString& aPath);
-
   ~FileSystem();
 
-  // TODO: return something sensible here, and change the return type
   nsPIDOMWindow* GetParentObject() const;
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope) MOZ_OVERRIDE;

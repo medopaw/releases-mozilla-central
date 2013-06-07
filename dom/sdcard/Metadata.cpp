@@ -16,7 +16,6 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-
 NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(Metadata)
 NS_IMPL_CYCLE_COLLECTING_ADDREF(Metadata)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(Metadata)
@@ -25,9 +24,7 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(Metadata)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-Metadata::Metadata() :
-    mSize(0),
-    mDate(0)
+Metadata::Metadata() : mSize(0), mDate(0)
 {
   SDCARD_LOG("construct Metadata");
   SetIsDOMBinding();
@@ -50,22 +47,25 @@ Metadata::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
   return MetadataBinding::Wrap(aCx, aScope, this);
 }
 
-JS::Value Metadata::ModificationTime(JSContext* cx) const
-{
+JS::Value
+Metadata::ModificationTime(JSContext* cx) const
+    {
   JSObject* date = JS_NewDateObjectMsec(cx, mDate);
   JS::Value value;
   value.setObject(*date);
   return value;
 }
 
-uint64_t Metadata::Size() const
+uint64_t
+Metadata::Size() const
 {
   SDCARD_LOG("in Metadata.Size()");
   SDCARD_LOG("size=%" PRIu64, mSize);
   return mSize;
 }
 
-void Metadata::SetModificationTime(PRTime mtime)
+void
+Metadata::SetModificationTime(PRTime mtime)
 {
   SDCARD_LOG("in Metadata.SetModificationTime()");
   SDCARD_LOG("size=%" PRIi64, mtime);

@@ -14,13 +14,14 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-IPCCopyAndMoveToEvent::IPCCopyAndMoveToEvent(
-    const nsAString& aRelpath,
+IPCCopyAndMoveToEvent::IPCCopyAndMoveToEvent(const nsAString& aRelpath,
     const nsAString& aParentPath,
     const nsAString& aNewName,
     bool aIsCopy,
     SDCardRequestParent* aParent) :
-    IPCEvent(new CopyAndMoveToWorker(aRelpath, aParentPath, aNewName, aIsCopy), aParent)
+    IPCEvent(
+      new CopyAndMoveToWorker(aRelpath, aParentPath, aNewName, aIsCopy),
+      aParent)
 {
   SDCARD_LOG("construct IPCCopyAndMoveToEvent");
 }
@@ -30,11 +31,13 @@ IPCCopyAndMoveToEvent::~IPCCopyAndMoveToEvent()
   SDCARD_LOG("destruct IPCCopyAndMoveToEvent");
 }
 
-void IPCCopyAndMoveToEvent::OnSuccess()
+void
+IPCCopyAndMoveToEvent::OnSuccess()
 {
   SDCARD_LOG("in IPCCopyAndMoveToEvent.OnSuccess()!");
 
-  PathResponse response(static_cast<CopyAndMoveToWorker*>(mWorker.get())->mResultPath);
+  PathResponse response(
+      static_cast<CopyAndMoveToWorker*>(mWorker.get())->mResultPath);
   unused << mParent->Send__delete__(mParent, response);
 }
 

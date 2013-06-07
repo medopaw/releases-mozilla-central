@@ -48,15 +48,17 @@ DirectoryReader::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
   return DirectoryReaderBinding::Wrap(aCx, aScope, this);
 }
 
-void DirectoryReader::ReadEntries(EntriesCallback& successCallback,
+void
+DirectoryReader::ReadEntries(EntriesCallback& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
   ErrorCallback* errorCallbackPtr = nullptr;
   if (errorCallback.WasPassed()) {
     errorCallbackPtr = errorCallback.Value().get();
   }
-  nsCOMPtr<ReadEntriesRunnable> runnable = new ReadEntriesRunnable(&successCallback,
-          errorCallbackPtr, mEntry);
+  nsCOMPtr<ReadEntriesRunnable> runnable = new ReadEntriesRunnable(
+      &successCallback,
+      errorCallbackPtr, mEntry);
   runnable->Start();
 }
 

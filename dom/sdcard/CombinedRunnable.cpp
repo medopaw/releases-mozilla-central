@@ -15,7 +15,8 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback, Entry* aEntry) :
+CombinedRunnable::CombinedRunnable(ErrorCallback* aErrorCallback,
+    Entry* aEntry) :
     mErrorCallback(aErrorCallback),
     mEntry(aEntry),
     mErrorCode(NS_OK),
@@ -29,14 +30,15 @@ CombinedRunnable::~CombinedRunnable()
   SDCARD_LOG("destruct CombinedRunnable");
 }
 
-void CombinedRunnable::Start()
+void
+CombinedRunnable::Start()
 {
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
 
   // run worker thread
   if (!mWorkerThread) {
     nsresult rv = NS_NewThread(getter_AddRefs(mWorkerThread));
-    if (NS_FAILED(rv)) {
+    if (NS_FAILED(rv) ) {
       mWorkerThread = nullptr;
       // call error callback
       SetErrorCode(rv);
@@ -47,7 +49,8 @@ void CombinedRunnable::Start()
   mWorkerThread->Dispatch(this, NS_DISPATCH_NORMAL);
 }
 
-NS_IMETHODIMP CombinedRunnable::Run()
+NS_IMETHODIMP
+CombinedRunnable::Run()
 {
   if (!NS_IsMainThread()) {
     SDCARD_LOG("CombinedRunnable.Run() on worker thread.");
@@ -71,7 +74,8 @@ NS_IMETHODIMP CombinedRunnable::Run()
   return NS_OK;
 }
 
-void CombinedRunnable::MainThreadRun()
+void
+CombinedRunnable::MainThreadRun()
 {
   SDCARD_LOG("in CombinedRunnable.MainThreadRun()!");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
@@ -83,125 +87,22 @@ void CombinedRunnable::MainThreadRun()
   } else {
     OnSuccess();
   }
-
-  /*
-  nsRefPtr<nsIDOMDOMError> error = GetDOMError();
-  if (error) {
-    if (mErrorCallback) { // errorCallback is always optional
-      ErrorResult rv;
-      mErrorCallback->Call(error, rv);
-    }
-  } else {
-    OnSuccess();
-  }
-  */
 }
 
-
-void CombinedRunnable::SetErrorCode(const nsresult& aErrorCode)
+void
+CombinedRunnable::SetErrorCode(const nsresult& aErrorCode)
 {
   mErrorCode = aErrorCode;
 }
 
-void CombinedRunnable::SetErrorName(const nsAString& aErrorName)
+void
+CombinedRunnable::SetErrorName(const nsAString& aErrorName)
 {
   mErrorName = aErrorName;
 }
 
-/*
-already_AddRefed<nsIDOMDOMError> CombinedRunnable::GetDOMError() const
-{
-  SDCARD_LOG("in CombinedRunnable.GetDOMError()!");
-
-  already_AddRefed<nsIDOMDOMError> domError = nullptr;
-  if (!mErrorName.IsEmpty()) {
-    SDCARD_LOG("Create DOMError with %s", NS_ConvertUTF16toUTF8(mErrorName).get());
-    domError = DOMError::CreateWithName(mErrorName);
-  } else if (mErrorCode != NS_OK) {
-    domError = DOMError::CreateForNSResult(mErrorCode);
-
-    nsString errorString;
-    switch (mErrorCode) {
-      case NS_ERROR_FILE_INVALID_PATH:
-        errorString.AssignLiteral("NS_ERROR_FILE_INVALID_PATH");
-        break;
-      case NS_ERROR_FILE_UNRECOGNIZED_PATH:
-        errorString.AssignLiteral("NS_ERROR_FILE_UNRECOGNIZED_PATH");
-        break;
-      case NS_ERROR_FILE_DESTINATION_NOT_DIR:
-        errorString.AssignLiteral("NS_ERROR_FILE_DESTINATION_NOT_DIR");
-        break;
-      case NS_ERROR_FILE_ACCESS_DENIED:
-        errorString.AssignLiteral("NS_ERROR_FILE_ACCESS_DENIED");
-        break;
-      case NS_ERROR_FILE_DIR_NOT_EMPTY:
-        errorString.AssignLiteral("NS_ERROR_FILE_DIR_NOT_EMPTY");
-        break;
-      case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
-        errorString.AssignLiteral("NS_ERROR_FILE_TARGET_DOES_NOT_EXIST");
-        break;
-      case NS_ERROR_NOT_AVAILABLE:
-        errorString.AssignLiteral("NS_ERROR_NOT_AVAILABLE");
-        break;
-      case NS_ERROR_FILE_ALREADY_EXISTS:
-        errorString.AssignLiteral("NS_ERROR_FILE_ALREADY_EXISTS");
-        break;
-      case NS_ERROR_DOM_SECURITY_ERR:
-        errorString.AssignLiteral("NS_ERROR_DOM_SECURITY_ERR");
-      case NS_ERROR_OUT_OF_MEMORY:
-        errorString.AssignLiteral("NS_ERROR_OUT_OF_MEMORY");
-        break;
-      case NS_ERROR_FILE_NOT_DIRECTORY:
-        errorString.AssignLiteral("NS_ERROR_FILE_NOT_DIRECTORY");
-        break;
-      case NS_ERROR_UNEXPECTED:
-        errorString.AssignLiteral("NS_ERROR_UNEXPECTED");
-      default:
-        break;
-    }
-    if (errorString.IsEmpty()) {
-      SDCARD_LOG("Create DOMError from nsresult %ul", mErrorCode);
-    } else {
-      SDCARD_LOG("Create DOMError from nsresult %s", NS_ConvertUTF16toUTF8(errorString).get());
-    }
-    switch (mErrorCode) {
-    case NS_ERROR_FILE_INVALID_PATH:
-    case NS_ERROR_FILE_UNRECOGNIZED_PATH:
-      name = DOM_ERROR_ENCODING;
-      break;
-    case NS_ERROR_FILE_DESTINATION_NOT_DIR:
-      name = DOM_ERROR_INVALID_MODIFICATION;
-      break;
-    case NS_ERROR_FILE_ACCESS_DENIED:
-    case NS_ERROR_FILE_DIR_NOT_EMPTY:
-      name = DOM_ERROR_NO_MODIFICATION_ALLOWED;
-      break;
-    case NS_ERROR_FILE_TARGET_DOES_NOT_EXIST:
-    case NS_ERROR_NOT_AVAILABLE:
-      name = DOM_ERROR_NOT_FOUND;
-      break;
-    case NS_ERROR_FILE_ALREADY_EXISTS:
-      name = DOM_ERROR_PATH_EXISTS;
-      break;
-    case NS_ERROR_DOM_SECURITY_ERR:
-    case NS_ERROR_OUT_OF_MEMORY:
-      name = DOM_ERROR_SECURITY;
-      break;
-    case NS_ERROR_FILE_NOT_DIRECTORY:
-      name = DOM_ERROR_TYPE_MISMATCH;
-      break;
-    case NS_ERROR_UNEXPECTED:
-    default:
-      name = DOM_ERROR_UNKNOWN;
-      break;
-    }
-  }
-
-  return domError;
-}
-*/
-
-Entry* CombinedRunnable::GetEntry() const
+Entry*
+CombinedRunnable::GetEntry() const
 {
   MOZ_ASSERT(NS_IsMainThread(), "only call on main thread!");
   return NS_IsMainThread() ? mEntry : nullptr;

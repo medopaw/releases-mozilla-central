@@ -17,9 +17,7 @@ class Caller;
 class SPEvent : public SDCardEvent
 {
 public:
-  SPEvent(
-      Worker* aWorker,
-      Caller* aCaller);
+  SPEvent(Worker* aWorker, Caller* aCaller);
   virtual ~SPEvent();
 
 protected:

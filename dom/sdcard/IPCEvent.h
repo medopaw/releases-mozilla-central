@@ -17,8 +17,7 @@ class SDCardRequestParent;
 class IPCEvent : public SDCardEvent
 {
 public:
-  IPCEvent(
-      Worker* aWorker,
+  IPCEvent(Worker* aWorker,
       SDCardRequestParent* aParent);
   virtual ~IPCEvent();
 

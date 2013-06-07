@@ -14,8 +14,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-IPCEvent::IPCEvent(
-    Worker* aWorker,
+IPCEvent::IPCEvent(Worker* aWorker,
     SDCardRequestParent* aParent) :
     SDCardEvent(aWorker),
     mParent(aParent)
