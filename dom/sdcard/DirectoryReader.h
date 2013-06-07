@@ -12,6 +12,7 @@
 #include "nsWrapperCache.h"
 #include "mozilla/dom/FileSystemBinding.h"
 
+class nsPIDOMWindow;
 struct JSContext;
 
 namespace mozilla {
@@ -33,10 +34,7 @@ public:
   ~DirectoryReader();
 
   // TODO: return something sensible here, and change the return type
-  DirectoryReader* GetParentObject() const
-  {
-    return NULL;
-  }
+  nsPIDOMWindow* GetParentObject() const;
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);
 

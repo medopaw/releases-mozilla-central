@@ -47,6 +47,7 @@ CPP_SOURCES += [
     'SPEvent.cpp',
     'SPGetEntryEvent.cpp',
     'SPRemoveEvent.cpp',
+    'Window.cpp',
     'Worker.cpp',
 ]
 

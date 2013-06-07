@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Entry.h"
-// #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
-
-#include "FileSystem.h"
-#include "Metadata.h"
+#include "Window.h"
 #include "Path.h"
 #include "Utils.h"
+#include "FileSystem.h"
+#include "Metadata.h"
 #include "GetParentRunnable.h"
 #include "CopyAndMoveToRunnable.h"
 #include "GetMetadataRunnable.h"
@@ -74,6 +73,12 @@ Entry::Entry(FileSystem* aFilesystem, nsIFile* aFile, bool aIsFile, bool aIsDire
 Entry::~Entry()
 {
   SDCARD_LOG("destruct Entry");
+}
+
+nsPIDOMWindow*
+Entry::GetParentObject() const
+{
+  return Window::GetWindow();
 }
 
 /*

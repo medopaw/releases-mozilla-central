@@ -15,6 +15,7 @@
 #include "nsIFile.h"
 #include "nsString.h"
 
+class nsPIDOMWindow;
 struct JSContext;
 
 namespace mozilla {
@@ -37,10 +38,7 @@ public:
   virtual ~Entry();
 
   // TODO: return something sensible here, and change the return type
-  Entry* GetParentObject() const
-  {
-    return NULL;
-  }
+  nsPIDOMWindow* GetParentObject() const;
 
 //  virtual JSObject* WrapObject(JSContext* aCx, JSObject* aScope);
 

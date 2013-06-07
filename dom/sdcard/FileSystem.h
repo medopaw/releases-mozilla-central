@@ -11,11 +11,11 @@
 #include "nsCycleCollectionParticipant.h"
 #include "nsWrapperCache.h"
 
-#include "nsCOMPtr.h"
 #include "nsAutoPtr.h"
 #include "nsString.h"
 #include "DirectoryEntry.h"
 
+class nsPIDOMWindow;
 struct JSContext;
 
 namespace mozilla {
@@ -35,10 +35,7 @@ public:
   ~FileSystem();
 
   // TODO: return something sensible here, and change the return type
-  nsPIDOMWindow* GetParentObject() const
-  {
-    return mWindow.get();
-  }
+  nsPIDOMWindow* GetParentObject() const;
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope) MOZ_OVERRIDE;
 
@@ -50,7 +47,6 @@ public:
   bool IsValid() const;
 
 private:
-  nsCOMPtr<nsPIDOMWindow> mWindow;
   nsString mName;
   nsRefPtr<DirectoryEntry> mRoot;
 };

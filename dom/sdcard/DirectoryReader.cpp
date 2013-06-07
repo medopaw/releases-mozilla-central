@@ -7,6 +7,7 @@
 #include "DirectoryReader.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "Window.h"
 #include "ReadEntriesRunnable.h"
 #include "DirectoryEntry.h"
 #include "Utils.h"
@@ -33,6 +34,12 @@ DirectoryReader::DirectoryReader(DirectoryEntry* entry) :
 DirectoryReader::~DirectoryReader()
 {
   SDCARD_LOG("destruct DirectoryReader");
+}
+
+nsPIDOMWindow*
+DirectoryReader::GetParentObject() const
+{
+  return Window::GetWindow();
 }
 
 JSObject*

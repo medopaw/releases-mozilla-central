@@ -7,6 +7,7 @@
 #include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "Window.h"
 #define __STDC_FORMAT_MACROS
 #include "inttypes.h"
 #include "Utils.h"
@@ -35,6 +36,12 @@ Metadata::Metadata() :
 Metadata::~Metadata()
 {
   SDCARD_LOG("destruct Metadata");
+}
+
+nsPIDOMWindow*
+Metadata::GetParentObject() const
+{
+  return Window::GetWindow();
 }
 
 JSObject*

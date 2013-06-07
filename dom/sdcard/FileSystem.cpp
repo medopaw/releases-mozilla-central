@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "FileSystem.h"
-#include "nsPIDOMWindow.h"
 #include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "Window.h"
 #include "Path.h"
 #include "Utils.h"
 
@@ -31,11 +31,13 @@ FileSystem::FileSystem(
     nsPIDOMWindow* aWindow,
     const nsAString& aName,
     const nsAString& aPath) :
-    mWindow(aWindow),
     mName(aName)
 {
   SDCARD_LOG("construct FileSystem");
-  MOZ_ASSERT(aNavigator, "Parent navigator object should be provided");
+
+  MOZ_ASSERT(aWindow, "Parent window object should be provided");
+  Window::SetWindow(aWindow);
+
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
   if (NS_FAILED(rv)) {
@@ -52,6 +54,12 @@ FileSystem::~FileSystem()
 {
   SDCARD_LOG("destruct FileSystem");
   MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
+}
+
+nsPIDOMWindow*
+FileSystem::GetParentObject() const
+{
+  return Window::GetWindow();
 }
 
 JSObject*

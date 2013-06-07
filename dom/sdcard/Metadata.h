@@ -11,6 +11,7 @@
 #include "nsCycleCollectionParticipant.h"
 #include "nsWrapperCache.h"
 
+class nsPIDOMWindow;
 struct JSContext;
 
 namespace mozilla {
@@ -30,10 +31,7 @@ public:
   ~Metadata();
 
   // TODO: return something sensible here, and change the return type
-  Metadata* GetParentObject() const
-  {
-    return NULL;
-  }
+  nsPIDOMWindow* GetParentObject() const;
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);
 
