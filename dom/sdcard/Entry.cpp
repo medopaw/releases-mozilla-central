@@ -54,6 +54,8 @@ Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
 Entry*
 Entry::CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aPath)
 {
+  SDCARD_LOG("in Entry::CreateFromRelpath() with relpath=%s", NS_ConvertUTF16toUTF8(aPath).get());
+
   nsCOMPtr<nsIFile> file;
   nsresult rv = NS_NewLocalFile(aPath, false, getter_AddRefs(file));
   if (NS_FAILED(rv) ) {

@@ -6,6 +6,7 @@
 
 #pragma once
 
+#include "nsString.h"
 #include "nsIFile.h"
 
 namespace mozilla {
@@ -16,11 +17,21 @@ namespace sdcard {
  * nsIFile related utilities.
  * All methods in this class are static.
  */
+
+struct FileInfo
+{
+  bool isFile;
+  bool isDirectory;
+  nsString name;
+  nsString fullPath;
+};
+
 class FileUtils
 {
 public:
-  static unsigned long GetType(bool isFile);
-  static nsresult IsDirectoryEmpty(nsIFile* dir, bool* retval);
+  static unsigned long GetType(bool aIsFile);
+  static nsresult IsDirectoryEmpty(nsIFile* aDir, bool* aEmpty);
+  static nsresult GetFileInfo(const nsAString& aPath, FileInfo& aInfo);
 };
 
 } // namespace sdcard
