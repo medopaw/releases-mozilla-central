@@ -34,7 +34,7 @@ NS_INTERFACE_MAP_BEGIN(Entry)
 NS_INTERFACE_MAP_END
 
 Entry*
-Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
+Entry::CreateFromFile(nsIFile* aFile)
 {
   MOZ_ASSERT(aFile,
       "Entry::CreateFromFile creation failed. aFile can't be null.");
@@ -44,15 +44,15 @@ Entry::CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile)
   bool isDirectory;
   aFile->IsDirectory(&isDirectory);
   if (isFile) {
-    return new FileEntry(aFilesystem, aFile);
+    return new FileEntry(aFile);
   } else {
-    return new DirectoryEntry(aFilesystem, aFile);
+    return new DirectoryEntry(aFile);
   }
   return nullptr;
 }
 
 Entry*
-Entry::CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aPath)
+Entry::CreateFromRelpath(const nsAString& aPath)
 {
   SDCARD_LOG("in Entry::CreateFromRelpath() with relpath=%s", NS_ConvertUTF16toUTF8(aPath).get());
 
@@ -62,14 +62,12 @@ Entry::CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aPath)
     SDCARD_LOG("Fail to create nsIFile from path.");
     return nullptr;
   }
-  return CreateFromFile(aFilesystem, file);
+  return CreateFromFile(file);
 }
 
-Entry::Entry(FileSystem* aFilesystem,
-    nsIFile* aFile,
+Entry::Entry(nsIFile* aFile,
     bool aIsFile,
     bool aIsDirectory) :
-    mFilesystem(aFilesystem),
     mIsFile(aIsFile),
     mIsDirectory(aIsDirectory)
 {
@@ -146,8 +144,9 @@ already_AddRefed<FileSystem>
 Entry::Filesystem() const
 {
   SDCARD_LOG("in Entry.Filesystem()");
-  nsRefPtr<FileSystem> fileSystem(mFilesystem);
-  return fileSystem.forget();
+
+  nsRefPtr<FileSystem> filesystem(FileSystem::GetFilesystem());
+  return filesystem.forget();
 }
 
 void
@@ -192,8 +191,7 @@ Entry::CopyAndMoveTo(DirectoryEntry& parent,
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback,
-      pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
   nsString path;
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
@@ -220,8 +218,7 @@ Entry::Remove(VoidCallback& successCallback,
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback,
-      pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
   nsString path;
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {

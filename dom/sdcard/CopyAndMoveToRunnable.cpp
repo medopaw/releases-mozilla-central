@@ -196,8 +196,7 @@ CopyAndMoveToRunnable::OnSuccess()
 
   if (mSuccessCallback) { // successCallback is optional
     ErrorResult rv;
-    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(
-        GetEntry()->GetFilesystem(), mResultFile.get());
+    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(mResultFile.get());
     mSuccessCallback->Call(*resultEntry, rv);
   }
 }

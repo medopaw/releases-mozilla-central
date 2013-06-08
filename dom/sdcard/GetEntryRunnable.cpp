@@ -117,8 +117,7 @@ GetEntryRunnable::OnSuccess()
   // SuccessCallback is optional.
   if (mSuccessCallback) {
     ErrorResult rv;
-    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(
-        GetEntry()->GetFilesystem(), mResultFile.get());
+    nsRefPtr<Entry> resultEntry = Entry::CreateFromFile(mResultFile.get());
     mSuccessCallback->Call(*resultEntry, rv);
   }
 }

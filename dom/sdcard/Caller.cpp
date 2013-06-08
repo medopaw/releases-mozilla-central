@@ -17,10 +17,8 @@ namespace sdcard {
 NS_IMPL_ADDREF(Caller)
 NS_IMPL_RELEASE(Caller)
 
-Caller::Caller(FileSystem* aFileSystem,
-    CallbackFunction* aSuccessCallback,
+Caller::Caller(CallbackFunction* aSuccessCallback,
     ErrorCallback* aErrorCallback) :
-    mFilesystem(aFileSystem),
     mSuccessCallback(aSuccessCallback),
     mErrorCallback(aErrorCallback)
 {
@@ -52,7 +50,7 @@ Caller::CallEntryCallback(const nsAString& path)
   if (mSuccessCallback) {
     ErrorResult rv;
     static_cast<EntryCallback*>(mSuccessCallback.get())->Call(
-        *(Entry::CreateFromRelpath(mFilesystem, path)), rv);
+        *(Entry::CreateFromRelpath(path)), rv);
   }
 }
 

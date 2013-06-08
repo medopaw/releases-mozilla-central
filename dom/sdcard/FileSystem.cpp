@@ -25,6 +25,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(FileSystem)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
+FileSystem* FileSystem::smFileSystem = nullptr;
+
 FileSystem::FileSystem(nsPIDOMWindow* aWindow,
     const nsAString& aName, const nsAString& aPath) :
     mName(aName)
@@ -34,6 +36,8 @@ FileSystem::FileSystem(nsPIDOMWindow* aWindow,
   MOZ_ASSERT(aWindow, "Parent window object should be provided");
   Window::SetWindow(aWindow);
 
+  FileSystem::smFileSystem = this;
+
   nsCOMPtr<nsIFile> rootDir;
   nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
   if (NS_FAILED(rv) ) {
@@ -41,7 +45,7 @@ FileSystem::FileSystem(nsPIDOMWindow* aWindow,
     mRoot = nullptr;
   } else {
     SDCARD_LOG("Create root nsIFile successfully.");
-    mRoot = new DirectoryEntry(this, rootDir);
+    mRoot = new DirectoryEntry(rootDir);
   }
   SetIsDOMBinding();
 }
@@ -79,6 +83,12 @@ FileSystem::Root()
   SDCARD_LOG("in FileSystem.Root()");
   nsRefPtr<DirectoryEntry> root(mRoot);
   return root.forget();
+}
+
+FileSystem*
+FileSystem::GetFilesystem()
+{
+  return FileSystem::smFileSystem;
 }
 
 bool

@@ -9,7 +9,6 @@
 #include "nsContentUtils.h"
 
 #include "DirectoryReader.h"
-#include "FileSystem.h"
 #include "GetEntryRunnable.h"
 #include "RemoveRunnable.h"
 #include "Error.h"
@@ -25,7 +24,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_2(DirectoryEntry, mFilesystem, mFile)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_1(DirectoryEntry, mFile)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(DirectoryEntry)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(DirectoryEntry)
@@ -34,8 +33,8 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-DirectoryEntry::DirectoryEntry(FileSystem* aFilesystem, nsIFile* aFile) :
-    Entry(aFilesystem, aFile, false, true)
+DirectoryEntry::DirectoryEntry(nsIFile* aFile) :
+    Entry(aFile, false, true)
 {
   SDCARD_LOG("construct DirectoryEntry");
   SetIsDOMBinding();
@@ -90,8 +89,7 @@ DirectoryEntry::RemoveRecursively(VoidCallback& successCallback,
     pErrorCallback = errorCallback.Value().get();
   }
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, &successCallback,
-      pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
   nsString path;
   mFile->GetPath(path);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
@@ -139,8 +137,7 @@ DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options,
   nsString realPath;
   Path::DOMPathToRealPath(absolutePath, realPath);
 
-  nsRefPtr<Caller> pCaller = new Caller(mFilesystem, pSuccessCallback,
-      pErrorCallback);
+  nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
     nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(realPath, options.mCreate,

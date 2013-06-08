@@ -26,7 +26,7 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileEntry)
 
 public:
-  explicit FileEntry(FileSystem* aFilesystem, nsIFile* aFile);
+  explicit FileEntry(nsIFile* aFile);
   ~FileEntry();
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);

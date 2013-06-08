@@ -31,8 +31,8 @@ public:
 
 public:
   // nsIFile to Entry
-  static Entry* CreateFromFile(FileSystem* aFilesystem, nsIFile* aFile);
-  static Entry* CreateFromRelpath(FileSystem* aFilesystem, const nsAString& aRelpath);
+  static Entry* CreateFromFile(nsIFile* aFile);
+  static Entry* CreateFromRelpath(const nsAString& aRelpath);
 
   virtual ~Entry();
 
@@ -75,11 +75,6 @@ public:
   bool Exists() const;
   bool IsRoot() const;
 
-  FileSystem* GetFilesystem() const
-  {
-    return mFilesystem.get();
-  }
-
   nsIFile* GetFileInternal() const
   {
     return mFile;
@@ -87,10 +82,9 @@ public:
 
 protected:
   // Protected constructor to prevent direct call.
-  explicit Entry(FileSystem* aFilesystem, nsIFile* aFile,
-      bool aIsFile, bool aIsDirectory);
+  explicit
+  Entry(nsIFile* aFile, bool aIsFile, bool aIsDirectory);
 
-  nsRefPtr<FileSystem> mFilesystem;
   nsCOMPtr<nsIFile> mFile;
   bool mIsFile;
   bool mIsDirectory;

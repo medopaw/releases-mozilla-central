@@ -20,7 +20,7 @@ namespace sdcard {
 class Caller
 {
 public:
-  Caller(FileSystem* aFileSystem, CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
+  Caller(CallbackFunction* aSuccessCallback, ErrorCallback* aErrorCallback);
   virtual ~Caller();
 
   NS_IMETHOD_(nsrefcnt) AddRef();
@@ -34,7 +34,6 @@ public:
 
 private:
   nsAutoRefCnt mRefCnt;
-  nsRefPtr<FileSystem> mFilesystem;
 
   nsRefPtr<CallbackFunction> mSuccessCallback;
   nsRefPtr<ErrorCallback> mErrorCallback;

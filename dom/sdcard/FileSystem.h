@@ -41,9 +41,12 @@ public:
   // Mark this as resultNotAddRefed to return raw pointers
   already_AddRefed<DirectoryEntry> Root();
 
+  static FileSystem* GetFilesystem();
+
   bool IsValid() const;
 
 private:
+  static FileSystem* smFileSystem;
   nsString mName;
   nsRefPtr<DirectoryEntry> mRoot;
 };
