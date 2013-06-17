@@ -6,30 +6,22 @@
 
 #pragma once
 
-#include "CombinedRunnable.h"
+#include "Worker.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class RemoveRunnable : public CombinedRunnable
+class GetParentWorker : public Worker
 {
 public:
-  RemoveRunnable(VoidCallback* aSuccessCallback,
-      ErrorCallback* aErrorCallback,
-      Entry* aEntry, bool aRecursive = false);
-  ~RemoveRunnable();
+  GetParentWorker(const nsAString& aRelpath);
+  ~GetParentWorker();
 
-protected:
-  virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  virtual void OnSuccess() MOZ_OVERRIDE;
+  nsString mResultPath;
 
 private:
-  // Not thread safe
-  nsRefPtr<VoidCallback> mSuccessCallback;
-
-  nsCOMPtr<nsIFile> mFile;
-  bool mRecursive;
+  virtual void Work() MOZ_OVERRIDE;
 };
 
 } // namespace sdcard

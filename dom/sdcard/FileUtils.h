@@ -30,6 +30,7 @@ class FileUtils
 {
 public:
   static unsigned long GetType(bool aIsFile);
+  static nsresult Exists(const nsAString& aPath, bool* aExists);
   static nsresult IsDirectoryEmpty(nsIFile* aDir, bool* aEmpty);
   static nsresult GetFileInfo(const nsAString& aPath, FileInfo& aInfo);
 };

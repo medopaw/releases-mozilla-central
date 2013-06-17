@@ -49,7 +49,9 @@ Metadata::WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope)
 
 JS::Value
 Metadata::ModificationTime(JSContext* cx) const
-    {
+{
+  SDCARD_LOG("in Metadata.ModificationTime()");
+  SDCARD_LOG("time=%" PRIi64, mDate);
   JSObject* date = JS_NewDateObjectMsec(cx, mDate);
   JS::Value value;
   value.setObject(*date);
@@ -65,11 +67,19 @@ Metadata::Size() const
 }
 
 void
-Metadata::SetModificationTime(PRTime mtime)
+Metadata::SetModificationTime(PRTime value)
 {
   SDCARD_LOG("in Metadata.SetModificationTime()");
-  SDCARD_LOG("size=%" PRIi64, mtime);
-  mDate = static_cast<double>(mtime);
+  SDCARD_LOG("time=%" PRIi64, value);
+  mDate = static_cast<double>(value);
+}
+
+void
+Metadata::SetSize(uint64_t value)
+{
+  SDCARD_LOG("in Metadata.SetSize()");
+  SDCARD_LOG("size=%" PRIu64, value);
+  mSize = value;
 }
 
 } // namespace sdcard

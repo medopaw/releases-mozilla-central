@@ -8,17 +8,16 @@
 #include "nsContentUtils.h"
 #include "Window.h"
 #include "Path.h"
+#include "FileUtils.h"
 #include "Utils.h"
 #include "FileSystem.h"
 #include "Metadata.h"
-#include "GetParentRunnable.h"
-#include "CopyAndMoveToRunnable.h"
-#include "GetMetadataRunnable.h"
-#include "RemoveRunnable.h"
 #include "FileEntry.h"
 #include "DirectoryEntry.h"
 
 #include "SPCopyAndMoveToEvent.h"
+#include "SPGetMetadataEvent.h"
+#include "SPGetParentEvent.h"
 #include "SPRemoveEvent.h"
 #include "mozilla/dom/ContentChild.h"
 #include "SDCardRequestChild.h"
@@ -34,48 +33,31 @@ NS_INTERFACE_MAP_BEGIN(Entry)
 NS_INTERFACE_MAP_END
 
 Entry*
-Entry::CreateFromFile(nsIFile* aFile)
-{
-  MOZ_ASSERT(aFile,
-      "Entry::CreateFromFile creation failed. aFile can't be null.");
-
-  bool isFile;
-  aFile->IsFile(&isFile);
-  bool isDirectory;
-  aFile->IsDirectory(&isDirectory);
-  if (isFile) {
-    return new FileEntry(aFile);
-  } else {
-    return new DirectoryEntry(aFile);
-  }
-  return nullptr;
-}
-
-Entry*
 Entry::CreateFromRelpath(const nsAString& aPath)
 {
   SDCARD_LOG("in Entry::CreateFromRelpath() with relpath=%s", NS_ConvertUTF16toUTF8(aPath).get());
 
-  nsCOMPtr<nsIFile> file;
-  nsresult rv = NS_NewLocalFile(aPath, false, getter_AddRefs(file));
+  FileInfo info;
+  nsresult rv = FileUtils::GetFileInfo(aPath, info);
   if (NS_FAILED(rv) ) {
-    SDCARD_LOG("Fail to create nsIFile from path.");
+    SDCARD_LOG("Fail to create FileInfo from path.");
     return nullptr;
   }
-  return CreateFromFile(file);
+  if (info.isFile) {
+    return new FileEntry(info);
+  } else {
+    return new DirectoryEntry(info);
+  }
 }
 
-Entry::Entry(nsIFile* aFile,
-    bool aIsFile,
-    bool aIsDirectory) :
-    mIsFile(aIsFile),
-    mIsDirectory(aIsDirectory)
+Entry::Entry(const FileInfo& aInfo) :
+    mIsFile(aInfo.isFile),
+    mIsDirectory(aInfo.isDirectory),
+    mName(aInfo.name),
+    mFullPath(aInfo.fullPath)
 {
-  SDCARD_LOG("construct Entry");
-
-  // Copy nsIFile object and hold it.
-  nsCOMPtr<nsIFile> file;
-  aFile->Clone(getter_AddRefs(mFile));
+  SDCARD_LOG("construct Entry with FileInfo struct");
+  Path::DOMPathToRealPath(mFullPath, mRelpath);
 }
 
 Entry::~Entry()
@@ -111,40 +93,31 @@ Entry::GetMetadata(MetadataCallback& successCallback,
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-  nsRefPtr<GetMetadataRunnable> runnable = new GetMetadataRunnable(
-      &successCallback, pErrorCallback, this);
-  runnable->Start();
+  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
+
+  // Leave read-only access non-ipc to speed up.
+  nsRefPtr<SPGetMetadataEvent> r = new SPGetMetadataEvent(mRelpath, pCaller);
+  r->Start();
 }
 
 void
 Entry::GetName(nsString& retval) const
-    {
-  SDCARD_LOG("in Entry.GetName()");
-
-  nsString name;
-  mFile->GetLeafName(name);
-  SDCARD_LOG("entry name=%s", NS_ConvertUTF16toUTF8(name).get());
-  retval = name;
+{
+  SDCARD_LOG("in Entry.GetName() with name=%s", NS_ConvertUTF16toUTF8(mName).get());
+  retval = mName;
 }
 
 void
 Entry::GetFullPath(nsString& retval) const
-    {
-  SDCARD_LOG("in Entry.GetFullPath()!!!!");
-
-  nsString path, fullPath;
-  mFile->GetPath(path);
-  SDCARD_LOG("mFile Path=%s", NS_ConvertUTF16toUTF8(path).get());
-  Path::RealPathToDOMPath(path, fullPath);
-  SDCARD_LOG("entry fullPath=%s", NS_ConvertUTF16toUTF8(fullPath).get());
-  retval = fullPath;
+{
+  SDCARD_LOG("in Entry.GetFullPath() with fullpath=%s", NS_ConvertUTF16toUTF8(mFullPath).get());
+  retval = mFullPath;
 }
 
 already_AddRefed<FileSystem>
 Entry::Filesystem() const
 {
   SDCARD_LOG("in Entry.Filesystem()");
-
   nsRefPtr<FileSystem> filesystem(FileSystem::GetFilesystem());
   return filesystem.forget();
 }
@@ -172,8 +145,9 @@ Entry::CopyAndMoveTo(DirectoryEntry& parent,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback,
     bool isCopy)
 {
-  nsString parentPath;
-  parent.GetFileInternal()->GetPath(parentPath);
+  nsString parentDOMPath, parentRelpath;
+  parent.GetFullPath(parentDOMPath);
+  parent.GetRelpath(parentRelpath);
 
   nsString strNewName;
   if (newName.WasPassed()) {
@@ -190,18 +164,16 @@ Entry::CopyAndMoveTo(DirectoryEntry& parent,
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-
   nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
-  nsString path;
-  mFile->GetPath(path);
+
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(path,
-        parentPath, strNewName, isCopy, pCaller);
+    nsRefPtr<SPCopyAndMoveToEvent> r = new SPCopyAndMoveToEvent(mRelpath,
+        parentRelpath, strNewName, isCopy, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
-    SDCardCopyAndMoveParams params(path, parentPath, strNewName, isCopy);
+    SDCardCopyAndMoveParams params(mRelpath, parentRelpath, strNewName, isCopy);
     PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }
@@ -217,17 +189,15 @@ Entry::Remove(VoidCallback& successCallback,
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
-  nsString path;
-  mFile->GetPath(path);
+
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(path, false, pCaller);
+    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(mRelpath, false, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
-    SDCardRemoveParams params(path, false);
+    SDCardRemoveParams params(mRelpath, false);
     PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }
@@ -237,20 +207,26 @@ void
 Entry::GetParent(EntryCallback& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
-  ErrorCallback* errorCallbackPtr = nullptr;
+  SDCARD_LOG("in Entry.GetParent()");
+
+  ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    errorCallbackPtr = errorCallback.Value().get();
+    pErrorCallback = errorCallback.Value().get();
   }
-  nsRefPtr<GetParentRunnable> runnable = new GetParentRunnable(&successCallback,
-      errorCallbackPtr, this);
-  runnable->Start();
+  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
+
+  // Leave read-only access non-ipc to speed up.
+  nsRefPtr<SPGetParentEvent> r = new SPGetParentEvent(mRelpath, pCaller);
+  r->Start();
 }
 
 bool
 Entry::Exists() const
 {
+  nsString relpath;
+  Path::DOMPathToRealPath(mFullPath, relpath);
   bool exists = false;
-  mFile->Exists(&exists);
+  FileUtils::Exists(relpath, &exists);
   return exists;
 }
 
@@ -259,7 +235,14 @@ Entry::IsRoot() const
 {
   nsString path;
   GetFullPath(path);
-  return path == NS_LITERAL_STRING("/");
+  return Path::IsRoot(path);
+}
+
+void
+Entry::GetRelpath(nsString& retval) const
+{
+  SDCARD_LOG("in Entry.GetRelPath() with relpath=%s", NS_ConvertUTF16toUTF8(mRelpath).get());
+  retval = mRelpath;
 }
 
 } // namespace sdcard

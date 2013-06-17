@@ -7,7 +7,8 @@
 #pragma once
 
 #include "nsString.h"
-#include "mozilla/dom/FileSystemBinding.h"
+#include "nsAutoPtr.h"
+#include "mozilla/dom/DOMError.h"
 
 class DOMError;
 
@@ -21,10 +22,6 @@ namespace sdcard {
  */
 class Error
 {
-public:
-  static void HandleError(ErrorCallback* aErrorCallback, const nsAString& aErrorName);
-  static void HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCode);
-
 public:
   static void ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode);
   static nsRefPtr<DOMError> GetDOMError(const nsAString& aErrorName);

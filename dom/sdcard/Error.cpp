@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Error.h"
-#include "mozilla/dom/DOMError.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -34,32 +33,6 @@ const nsString Error::DOM_ERROR_TYPE_MISMATCH =
     NS_LITERAL_STRING("TypeMismatchError");
 const nsString Error::DOM_ERROR_UNKNOWN =
     NS_LITERAL_STRING("Unknown");
-
-void
-Error::HandleError(ErrorCallback* aErrorCallback, const nsAString& aErrorName)
-{
-  SDCARD_LOG("in ErrorHandler::HandleError() with error name");
-  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
-
-  SDCARD_LOG("Create DOMError with %s", NS_ConvertUTF16toUTF8(aErrorName).get());
-  if (aErrorCallback) { // errorCallback is always optional
-    ErrorResult rv;
-    aErrorCallback->Call(*GetDOMError(aErrorName), rv);
-  }
-}
-
-void
-Error::HandleError(ErrorCallback* aErrorCallback, const nsresult& aErrorCode)
-{
-  SDCARD_LOG("in ErrorHandler::HandleError() with error code");
-  MOZ_ASSERT(NS_IsMainThread(), "Only call on main thread!");
-
-  if (aErrorCallback) { // errorCallback is always optional
-    nsString errorName;
-    Error::ErrorNameFromCode(errorName, aErrorCode);
-    Error::HandleError(aErrorCallback, errorName);
-  }
-}
 
 void
 Error::ErrorNameFromCode(nsAString& aErrorName, const nsresult& aErrorCode)

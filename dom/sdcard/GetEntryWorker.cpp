@@ -6,7 +6,6 @@
 
 #include "GetEntryWorker.h"
 #include "FileUtils.h"
-#include "Path.h"
 #include "Error.h"
 #include "Utils.h"
 
@@ -34,7 +33,7 @@ GetEntryWorker::~GetEntryWorker()
 void
 GetEntryWorker::Work()
 {
-  SDCARD_LOG("in GetEntryWorker.WorkerThreadRun()!");
+  SDCARD_LOG("in GetEntryWorker.Work()!");
   SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mRelpath).get());
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
@@ -94,7 +93,11 @@ GetEntryWorker::Work()
     }
   }
 
-  mFile->GetPath(mResultPath);
+  rv = mFile->GetPath(mResultPath);
+  if (NS_FAILED(rv) ) {
+      SDCARD_LOG("Error occurs when getting file path.");
+      SetError(rv);
+  }
 }
 
 } // namespace sdcard

@@ -8,6 +8,7 @@
 #include "Metadata.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "FileUtils.h"
 #include "Window.h"
 #include "Path.h"
 #include "Utils.h"
@@ -38,15 +39,16 @@ FileSystem::FileSystem(nsPIDOMWindow* aWindow,
 
   FileSystem::smFileSystem = this;
 
-  nsCOMPtr<nsIFile> rootDir;
-  nsresult rv = NS_NewLocalFile(Path::base, false, getter_AddRefs(rootDir));
-  if (NS_FAILED(rv) ) {
-    SDCARD_LOG("Fail to create root nsIFile.");
+  FileInfo info;
+  nsresult rv = FileUtils::GetFileInfo(Path::base, info);
+  if (NS_FAILED(rv)) {
+    SDCARD_LOG("Fail to get root file info.");
     mRoot = nullptr;
   } else {
-    SDCARD_LOG("Create root nsIFile successfully.");
-    mRoot = new DirectoryEntry(rootDir);
+    SDCARD_LOG("Create root.");
+    mRoot = new DirectoryEntry(info);
   }
+
   SetIsDOMBinding();
 }
 

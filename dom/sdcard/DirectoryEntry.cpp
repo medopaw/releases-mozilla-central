@@ -9,8 +9,7 @@
 #include "nsContentUtils.h"
 
 #include "DirectoryReader.h"
-#include "GetEntryRunnable.h"
-#include "RemoveRunnable.h"
+#include "FileUtils.h"
 #include "Error.h"
 #include "Path.h"
 #include "Utils.h"
@@ -24,7 +23,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_1(DirectoryEntry, mFile)
+NS_IMPL_CYCLE_COLLECTION_WRAPPERCACHE_0(DirectoryEntry)
 
 NS_IMPL_CYCLE_COLLECTING_ADDREF(DirectoryEntry)
 NS_IMPL_CYCLE_COLLECTING_RELEASE(DirectoryEntry)
@@ -33,10 +32,10 @@ NS_INTERFACE_MAP_BEGIN_CYCLE_COLLECTION(DirectoryEntry)
   NS_INTERFACE_MAP_ENTRY(nsISupports)
 NS_INTERFACE_MAP_END
 
-DirectoryEntry::DirectoryEntry(nsIFile* aFile) :
-    Entry(aFile, false, true)
+DirectoryEntry::DirectoryEntry(const FileInfo& aInfo) :
+    Entry(aInfo)
 {
-  SDCARD_LOG("construct DirectoryEntry");
+  SDCARD_LOG("construct DirectoryEntry with FileInfo struct");
   SetIsDOMBinding();
 }
 
@@ -88,17 +87,17 @@ DirectoryEntry::RemoveRecursively(VoidCallback& successCallback,
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
-
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
-  nsString path;
-  mFile->GetPath(path);
+
+  nsString relpath;
+  Path::DOMPathToRealPath(mFullPath, relpath);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
-    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(path, true, pCaller);
+    nsRefPtr<SPRemoveEvent> r = new SPRemoveEvent(relpath, true, pCaller);
     r->Start();
   } else {
     SDCARD_LOG("in app process");
-    SDCardRemoveParams params(path, true);
+    SDCardRemoveParams params(relpath, true);
     PSDCardRequestChild* child = new SDCardRequestChild(pCaller);
     ContentChild::GetSingleton()->SendPSDCardRequestConstructor(child, params);
   }
@@ -121,11 +120,12 @@ DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options,
   if (errorCallback.WasPassed()) {
     pErrorCallback = errorCallback.Value().get();
   }
+  nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
 
   // Check if path is valid.
   if (!Path::IsValidPath(path)) {
     SDCARD_LOG("Invalid path!");
-    Error::HandleError(pErrorCallback, Error::DOM_ERROR_ENCODING);
+    pCaller->CallErrorCallback(Error::DOM_ERROR_ENCODING);
     return;
   }
 
@@ -137,7 +137,6 @@ DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options,
   nsString realPath;
   Path::DOMPathToRealPath(absolutePath, realPath);
 
-  nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
   if (XRE_GetProcessType() == GeckoProcessType_Default) {
     SDCARD_LOG("in b2g process");
     nsRefPtr<SPGetEntryEvent> r = new SPGetEntryEvent(realPath, options.mCreate,

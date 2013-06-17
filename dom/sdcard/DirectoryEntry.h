@@ -19,7 +19,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class DirectoryEntry;
+struct FileInfo;
 
 class DirectoryEntry MOZ_FINAL : public Entry
 {
@@ -28,7 +28,7 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(DirectoryEntry)
 
 public:
-  explicit DirectoryEntry(nsIFile* aFile);
+  explicit DirectoryEntry(const FileInfo& aInfo);
 
   ~DirectoryEntry();
 

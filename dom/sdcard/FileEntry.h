@@ -19,6 +19,8 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
+struct FileInfo;
+
 class FileEntry MOZ_FINAL : public Entry
 {
 public:
@@ -26,7 +28,7 @@ public:
   NS_DECL_CYCLE_COLLECTION_SCRIPT_HOLDER_CLASS(FileEntry)
 
 public:
-  explicit FileEntry(nsIFile* aFile);
+  explicit FileEntry(const FileInfo& aInfo);
   ~FileEntry();
 
   virtual JSObject* WrapObject(JSContext* aCx, JS::Handle<JSObject*> aScope);

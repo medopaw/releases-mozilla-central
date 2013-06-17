@@ -6,29 +6,20 @@
 
 #pragma once
 
-#include "CombinedRunnable.h"
+#include "SPEvent.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-class ReadEntriesRunnable : public CombinedRunnable
+class SPGetMetadataEvent : public SPEvent
 {
 public:
-  ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
-      ErrorCallback* aErrorCallback, Entry* aEntry);
-  ~ReadEntriesRunnable();
-
-protected:
-  virtual void WorkerThreadRun() MOZ_OVERRIDE;
-  virtual void OnSuccess() MOZ_OVERRIDE;
+  SPGetMetadataEvent(const nsAString& aRelpath, Caller* aCaller);
+  ~SPGetMetadataEvent();
 
 private:
-  nsCOMPtr<nsIFile> mFile;
-  nsTArray<nsCOMPtr<nsIFile> > mChildren;
-
-  // Not thread safe
-  nsRefPtr<EntriesCallback> mSuccessCallback;
+  virtual void OnSuccess() MOZ_OVERRIDE;
 };
 
 } // namespace sdcard

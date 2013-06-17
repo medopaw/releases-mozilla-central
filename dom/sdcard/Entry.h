@@ -22,6 +22,7 @@ namespace mozilla {
 namespace dom {
 namespace sdcard {
 
+struct FileInfo;
 class FileSystem;
 
 class Entry : public nsISupports, public nsWrapperCache
@@ -31,7 +32,6 @@ public:
 
 public:
   // nsIFile to Entry
-  static Entry* CreateFromFile(nsIFile* aFile);
   static Entry* CreateFromRelpath(const nsAString& aRelpath);
 
   virtual ~Entry();
@@ -63,31 +63,33 @@ public:
   void ToURL(nsString& retval);
 */
 
-  void Remove(
-      VoidCallback& successCallback,
+  void Remove(VoidCallback& successCallback,
       const Optional< OwningNonNull<ErrorCallback> >& errorCallback);
 
-  void GetParent(
-      EntryCallback& successCallback,
+  void GetParent(EntryCallback& successCallback,
       const Optional<OwningNonNull<ErrorCallback> >& errorCallback);
 
 public:
   bool Exists() const;
   bool IsRoot() const;
+  void GetRelpath(nsString& retval) const;
 
+  /*
   nsIFile* GetFileInternal() const
   {
     return mFile;
   }
+  */
 
 protected:
   // Protected constructor to prevent direct call.
-  explicit
-  Entry(nsIFile* aFile, bool aIsFile, bool aIsDirectory);
+  explicit Entry(const FileInfo& aInfo);
 
-  nsCOMPtr<nsIFile> mFile;
   bool mIsFile;
   bool mIsDirectory;
+  nsString mName;
+  nsString mFullPath;
+  nsString mRelpath;
 
 private:
   void CopyAndMoveTo(DirectoryEntry& parent,

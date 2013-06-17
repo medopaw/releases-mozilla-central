@@ -4,41 +4,39 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "ReadEntriesRunnable.h"
+#include "ReadEntriesWorker.h"
 #include "nsISimpleEnumerator.h"
 #include "Entry.h"
+#include "nsIFile.h"
 #include "Utils.h"
 
 namespace mozilla {
 namespace dom {
 namespace sdcard {
 
-ReadEntriesRunnable::ReadEntriesRunnable(EntriesCallback* aSuccessCallback,
-    ErrorCallback* aErrorCallback,
-    Entry* aEntry) :
-    CombinedRunnable(aErrorCallback, aEntry),
-    mSuccessCallback(aSuccessCallback)
+ReadEntriesWorker::ReadEntriesWorker(const nsAString& aRelpath) :
+    Worker(aRelpath)
 {
-  SDCARD_LOG("construct ReadEntriesRunnable!");
-  mFile = aEntry->GetFileInternal();
+  SDCARD_LOG("construct ReadEntriesWorker");
 }
 
-ReadEntriesRunnable::~ReadEntriesRunnable()
+ReadEntriesWorker::~ReadEntriesWorker()
 {
-  SDCARD_LOG("destruct ReadEntriesRunnable!");
+  SDCARD_LOG("destruct ReadEntriesWorker");
 }
 
 void
-ReadEntriesRunnable::WorkerThreadRun()
+ReadEntriesWorker::Work()
 {
-  SDCARD_LOG("in ReadEntriesRunnable.WorkerThreadRun()!");
+  SDCARD_LOG("in ReadEntriesWorker.Work()!");
+  SDCARD_LOG("realPath=%s", NS_ConvertUTF16toUTF8(mRelpath).get());
   MOZ_ASSERT(!NS_IsMainThread(), "Never call on main thread!");
 
   nsresult rv = NS_OK;
   nsCOMPtr<nsISimpleEnumerator> childEnumerator;
   rv = mFile->GetDirectoryEntries(getter_AddRefs(childEnumerator));
   if (NS_FAILED(rv) ) {
-    SetErrorCode(rv);
+    SetError(rv);
     return;
   }
 
@@ -48,7 +46,7 @@ ReadEntriesRunnable::WorkerThreadRun()
     nsCOMPtr<nsISupports> child;
     rv = childEnumerator->GetNext(getter_AddRefs(child));
     if (NS_FAILED(rv) ) {
-      SetErrorCode(rv);
+      SetError(rv);
       return;
     }
 
@@ -56,30 +54,24 @@ ReadEntriesRunnable::WorkerThreadRun()
     nsRefPtr<Entry> entry;
 
     bool isDir;
-    childFile->IsDirectory(&isDir);
+    rv = childFile->IsDirectory(&isDir);
+    if (NS_FAILED(rv) ) {
+      SetError(rv);
+      return;
+    }
     bool isFile;
-    childFile->IsFile(&isFile);
+    rv = childFile->IsFile(&isFile);
+    if (NS_FAILED(rv) ) {
+      SetError(rv);
+      return;
+    }
 
     if (isDir || isFile) {
-      mChildren.AppendElement(childFile);
+      nsString childPath;
+      childFile->GetPath(childPath);
+      mResultPaths.AppendElement(childPath);
     }
   }
-}
-
-void
-ReadEntriesRunnable::OnSuccess()
-{
-  SDCARD_LOG("in ReadEntriesRunnable.OnSuccess()!");
-  MOZ_ASSERT(mSuccessCallback, "Must pass successCallback!");
-
-  Sequence<OwningNonNull<Entry> > entries;
-  int n = mChildren.Length();
-  for (int i = 0; i < n; i++) {
-    nsRefPtr<Entry> entry = Entry::CreateFromFile(mChildren[i].get());
-    *entries.AppendElement() = entry.forget();
-  }
-  ErrorResult rv;
-  mSuccessCallback->Call(entries, rv);
 }
 
 } // namespace sdcard

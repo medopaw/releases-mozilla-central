@@ -38,11 +38,7 @@ public:
 
 public:
   void SetModificationTime(PRTime mtime);
-
-  void SetSize(uint64_t value)
-  {
-    mSize = value;
-  }
+  void SetSize(uint64_t value);
 
 private:
   uint64_t mSize;

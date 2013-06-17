@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "Caller.h"
-#include "Entry.h"
 #include "mozilla/dom/DOMError.h"
 #include "Error.h"
+#include "Entry.h"
+#include "Metadata.h"
 #include "Utils.h"
 
 namespace mozilla {
@@ -46,6 +47,9 @@ Caller::CallErrorCallback(const nsAString& error)
 void
 Caller::CallEntryCallback(const nsAString& path)
 {
+  SDCARD_LOG("Call EntryCallback with path=%s",
+      NS_ConvertUTF16toUTF8(path).get());
+
   // Create an Entry from path.
   if (mSuccessCallback) {
     ErrorResult rv;
@@ -57,13 +61,36 @@ Caller::CallEntryCallback(const nsAString& path)
 void
 Caller::CallEntriesCallback(const InfallibleTArray<nsString>& paths)
 {
+  SDCARD_LOG("Call EntriesCalback");
 
+  if (mSuccessCallback) {
+    Sequence<OwningNonNull<Entry> > entries;
+    int n = paths.Length();
+    for (int i = 0; i < n; i++) {
+      nsRefPtr<Entry> entry = Entry::CreateFromRelpath(paths[i]);
+      *entries.AppendElement() = entry.forget();
+    }
+
+    ErrorResult rv;
+    static_cast<EntriesCallback*>(mSuccessCallback.get())->Call(
+        entries, rv);
+  }
 }
 
 void
 Caller::CallMetadataCallback(int64_t modificationTime, uint64_t size)
 {
+  SDCARD_LOG("Call MetadataCallback");
 
+  if (mSuccessCallback) {
+    nsRefPtr<Metadata> metadata = new Metadata();
+    metadata->SetModificationTime(modificationTime);
+    metadata->SetSize(size);
+
+    ErrorResult rv;
+    static_cast<MetadataCallback*>(mSuccessCallback.get())->Call(
+        *metadata, rv);
+  }
 }
 
 void

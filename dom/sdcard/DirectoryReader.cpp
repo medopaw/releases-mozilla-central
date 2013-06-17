@@ -7,8 +7,9 @@
 #include "DirectoryReader.h"
 #include "mozilla/dom/FileSystemBinding.h"
 #include "nsContentUtils.h"
+#include "Caller.h"
 #include "Window.h"
-#include "ReadEntriesRunnable.h"
+#include "SPReadEntriesEvent.h"
 #include "DirectoryEntry.h"
 #include "Utils.h"
 
@@ -52,14 +53,17 @@ void
 DirectoryReader::ReadEntries(EntriesCallback& successCallback,
     const Optional<OwningNonNull<ErrorCallback> >& errorCallback)
 {
-  ErrorCallback* errorCallbackPtr = nullptr;
+  ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    errorCallbackPtr = errorCallback.Value().get();
+    pErrorCallback = errorCallback.Value().get();
   }
-  nsCOMPtr<ReadEntriesRunnable> runnable = new ReadEntriesRunnable(
-      &successCallback,
-      errorCallbackPtr, mEntry);
-  runnable->Start();
+  nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
+
+  // Leave read-only access non-ipc to speed up.
+  nsString relpath;
+  mEntry->GetRelpath(relpath);
+  nsRefPtr<SPReadEntriesEvent> r = new SPReadEntriesEvent(relpath, pCaller);
+  r->Start();
 }
 
 } // namespace sdcard

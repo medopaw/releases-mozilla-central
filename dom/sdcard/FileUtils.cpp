@@ -21,6 +21,17 @@ FileUtils::GetType(bool isFile)
 }
 
 nsresult
+FileUtils::Exists(const nsAString& aPath, bool* aExists)
+{
+  SDCARD_LOG("in FileUtils.Exists() with path=%s", NS_ConvertUTF16toUTF8(aPath).get());
+
+  nsCOMPtr<nsIFile> file;
+  nsresult rv = NS_NewLocalFile(aPath, false, getter_AddRefs(file));
+  rv = file->Exists(aExists);
+  return rv;
+}
+
+nsresult
 FileUtils::IsDirectoryEmpty(nsIFile* aDir, bool* aEmpty)
 {
   SDCARD_LOG("in FileUtils.IsDirectoryEmpty()");
