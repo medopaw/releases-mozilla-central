@@ -55,7 +55,7 @@ DirectoryReader::ReadEntries(EntriesCallback& successCallback,
 {
   ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
 

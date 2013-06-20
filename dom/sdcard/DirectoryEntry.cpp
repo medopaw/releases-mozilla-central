@@ -85,7 +85,7 @@ DirectoryEntry::RemoveRecursively(VoidCallback& successCallback,
 
   ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
 
@@ -115,10 +115,10 @@ DirectoryEntry::GetEntry(const nsAString& path, const FileSystemFlags& options,
   EntryCallback* pSuccessCallback = nullptr;
   ErrorCallback* pErrorCallback = nullptr;
   if (successCallback.WasPassed()) {
-    pSuccessCallback = successCallback.Value().get();
+    pSuccessCallback = &(successCallback.Value());
   }
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
 

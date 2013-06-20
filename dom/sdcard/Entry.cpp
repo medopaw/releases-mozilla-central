@@ -91,7 +91,7 @@ Entry::GetMetadata(MetadataCallback& successCallback,
 
   ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
 
@@ -158,11 +158,11 @@ Entry::CopyAndMoveTo(DirectoryEntry& parent,
 
   EntryCallback* pSuccessCallback = nullptr;
   if (successCallback.WasPassed()) {
-    pSuccessCallback = successCallback.Value().get();
+    pSuccessCallback = &(successCallback.Value());
   }
   ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(pSuccessCallback, pErrorCallback);
 
@@ -187,7 +187,7 @@ Entry::Remove(VoidCallback& successCallback,
 
   ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
 
@@ -211,7 +211,7 @@ Entry::GetParent(EntryCallback& successCallback,
 
   ErrorCallback* pErrorCallback = nullptr;
   if (errorCallback.WasPassed()) {
-    pErrorCallback = errorCallback.Value().get();
+    pErrorCallback = &(errorCallback.Value());
   }
   nsRefPtr<Caller> pCaller = new Caller(&successCallback, pErrorCallback);
 
