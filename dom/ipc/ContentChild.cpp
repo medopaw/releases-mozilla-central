@@ -789,10 +789,10 @@ ContentChild::AllocPSDCardRequest(const SDCardParams& aParams)
 {
   // return new SDCardRequestChild();
 #ifdef MOZ_SDCARD
-    MOZ_NOT_REACHED("No one should be allocating PSDCardChild actors");
+    MOZ_CRASH("No one should be allocating PSDCardChild actors");
     return nullptr;
 #else
-    MOZ_NOT_REACHED("No support for sdcard filesystem on this platform!");
+    MOZ_CRASH("No support for sdcard filesystem on this platform!");
     return nullptr;
 #endif
 }
